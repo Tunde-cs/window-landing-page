@@ -17,7 +17,6 @@ from app.forms import OrderForm  # If OrderForm is used
 from app.models import Lead, Order, Quote
 
 
-
 from .forms import (
     LeadForm,
     QuoteForm,  # Ensure forms are used in your views
@@ -320,7 +319,7 @@ def request_quote(request):
             messages.error(request, "There was an error submitting your request.")
     else:
         form = QuoteForm()
-    
+
     return render(request, "pages/request_quote.html", {"form": form})
 
 

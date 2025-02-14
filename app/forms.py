@@ -32,12 +32,25 @@ class LeadForm(forms.ModelForm):
 class QuoteForm(forms.ModelForm):
     class Meta:
         model = Quote
-        fields = ["name", "email", "phone", "details"]  # Use existing fields in Quote model
+        fields = [
+            "name",
+            "email",
+            "phone",
+            "details",
+        ]  # Use existing fields in Quote model
         widgets = {
-            "name": forms.TextInput(attrs={"class": "form-control", "placeholder": "Customer Name"}),
-            "email": forms.EmailInput(attrs={"class": "form-control", "placeholder": "Customer Email"}),
-            "phone": forms.TextInput(attrs={"class": "form-control", "placeholder": "Customer Phone"}),
-            "details": forms.Textarea(attrs={"class": "form-control", "placeholder": "Additional Details"}),
+            "name": forms.TextInput(
+                attrs={"class": "form-control", "placeholder": "Customer Name"}
+            ),
+            "email": forms.EmailInput(
+                attrs={"class": "form-control", "placeholder": "Customer Email"}
+            ),
+            "phone": forms.TextInput(
+                attrs={"class": "form-control", "placeholder": "Customer Phone"}
+            ),
+            "details": forms.Textarea(
+                attrs={"class": "form-control", "placeholder": "Additional Details"}
+            ),
         }
 
 

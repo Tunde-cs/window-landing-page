@@ -1,0 +1,40 @@
+/* Default Sidebar Styling */
+.main-sidebar {
+    width: 250px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #343a40; /* Dark theme */
+    transition: width 0.3s ease-in-out;
+}
+
+/* Adjust Main Content */
+.content-wrapper {
+    margin-left: 250px;
+    transition: margin-left 0.3s ease-in-out;
+    min-height: 100vh;
+    padding: 20px; /* Prevent content from touching the edge */
+}
+
+/* Shrink Sidebar for Small Screens */
+@media (max-width: 992px) {
+    .main-sidebar {
+        width: 80px;  /* Shrink Sidebar */
+    }
+
+    .content-wrapper {
+        margin-left: 80px;  /* Adjust Content */
+    }
+
+    /* Hide Sidebar Text */
+    .main-sidebar .nav-link p {
+        display: none;  
+    }
+
+    /* Center Icons */
+    .main-sidebar .nav-icon {
+        margin-right: 0;
+        text-align: center;
+    }
+}

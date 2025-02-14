@@ -11702,10 +11702,6 @@ button {
   margin: auto; /* Center the confirmation message */
 }
 
-
-<link href="{% static 'css/styles.css' %}" rel="stylesheet">
-
-
 .navbar-brand {
   font-family: 'Poppins', sans-serif;
   font-size: 1.5rem;
@@ -11718,4 +11714,5 @@ button {
 html {
   scroll-behavior: smooth;
 }
+
 

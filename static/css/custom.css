@@ -1,0 +1,28 @@
+/* 🔹 Ensure Sidebar Adjusts Responsively */
+@media (max-width: 768px) {
+    /* Move sidebar off-screen by default */
+    .main-sidebar {
+        position: fixed;
+        width: 250px;
+        height: 100%;
+        z-index: 1030;
+        left: -250px;
+        transition: left 0.3s ease-in-out;
+    }
+
+    /* When sidebar is toggled */
+    .main-sidebar.sidebar-open {
+        left: 0;
+    }
+
+    /* Ensure the main content wrapper shifts when sidebar is open */
+    .content-wrapper {
+        margin-left: 0;
+        transition: margin-left 0.3s ease-in-out;
+    }
+
+    /* Move the main content when the sidebar is open */
+    body.sidebar-open .content-wrapper {
+        margin-left: 250px;
+    }
+}

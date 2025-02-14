@@ -153,40 +153,77 @@
             </div>
 
             <!-- Sales Chart -->
-            <div class="card mt-4">
-                <div class="card-header">
-                    <h3 class="card-title"><i class="fas fa-chart-line"></i> Sales Overview</h3>
-                </div>
-                <div class="card-body">
-                    <canvas id="sales-chart" style="height: 300px;"></canvas>
-                </div>
-            </div>
-        </div>
-    </section>
+<div class="card mt-4">
+    <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-chart-line"></i> Sales Overview</h3>
+    </div>
+    <div class="card-body">
+        <canvas id="sales-chart" style="height: 300px;"></canvas>
+        
+        <!-- JSON Data for Chart.js -->
+        <script type="application/json" id="salesChartLabels">
+            {{ sales_chart_labels|safe }}
+        </script>
+        <script type="application/json" id="salesChartData">
+            {{ sales_chart_data|safe }}
+        </script>
+    </div>
 </div>
+
+<!-- ✅ Add JavaScript Code Below Before `</body>` -->
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        var ctx = document.getElementById('sales-chart').getContext('2d');
-        var salesChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: {{ metrics.sales_chart_labels|safe }},
-                datasets: [{
-                    label: 'Revenue ($43,300.33)',
-                    data: {{ metrics.sales_chart_data|safe }},
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: { beginAtZero: true }
-                }
+        try {
+            let labelsElement = document.getElementById('salesChartLabels');
+            let dataElement = document.getElementById('salesChartData');
+    
+            if (!labelsElement || !dataElement) {
+                console.error("🚨 Sales chart data elements not found in DOM!");
+                return;
             }
-        });
+    
+            let labels = JSON.parse(labelsElement.textContent || "[]");
+            let data = JSON.parse(dataElement.textContent || "[]");
+    
+            if (labels.length === 0 || data.length === 0) {
+                console.warn("⚠️ No sales data available.");
+                return;
+            }
+    
+            let ctx = document.getElementById('sales-chart');
+    
+            if (!ctx) {
+                console.error("❌ Canvas element #sales-chart not found!");
+                return;
+            }
+    
+            console.log("✅ Creating Chart with Data:", labels, data);
+    
+            new Chart(ctx.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Revenue ($)',
+                        data: data,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+    
+        } catch (error) {
+            console.error("❌ JSON Parsing Error:", error);
+        }
     });
-</script>
+    </script>
 {% endblock %}
+

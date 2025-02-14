@@ -21,6 +21,10 @@ from app.forms import QuoteForm
 from app.models import Quote
 from django.http import HttpResponse
 import csv
+from app.models import Message
+from calendar import month_name
+from django.urls import reverse
+from app.models import Order, Customer
 
 
 # Base Views
@@ -97,30 +101,23 @@ def USERADMIN(request):
             round((sales_completed / total_leads) * 100, 2) if total_leads > 0 else 0
         )
 
-        # Popular Window Styles
-        popular_window_styles = (
-            Project.objects.values("window_style")
-            .annotate(style_count=Count("window_style"))
-            .order_by("-style_count")[:5]
-        )
-
-        # Sales Chart Data (Revenue by Month)
+        # Group Sales Data by Month
         sales_data = (
             Order.objects.annotate(month=ExtractMonth("date"))
             .values("month")
             .annotate(total=Sum("amount"))
             .order_by("month")
         )
-        sales_chart_labels = [f"Month {data['month']}" for data in sales_data]
-        sales_chart_data = [data["total"] for data in sales_data]
+        
+        # Convert Month Numbers to Month Names (e.g., 1 -> January)
+        sales_chart_labels = [month_name[data["month"]] for data in sales_data if data["month"]]
+        sales_chart_data = [float(data["total"]) for data in sales_data]
 
         # Recent Leads
         recent_leads = Lead.objects.order_by("-created_at")[:5]
 
         # Inbox Message Count
-        message_count = Message.objects.filter(
-            is_read=False
-        ).count()  # Example: Count unread messages
+        message_count = Message.objects.filter(is_read=False).count()
 
     except Exception as e:
         # Log error and set default values
@@ -133,7 +130,6 @@ def USERADMIN(request):
         orders_in_progress = 0
         sales_completed = 0
         conversion_rate = 0
-        popular_window_styles = []
         sales_chart_labels = []
         sales_chart_data = []
         recent_leads = []
@@ -152,9 +148,9 @@ def USERADMIN(request):
             "conversion_rate": conversion_rate,
             "message_count": message_count,  # Added inbox message count
         },
-        "popular_window_styles": popular_window_styles,
-        "sales_chart_labels": sales_chart_labels,
-        "sales_chart_data": sales_chart_data,
+        
+        "sales_chart_labels": sales_chart_labels,  # ✅ Ensure these are included
+        "sales_chart_data": sales_chart_data,  # ✅ Ensure these are included
         "leads": recent_leads,
     }
 
@@ -193,27 +189,21 @@ def revenue_view(request):
     return render(request, "adminPages/revenue.html", {"revenue_data": revenue_data})
 
 
+@login_required
 def pending_orders_view(request):
-    """
-    View for displaying pending orders and metrics in the adminorders.html template.
-    """
     if not request.user.is_staff:  # Ensure only staff/admin users can access
         return redirect("admin:login")
 
-    # Query the database for pending orders
-    pending_orders = Order.objects.filter(
-        status="pending"
-    )  # Adjust status value as needed
-    pending_orders_count = pending_orders.count()  # Count pending orders
+    pending_orders = Order.objects.filter(status="pending")
+    pending_orders_count = pending_orders.count()
 
-    # Pass data to the shared adminorders.html template
     return render(
         request,
         "adminPages/adminorders.html",
         {
-            "orders": pending_orders,  # Use orders for compatibility with existing template
+            "orders": pending_orders,
             "pending_orders_count": pending_orders_count,
-            "view_mode": "pending",  # Used to differentiate views in the template
+            "view_mode": "pending",
         },
     )
 
@@ -224,7 +214,7 @@ def orders_view(request):
     View for managing all orders, including pending orders, dynamically.
     """
     if not request.user.is_staff:  # Restrict access to staff/admin users
-        return redirect('admin:login')
+        return redirect("admin:login")
 
     # Get the filter type from the query parameter
     view_mode = request.GET.get("view", "all")  # Default to 'all'
@@ -248,7 +238,6 @@ def orders_view(request):
     )
 
 
-
 def view_order(request, id):
     # Fetch the order with the given id, or return a 404 if not found
     order = get_object_or_404(Order, id=id)
@@ -263,8 +252,40 @@ def projects_view(request):
 
 
 def reports_view(request):
-    """Handles generating reports."""
-    return render(request, "adminPages/adminreports.html")
+    """Handles generating reports with actual order data."""
+
+    # Get optional date filters from request
+    start_date = request.GET.get("start_date")
+    end_date = request.GET.get("end_date")
+
+    # Filter orders by date if provided
+    orders = Order.objects.all()
+    if start_date and end_date:
+        orders = orders.filter(date__range=[start_date, end_date])
+
+    # Aggregate report data
+    total_revenue = orders.aggregate(Sum("amount"))["amount__sum"] or 0
+    total_orders = orders.count()
+    pending_orders = orders.filter(status="pending").count()
+    total_customers = Customer.objects.count()
+
+    # Convert orders into report data
+    report_data = orders.values("id", "status", "amount", "date")
+
+    # Render template with the updated context
+    return render(
+        request,
+        "adminPages/adminreports.html",
+        {
+            "total_revenue": total_revenue,
+            "total_orders": total_orders,
+            "pending_orders": pending_orders,
+            "total_customers": total_customers,
+            "report_data": report_data,
+            "start_date": start_date,
+            "end_date": end_date,
+        },
+    )
 
 
 def reports_export(request):
@@ -273,13 +294,21 @@ def reports_export(request):
     """
     # Example report data (replace this with actual query)
     report_data = [
-        {"title": "Report 1", "details": "Details of Report 1", "created_at": "2024-12-17"},
-        {"title": "Report 2", "details": "Details of Report 2", "created_at": "2024-12-18"},
+        {
+            "title": "Report 1",
+            "details": "Details of Report 1",
+            "created_at": "2024-12-17",
+        },
+        {
+            "title": "Report 2",
+            "details": "Details of Report 2",
+            "created_at": "2024-12-18",
+        },
     ]
 
     # Create the HttpResponse object with CSV headers
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="reports.csv"'
+    response = HttpResponse(content_type="text/csv")
+    response["Content-Disposition"] = 'attachment; filename="reports.csv"'
 
     # Write data to CSV
     writer = csv.writer(response)
@@ -405,27 +434,33 @@ def admin_quotes_view(request, quote_id=None):
 
     # List all quotes
     quotes = Quote.objects.all()
-    return render(request, "adminPages/adminquotes.html", {"quotes": quotes, "form": QuoteForm()})
-    
+    return render(
+        request, "adminPages/adminquotes.html", {"quotes": quotes, "form": QuoteForm()}
+    )
+
 
 def edit_order(request, id):
-    # Fetch the order by its ID or return a 404 if it doesn't exist
+    """
+    View to edit an existing order.
+    """
+    # Fetch the order by its ID or return a 404 if not found
     order = get_object_or_404(Order, id=id)
 
     if request.method == "POST":
-        # Process the form submission to update the order
-        order.status = request.POST.get("status")  # Example field: Update order status
-        # Update other fields if necessary
+        # Get updated status from form data
+        new_status = request.POST.get("status")
+        if new_status:
+            order.status = new_status  # Update order status
+        # Update additional fields if needed
         order.save()
 
-        messages.success(request, "Order successfully updated!")
-        return redirect(
-            "view_order", id=order.id
-        )  # Redirect to the order detail page after saving
+        messages.success(request, f"Order {order.id} updated successfully!")
+        
+        # Redirect back to order details page
+        return redirect(reverse("view_order", kwargs={"id": order.id}))
 
-    # Render the form with the current order details
+    # Pass order data to template
     return render(request, "adminPages/edit_order.html", {"order": order})
-
 
 @login_required
 @csrf_protect
@@ -442,16 +477,21 @@ def delete_message(request, message_id):
 
 def order_delete(request, order_id):
     """
-    Deletes a specific order by ID and redirects to the orders list.
+    Deletes a specific order by ID and redirects to the orders list with a success message.
     """
     if not request.user.is_staff:
         messages.error(request, "You do not have permission to delete this order.")
-        return redirect("adminorders")  # Redirect to the admin orders page
+        return redirect("orders")  # Redirect to all orders page
 
+    # Get the order or return 404 if it doesn’t exist
     order = get_object_or_404(Order, id=order_id)
     order.delete()
+
+    # ✅ Add a success message
     messages.success(request, f"Order {order_id} deleted successfully.")
-    return redirect("adminPages/adminorders")  # Redirect to the orders list
+
+    # ✅ Redirect to the correct orders page
+    return redirect("orders")  # Ensure this matches your URLs
 
 
 @staff_member_required

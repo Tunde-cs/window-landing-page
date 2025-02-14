@@ -1,14 +1,16 @@
 {% extends 'base/adminbase.html' %}
 
 {% block content %}
+    <!-- ✅ Include Sidebar for Navigation -->
+    {% include 'includes/adminsidebar.html' %}
+
     <!-- Header Section -->
-{% include 'includes/adminsidebar.html' %}     
     <div class="content-header">
         <h1 class="m-0">Reports</h1>
         <p class="text-muted">View and analyze your business performance with detailed reports.</p>
     </div>
 
-    <!-- Metrics Section -->
+    <!-- ✅ Metrics Section -->
     <div class="row">
         <div class="col-lg-3 col-6">
             <div class="small-box bg-info">
@@ -56,7 +58,7 @@
         </div>
     </div>
 
-    <!-- Date Filter Section -->
+    <!-- ✅ Date Filter Section -->
     <div class="card mb-4">
         <div class="card-header">
             <h3 class="card-title"><i class="fas fa-filter"></i> Filter Reports</h3>
@@ -66,11 +68,11 @@
                 <div class="row">
                     <div class="col-md-4">
                         <label for="start_date">Start Date:</label>
-                        <input type="date" id="start_date" name="start_date" class="form-control" value="{{ request.GET.start_date }}">
+                        <input type="date" id="start_date" name="start_date" class="form-control" value="{{ start_date }}">
                     </div>
                     <div class="col-md-4">
                         <label for="end_date">End Date:</label>
-                        <input type="date" id="end_date" name="end_date" class="form-control" value="{{ request.GET.end_date }}">
+                        <input type="date" id="end_date" name="end_date" class="form-control" value="{{ end_date }}">
                     </div>
                     <div class="col-md-4 d-flex align-items-end">
                         <button type="submit" class="btn btn-primary w-100">Filter</button>
@@ -80,12 +82,12 @@
         </div>
     </div>
 
-    <!-- Reports Content -->
+    <!-- ✅ Reports Content -->
     <div class="card">
         <div class="card-header">
             <h3 class="card-title"><i class="fas fa-chart-line"></i> Detailed Reports</h3>
             <div class="card-tools">
-                <a href="{% url 'reports_export' %}?start_date={{ request.GET.start_date }}&end_date={{ request.GET.end_date }}" class="btn btn-sm btn-success">
+                <a href="{% url 'reports_export' %}?start_date={{ start_date }}&end_date={{ end_date }}" class="btn btn-sm btn-success">
                     <i class="fas fa-download"></i> Export
                 </a>
             </div>
@@ -119,4 +121,5 @@
             {% endif %}
         </div>
     </div>
+
 {% endblock %}

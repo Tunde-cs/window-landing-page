@@ -1,6 +1,9 @@
 {% extends 'base/adminbase.html' %}
 
 {% block content %}
+<!-- Include Sidebar for Navigation -->
+{% include 'includes/adminsidebar.html' %}
+
     <!-- Header Section -->
     <div class="content-header">
         <h1 class="m-0">Order Details</h1>
@@ -24,7 +27,9 @@
                 <p><strong>Date:</strong> {{ order.date|date:"M d, Y" }}</p>
             </div>
             <div class="card-footer">
-                <a href="{% url 'edit-orders' %}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to Orders</a>
+                <a href="{% url 'edit_order' order.id %}" class="btn btn-warning">
+                    <i class="fas fa-edit"></i> Edit Order
+                </a>
             </div>
         </div>
     </div>

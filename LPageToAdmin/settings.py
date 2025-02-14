@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 import os
 from pathlib import Path
-
 from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -27,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config("SECRET_KEY", default="fallback-secret-key")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config("DEBUG", default=False, cast=bool)
+DEBUG = config("DEBUG", default=True, cast=bool)
 
 ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
 
@@ -136,9 +135,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # URL to serve static files
 STATIC_URL = "/static/"
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),  # App-level static files
-]
+STATICFILES_DIRS = [BASE_DIR / "static"]
+
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")  # For production use
 
 # Default primary key field type
@@ -146,8 +144,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")  # For production use
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-LOGIN_REDIRECT_URL = "/admin-login/"
-LOGOUT_REDIRECT_URL = "home"
+LOGIN_REDIRECT_URL = "/useradmin/"  # Redirect to the Admin Dashboard
+LOGOUT_REDIRECT_URL = "/accounts/login/"  # Redirect users to login page after logout
 
 LOGGING = {
     "version": 1,

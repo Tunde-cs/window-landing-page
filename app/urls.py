@@ -17,5 +17,7 @@ urlpatterns = [
     path("quote-success/", views.quote_success, name="quote-success"),  # Success page
     path("", home, name="home"),  # Route for the landing page
     path("request-quote/", request_quote, name="request_quote"),
-    path("", TemplateView.as_view(template_name="pages/index.html"), name="landing_page"),
+    path(
+        "", TemplateView.as_view(template_name="pages/index.html"), name="landing_page"
+    ),
 ]
