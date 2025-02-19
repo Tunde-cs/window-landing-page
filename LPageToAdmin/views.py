@@ -25,6 +25,8 @@ from app.models import Message
 from calendar import month_name
 from django.urls import reverse
 from app.models import Order, Customer
+import json  # ✅ Import json module
+import calendar
 
 
 # Base Views
@@ -74,17 +76,25 @@ def send_quote_email(to_email, subject, message):
     )
 
 
+from django.db.models.functions import ExtractMonth
+from django.utils.timezone import now
+import json
+from calendar import month_name
+from django.db.models import Sum
+
 @csrf_protect
 @login_required
 def USERADMIN(request):
     """
-    Admin Dashboard View - Displays key metrics, recent leads, and other statistics.
+    Admin Dashboard View - Displays key metrics, recent leads, and sales data.
     """
+    user = request.user  # ✅ Get the logged-in user
+
     try:
         # Key Metrics
         new_leads_count = Lead.objects.filter(status="new").count()
         pending_orders_count = Order.objects.filter(status="pending").count()
-        completed_projects_count = Project.objects.filter(status="completed").count()
+        completed_projects_count = Order.objects.filter(status="completed").count()
         monthly_revenue = (
             Order.objects.filter(date__month=now().month)
             .aggregate(Sum("amount"))
@@ -94,67 +104,71 @@ def USERADMIN(request):
         total_quotes = Quote.objects.count()
         orders_in_progress = Order.objects.filter(status="in-progress").count()
         sales_completed = Order.objects.filter(status="completed").count()
+        message_count = Message.objects.filter(is_read=False).count()
 
-        # Calculate Conversion Rate
+        # ✅ Conversion Rate Fix
         total_leads = Lead.objects.count()
-        conversion_rate = (
-            round((sales_completed / total_leads) * 100, 2) if total_leads > 0 else 0
-        )
+        conversion_rate = round((sales_completed / total_leads) * 100, 2) if total_leads > 0 else 0
 
-        # Group Sales Data by Month
-        sales_data = (
+        # ✅ Fetch Sales Data for ALL 12 Months
+        raw_sales_data = (
             Order.objects.annotate(month=ExtractMonth("date"))
             .values("month")
             .annotate(total=Sum("amount"))
             .order_by("month")
         )
-        
-        # Convert Month Numbers to Month Names (e.g., 1 -> January)
-        sales_chart_labels = [month_name[data["month"]] for data in sales_data if data["month"]]
-        sales_chart_data = [float(data["total"]) for data in sales_data]
 
-        # Recent Leads
-        recent_leads = Lead.objects.order_by("-created_at")[:5]
+        # ✅ Ensure ALL 12 Months are Present
+        sales_data_dict = {data["month"]: float(data["total"]) for data in raw_sales_data if data["month"]}
 
-        # Inbox Message Count
-        message_count = Message.objects.filter(is_read=False).count()
-
-    except Exception as e:
-        # Log error and set default values
-        print(f"Error fetching data: {e}")
-        new_leads_count = 0
-        pending_orders_count = 0
-        completed_projects_count = 0
-        monthly_revenue = 0.0
-        total_quotes = 0
-        orders_in_progress = 0
-        sales_completed = 0
-        conversion_rate = 0
+        # ✅ Create Full 12-Month Structure
         sales_chart_labels = []
         sales_chart_data = []
-        recent_leads = []
-        message_count = 0
 
-    # Context for the template
-    context = {
-        "metrics": {
-            "new_leads_count": new_leads_count,
-            "pending_orders_count": pending_orders_count,
-            "completed_projects_count": completed_projects_count,
-            "monthly_revenue": monthly_revenue,
-            "total_quotes": total_quotes,
-            "orders_in_progress": orders_in_progress,
-            "sales_completed": sales_completed,
-            "conversion_rate": conversion_rate,
-            "message_count": message_count,  # Added inbox message count
-        },
-        
-        "sales_chart_labels": sales_chart_labels,  # ✅ Ensure these are included
-        "sales_chart_data": sales_chart_data,  # ✅ Ensure these are included
-        "leads": recent_leads,
-    }
+        for month in range(1, 13):  # Loop through all 12 months
+            sales_chart_labels.append(month_name[month])  # Convert number to month name
+            sales_chart_data.append(sales_data_dict.get(month, 0))  # Get sales or default to 0
 
-    # Render the admin dashboard template with context
+        # ✅ Convert Data to JSON for Frontend
+        sales_chart_labels_json = json.dumps(sales_chart_labels)
+        sales_chart_data_json = json.dumps(sales_chart_data)
+
+        # ✅ Pass Data to Frontend
+        context = {
+            "user": user,
+            "metrics": {
+                "new_leads_count": new_leads_count,
+                "pending_orders_count": pending_orders_count,
+                "completed_projects_count": completed_projects_count,
+                "monthly_revenue": monthly_revenue,
+                "total_quotes": total_quotes,
+                "orders_in_progress": orders_in_progress,
+                "sales_completed": sales_completed,
+                "conversion_rate": conversion_rate,
+                "message_count": message_count,
+            },
+            "sales_chart_labels": sales_chart_labels_json,
+            "sales_chart_data": sales_chart_data_json,
+        }
+
+    except Exception as e:
+        print(f"Error fetching data: {e}")  # Debugging error
+        context = {
+            "metrics": {
+                "new_leads_count": 0,
+                "pending_orders_count": 0,
+                "completed_projects_count": 0,
+                "monthly_revenue": 0.0,
+                "total_quotes": 0,
+                "orders_in_progress": 0,
+                "sales_completed": 0,
+                "conversion_rate": 0,
+                "message_count": 0,
+            },
+            "sales_chart_labels": json.dumps(["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]),
+            "sales_chart_data": json.dumps([0] * 12),
+        }
+
     return render(request, "adminPages/adminhome.html", context)
 
 
@@ -258,21 +272,32 @@ def reports_view(request):
     start_date = request.GET.get("start_date")
     end_date = request.GET.get("end_date")
 
-    # Filter orders by date if provided
+    # Retrieve all orders (filtered if necessary)
     orders = Order.objects.all()
     if start_date and end_date:
         orders = orders.filter(date__range=[start_date, end_date])
 
     # Aggregate report data
-    total_revenue = orders.aggregate(Sum("amount"))["amount__sum"] or 0
+    total_revenue = round(orders.aggregate(Sum("amount"))["amount__sum"] or 0, 2)
     total_orders = orders.count()
     pending_orders = orders.filter(status="pending").count()
     total_customers = Customer.objects.count()
 
     # Convert orders into report data
-    report_data = orders.values("id", "status", "amount", "date")
+    report_data = list(orders.values("id", "status", "amount", "date"))
 
-    # Render template with the updated context
+    # Prepare sales data for the chart
+    sales_data = (
+        Order.objects.filter(date__year=now().year)
+        .values("date__month")
+        .annotate(total_sales=Sum("amount"))
+        .order_by("date__month")
+    )
+
+    # Convert sales data to JSON for Chart.js
+    sales_chart_labels = [f"{data['date__month']}" for data in sales_data]
+    sales_chart_data = [float(data["total_sales"]) for data in sales_data]
+
     return render(
         request,
         "adminPages/adminreports.html",
@@ -284,37 +309,26 @@ def reports_view(request):
             "report_data": report_data,
             "start_date": start_date,
             "end_date": end_date,
+            "sales_chart_labels": json.dumps(sales_chart_labels),
+            "sales_chart_data": json.dumps(sales_chart_data),
         },
     )
 
 
 def reports_export(request):
-    """
-    Export reports to CSV format.
-    """
-    # Example report data (replace this with actual query)
-    report_data = [
-        {
-            "title": "Report 1",
-            "details": "Details of Report 1",
-            "created_at": "2024-12-17",
-        },
-        {
-            "title": "Report 2",
-            "details": "Details of Report 2",
-            "created_at": "2024-12-18",
-        },
-    ]
+    """Export reports to CSV format with real order data."""
+    # Retrieve order data
+    orders = Order.objects.all()
 
-    # Create the HttpResponse object with CSV headers
+    # Create CSV response
     response = HttpResponse(content_type="text/csv")
     response["Content-Disposition"] = 'attachment; filename="reports.csv"'
 
-    # Write data to CSV
+    # Write CSV headers and data
     writer = csv.writer(response)
-    writer.writerow(["Title", "Details", "Created At"])  # CSV Header
-    for report in report_data:
-        writer.writerow([report["title"], report["details"], report["created_at"]])
+    writer.writerow(["Order ID", "Status", "Amount", "Date"])
+    for order in orders:
+        writer.writerow([order.id, order.status, order.amount, order.date])
 
     return response
 
@@ -322,8 +336,12 @@ def reports_export(request):
 # Admin Inbox View
 @staff_member_required
 def admin_inbox(request):
-    messages = Message.objects.all().order_by("-created_at")  # Ordered messages
-    leads = Lead.objects.all().order_by("-created_at")  # Ordered leads
+    messages = Message.objects.order_by("-created_at")  # Ordered messages
+    leads = Lead.objects.order_by("-created_at")  # Ordered leads
+
+    # ✅ Debugging
+    print("Total Messages:", messages.count())
+    print("Total Leads:", leads.count())
 
     context = {
         "messages": messages,
@@ -357,18 +375,51 @@ def quick_lead_view(request):
 
 
 @csrf_protect
+@login_required
 def view_message(request, message_id):
     """Handles viewing a specific message."""
-    # Retrieve the message by its ID or return 404 if not found
     message = get_object_or_404(Message, id=message_id)
 
-    # Mark the message as read
+    # Mark the message as read when viewed
     if not message.is_read:
         message.is_read = True
         message.save()
 
-    # Render the message detail template
     return render(request, "adminPages/adminmessage_detail.html", {"message": message})
+
+@login_required
+def mark_message_read(request, message_id):
+    """Marks a message as read when the admin clicks the 'Mark as Read' button."""
+    message = get_object_or_404(Message, id=message_id)
+    
+    if not message.is_read:
+        message.is_read = True
+        message.save()
+
+    return redirect("view_message", message_id=message.id)  # Ensure this URL name exists
+
+@login_required
+def reply_message(request, message_id):
+    """Handles replying to a message."""
+    message = get_object_or_404(Message, id=message_id)
+
+    if request.method == "POST":
+        reply_content = request.POST.get("reply_content")
+        if reply_content:
+            # Create a new reply message (or update existing logic)
+            reply = Message.objects.create(
+                sender=request.user.username,  # Assume sender is the logged-in user
+                receiver=message.sender,  # Send reply back to the original sender
+                subject=f"Re: {message.subject}",  # Prefix subject with "Re:"
+                content=reply_content,
+                is_read=False,  # Mark new reply as unread
+            )
+            messages.success(request, "Reply sent successfully!")
+            return redirect("view_message", message_id=message.id)
+
+    messages.error(request, "Failed to send reply. Please try again.")
+    return redirect("view_message", message_id=message.id)
+
 
 
 # Ensure only admin users can access this view

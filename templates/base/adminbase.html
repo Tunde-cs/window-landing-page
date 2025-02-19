@@ -4,7 +4,7 @@
 {% block head %}
   <title>Admin Dashboard | Window Replacement</title>
 
-  <!-- Additional Admin-Specific Styles -->
+    <!-- Additional Admin-Specific Styles -->
   <link rel="stylesheet" href="{% static 'admin/dist/css/adminlte.min.css' %}">
   <link rel="stylesheet" href="{% static 'css/custom.css' %}">
 {% endblock %}
@@ -41,4 +41,9 @@
 <!-- AdminLTE Scripts -->
 <script src="{% static 'admin/dist/js/adminlte.js' %}"></script>
 <script src="{% static 'js/custom.js' %}"></script>
+
+!-- ✅ Load Chart.js (AdminLTE Default) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 {% endblock %}
+
+

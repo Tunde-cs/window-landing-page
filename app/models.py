@@ -47,13 +47,14 @@ class Order(models.Model):
         ("completed", "Completed"),
     )
 
-    date = models.DateField()  # Or DateTimeField, depending on requirements
+    customer_name = models.CharField(max_length=255, default="Unknown")  # ✅ Added this field
+    date = models.DateField()
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=50, choices=STATUS_CHOICES)
 
     def __str__(self):
-        return f"Order {self.id} - {self.status} - ${self.amount}"
-
+        return f"Order {self.id} - {self.customer_name} - {self.status} - ${self.amount}"
+    
 
 # Project Model
 class Project(models.Model):
@@ -185,3 +186,11 @@ class Customer(models.Model):
 
     def __str__(self):
         return self.name
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
+    image = models.ImageField(upload_to="profile_pics/", default="profile_pics/default-profile.png")
+    role = models.CharField(max_length=100, default="Employee")
+
+    def __str__(self):
+        return self.user.username

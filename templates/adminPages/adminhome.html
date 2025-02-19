@@ -1,13 +1,22 @@
 {% extends "base/adminbase.html" %}
+{% load static %}
+
+{% block head %}
+    <title>Admin Dashboard | Window Replacement</title>
+   
+    <!-- ✅ Load Styles -->
+    <link rel="stylesheet" href="{% static 'admin/dist/css/adminlte.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+{% endblock %}
 
 {% block content %}
-<!-- Page Header -->
-{% include 'includes/adminsidebar.html' %}
+
+<!-- ✅ Page Header -->
 <div class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0">{{ project_name }} Dashboard</h1>
+                <h1 class="m-0">Welcome, {{ user.get_full_name|default:user.username }}!</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
@@ -18,11 +27,36 @@
         </div>
     </div>
 </div>
-    <!-- Main Content -->
-    <section class="content">
-        <div class="container-fluid">
-            
-        <!-- Key Metrics -->
+
+<!-- ✅ User Profile Section -->
+<div class="card mb-4 shadow-sm">
+    <div class="card-body text-center">
+        <h4 class="mb-2">{{ request.user.get_full_name|default:request.user.username }}</h4>
+        <p class="text-muted">
+            Role: {% if request.user.profile and request.user.profile.role %} 
+                      {{ request.user.profile.role }} 
+                  {% else %} Employee {% endif %}
+        </p>
+        <p>Last login: {{ request.user.last_login|date:"M d, Y H:i A" }}</p>
+        
+        <!-- ✅ Profile Picture (Use Dynamic Image if Available) -->
+        {% if request.user.profile and request.user.profile.image %}
+            <img src="{{ request.user.profile.image.url }}" 
+                 alt="Profile Picture"
+                 class="img-thumbnail mt-2" width="120">
+        {% else %}
+            <img src="{% static 'assets/img/default-profile.png' %}" 
+                 onerror="this.onerror=null;this.src='https://via.placeholder.com/120';" 
+                 alt="Profile Picture" class="img-thumbnail mt-2" width="120">
+        {% endif %}
+    </div>
+</div>
+
+<!-- ✅ Main Content -->
+<section class="content">
+    <div class="container-fluid">
+        
+        <!-- ✅ Key Metrics -->
         <div class="row">
             <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
                 <a href="{% url 'adminleads' %}">
@@ -34,19 +68,18 @@
                     </div>
                 </a>
             </div>
-            <div class="row">
 
-<!-- Inbox Section -->
-<div class="col-lg-3 col-md-6 col-sm-12 mb-4">
-    <a href="{% url 'inbox' %}">
-        <div class="card bg-primary text-white shadow">
-            <div class="card-body text-center">
-                <h4><i class="fas fa-envelope"></i> Inbox</h4>
-                <h3>{{ metrics.message_count }}</h3> <!-- Use message_count here -->
+            <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                <a href="{% url 'inbox' %}">
+                    <div class="card bg-primary text-white shadow">
+                        <div class="card-body text-center">
+                            <h4><i class="fas fa-envelope"></i> Inbox</h4>
+                            <h3>{{ metrics.message_count }}</h3>
+                        </div>
+                    </div>
+                </a>
             </div>
-        </div>
-    </a>
-</div>
+
             <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
                 <a href="{% url 'pending_orders' %}">
                     <div class="card bg-warning text-white shadow">
@@ -57,6 +90,7 @@
                     </div>
                 </a>
             </div>
+
             <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
                 <a href="{% url 'projects' %}">
                     <div class="card bg-success text-white shadow">
@@ -67,163 +101,86 @@
                     </div>
                 </a>
             </div>
-            <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
-                <a href="{% url 'revenue' %}">
-                    <div class="card bg-primary text-white shadow">
-                        <div class="card-body text-center">
-                            <h4><i class="fas fa-dollar-sign"></i> Monthly Revenue</h4>
-                            <h3>${{ metrics.monthly_revenue|floatformat:2 }}</h3>
-                        </div>
-                    </div>
-                </a>
-            </div>
         </div>
-        <!-- Conversion Rate -->
-<div class="row">
-    <div class="col-lg-4 col-md-6 mb-3">
-        <div class="small-box bg-secondary text-white shadow">
-            <div class="inner text-center">
-                <h4>Conversion Rate</h4>
-                <h2>{{ metrics.conversion_rate }}%</h2>
-            </div>
-            <div class="icon">
-                <i class="fas fa-percentage"></i>
-            </div>
-        </div>
-    </div>
-</div>
 
-            <!-- Leads Section -->
-            <div class="card mt-4 shadow">
-                <div class="card-header bg-primary text-white">
-                    <h3 class="card-title"><i class="fas fa-user-plus"></i> Recent Leads</h3>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>Phone</th>
-                                    <th>Status</th>
-                                    <th>Created At</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for lead in leads %}
-                                    <tr>
-                                        <td>{{ forloop.counter }}</td>
-                                        <td>{{ lead.name }}</td>
-                                        <td>{{ lead.email }}</td>
-                                        <td>{{ lead.phone }}</td>
-                                        <td>{{ lead.status|title }}</td>
-                                        <td>{{ lead.created_at|date:"d M Y H:i" }}</td>
-                                    </tr>
-                                {% empty %}
-                                    <tr>
-                                        <td colspan="6" class="text-center">No leads found</td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+        <!-- ✅ Monthly Revenue & Conversion Rate -->
+        <div class="row">
+            <div class="col-lg-6 col-md-6 mb-4">
+                <div class="small-box bg-primary text-white shadow">
+                    <div class="inner text-center">
+                        <h4>Monthly Revenue</h4>
+                        <h2>${{ metrics.monthly_revenue|floatformat:2 }}</h2>
                     </div>
                 </div>
-
-                <div class="card-footer">
-                    <nav aria-label="Page navigation">
-                        <ul class="pagination justify-content-center">
-                            {% if leads.has_previous %}
-                                <li class="page-item">
-                                    <a class="page-link" href="?page={{ leads.previous_page_number }}">Previous</a>
-                                </li>
-                            {% endif %}
-                            <li class="page-item disabled">
-                                <span class="page-link">Page {{ leads.number }} of {{ leads.paginator.num_pages }}</span>
-                            </li>
-                            {% if leads.has_next %}
-                                <li class="page-item">
-                                    <a class="page-link" href="?page={{ leads.next_page_number }}">Next</a>
-                                </li>
-                            {% endif %}
-                        </ul>
-                    </nav>
-                </div>
             </div>
 
-            <!-- Sales Chart -->
-<div class="card mt-4">
-    <div class="card-header">
-        <h3 class="card-title"><i class="fas fa-chart-line"></i> Sales Overview</h3>
+            <div class="col-lg-6 col-md-6 mb-4">
+                <div class="small-box bg-secondary text-white shadow">
+                    <div class="inner text-center">
+                        <h4>Conversion Rate</h4>
+                        <h2>{{ metrics.conversion_rate }}%</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+    <!-- ✅ Sales Overview Chart -->
+<div class="card">
+    <div class="card-header bg-dark text-white">
+        <h3 class="card-title"><i class="fas fa-chart-bar"></i> Sales Overview</h3>
     </div>
     <div class="card-body">
-        <canvas id="sales-chart" style="height: 300px;"></canvas>
-        
-        <!-- JSON Data for Chart.js -->
-        <script type="application/json" id="salesChartLabels">
-            {{ sales_chart_labels|safe }}
-        </script>
-        <script type="application/json" id="salesChartData">
-            {{ sales_chart_data|safe }}
-        </script>
+        <!-- ✅ Ensure this ID Matches the JavaScript -->
+        <canvas id="salesChart" style="width: 100%; height: 400px;"></canvas>
     </div>
 </div>
 
-<!-- ✅ Add JavaScript Code Below Before `</body>` -->
+<!-- ✅ Load Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        try {
-            let labelsElement = document.getElementById('salesChartLabels');
-            let dataElement = document.getElementById('salesChartData');
-    
-            if (!labelsElement || !dataElement) {
-                console.error("🚨 Sales chart data elements not found in DOM!");
-                return;
-            }
-    
-            let labels = JSON.parse(labelsElement.textContent || "[]");
-            let data = JSON.parse(dataElement.textContent || "[]");
-    
-            if (labels.length === 0 || data.length === 0) {
-                console.warn("⚠️ No sales data available.");
-                return;
-            }
-    
-            let ctx = document.getElementById('sales-chart');
-    
-            if (!ctx) {
-                console.error("❌ Canvas element #sales-chart not found!");
-                return;
-            }
-    
-            console.log("✅ Creating Chart with Data:", labels, data);
-    
-            new Chart(ctx.getContext('2d'), {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Revenue ($)',
-                        data: data,
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: { beginAtZero: true }
-                    }
+document.addEventListener("DOMContentLoaded", function () {
+    // ✅ Fetch Data from Django
+    const salesChartLabels = JSON.parse('{{ sales_chart_labels|safe }}');
+    const salesChartData = JSON.parse('{{ sales_chart_data|safe }}');
+
+    console.log("✅ Sales Chart Labels:", salesChartLabels);
+    console.log("✅ Sales Chart Data:", salesChartData);
+
+    if (salesChartLabels.length === 0 || salesChartData.length === 0) {
+        console.warn("⚠️ No sales data available.");
+        return;
+    }
+
+    // ✅ Render Chart.js Sales Chart
+    const ctx = document.getElementById("salesChart").getContext("2d");
+    new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: salesChartLabels,
+            datasets: [{
+                label: "Monthly Sales",
+                data: salesChartData,
+                backgroundColor: "rgba(75, 192, 192, 0.5)",  // Better color
+                borderColor: "rgba(75, 192, 192, 1)",
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    suggestedMax: Math.max(...salesChartData) * 1.2,  // Scale for better balance
                 }
-            });
-    
-        } catch (error) {
-            console.error("❌ JSON Parsing Error:", error);
+            }
         }
     });
-    </script>
+});
+</script>
 {% endblock %}
+
+
 

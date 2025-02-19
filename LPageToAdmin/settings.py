@@ -72,7 +72,7 @@ ROOT_URLCONF = "LPageToAdmin.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR, "templates"],  # For project-level templates
+        "DIRS": [os.path.join(BASE_DIR, "templates")],  # ✅ Use this for project-level templates
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -166,3 +166,6 @@ LOGGING = {
 # Add CSFR settings here
 CSFR_USE_SESSIONS = True
 CSFR_FAILURE_VIEW = "app.views.csrf_failure"  # Optional: custom CSRF failure view
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")

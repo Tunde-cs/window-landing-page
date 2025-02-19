@@ -2,67 +2,87 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from . import views
 from django.contrib.auth import views as auth_views
-from app import views as app_views  # Import app-level views
-from .views import USERADMIN
-from .views import revenue_view
-from LPageToAdmin.views import pending_orders_view  # Import your pending orders view
-from LPageToAdmin.views import order_delete  # Import the order_delete function
-from LPageToAdmin.views import admin_leads_view
-from .views import admin_submit_lead
-from app.views import submit_lead  # Import the frontend view
-from . import views
-from .views import reports_view, reports_export
-from .views import pending_orders_view, orders_view, view_order, edit_order, order_delete
+from LPageToAdmin.views import mark_message_read
+from LPageToAdmin.views import reply_message  # Ensure function is imported
 
+from . import views
+from app import views as app_views  # Import app-level views
+from LPageToAdmin.views import (
+    pending_orders_view,
+    order_delete,
+    admin_leads_view,
+)
+
+# Import views from LPageToAdmin
+from .views import (
+    USERADMIN,
+    revenue_view,
+    reports_view,
+    reports_export,
+    orders_view,
+    view_order,
+    edit_order,
+    order_delete,
+    admin_submit_lead,
+    delete_lead,
+    delete_message,
+    admin_inbox,
+    admin_quotes_view,
+    delete_quote,
+    view_message,
+)
 
 urlpatterns = [
+    # ✅ Django Admin Panel
     path("admin/", admin.site.urls),
+        
+    # ✅ Base Pages
     path("base/", views.BASE, name="base"),  # Base page
     path("adminpage/base/", views.ADMINBASE, name="adminbase"),  # Admin base
     path("", views.HOME, name="home"),  # Landing page
     path("useradmin/", views.USERADMIN, name="useradmin"),  # Admin dashboard
-    path("signup", views.signup, name="signup"),  # Signup page
-    path("accounts/", include("django.contrib.auth.urls")),  # Authentication
+    
+    # ✅ Authentication
+    path("signup/", views.signup, name="signup"),  # Signup page
+    path("accounts/", include("django.contrib.auth.urls")),  # Default Django authentication
     path(
         "admin/login/",
         auth_views.LoginView.as_view(template_name="registration/login.html"),
         name="admin_login",
     ),
-    path("", include("app.urls")),  # Include app-level URLs
+
+    # ✅ Reports
     path("reports/", views.reports_view, name="reports"),
-    path("reports/export/", reports_export, name="reports_export"),  # New export route
-    path("admin/revenue/", revenue_view, name="revenue"),
-    path("view_message/<int:id>/", views.view_message, name="view_message"),
+    path("reports/export/", reports_export, name="reports_export"),  # Export route
+    path("admin/revenue/", revenue_view, name="revenue"),  # Revenue reports
+
+    # ✅ Messages & Leads Management
+    path("view_message/<int:message_id>/", views.view_message, name="view_message"),
+    path("mark_message_read/<int:message_id>/", views.mark_message_read, name="mark_message_read"),
+    path("reply_message/<int:message_id>/", reply_message, name="reply_message"),
     path("adminleads/", views.admin_submit_lead, name="adminleads"),  # Admin leads view
-    path("adminleads/delete/<int:lead_id>/", views.delete_lead, name="delete_lead"),
-    path(
-        "adminmessages/delete/<int:message_id>/",
-        views.delete_message,
-        name="delete_message",
-    ),
-    path("admininbox/", views.admin_inbox, name="admininbox"),
-    path("adminleads/", views.admin_leads_view, name="adminleads"),
-    # Admin Quotes Management
-    path(
-        "adminquotes/", views.admin_quotes_view, name="adminquotes"
-    ),  # Main admin quotes view
-    path(
-        "adminquotes/<int:quote_id>/", views.admin_quotes_view, name="adminquote_detail"
-    ),  # For a specific quote
-    path(
-        "adminquotes/delete/<int:quote_id>/", views.delete_quote, name="delete_quote"
-    ),  # Delete a quote
-    # Main orders management routes
-path("orders/", orders_view, name="orders"),
-path("orders/pending/", pending_orders_view, name="pending_orders"),  # Ensure consistency
-path("orders/<int:id>/", view_order, name="view_order"),
-path("orders/edit/<int:id>/", edit_order, name="edit_order"),  # Remove "admin/"
-path("orders/delete/<int:order_id>/", order_delete, name="order_delete"),
-path("", include("app.urls")),  # Include app's urls.py for the landing page
+    path("adminleads/delete/<int:lead_id>/", delete_lead, name="delete_lead"),
+    path("adminmessages/delete/<int:message_id>/", delete_message, name="delete_message"),
+    path("admininbox/", admin_inbox, name="admininbox"),
+    path("adminleads/", admin_leads_view, name="adminleads"),
+
+    # ✅ Admin Quotes Management
+    path("adminquotes/", admin_quotes_view, name="adminquotes"),  # Main admin quotes view
+    path("adminquotes/<int:quote_id>/", admin_quotes_view, name="adminquote_detail"),  # Specific quote
+    path("adminquotes/delete/<int:quote_id>/", delete_quote, name="delete_quote"),  # Delete a quote
+
+    # ✅ Orders Management
+    path("orders/", orders_view, name="orders"),
+    path("orders/pending/", pending_orders_view, name="pending_orders"),  # Pending orders
+    path("orders/<int:id>/", view_order, name="view_order"),
+    path("orders/edit/<int:id>/", edit_order, name="edit_order"),
+    path("orders/delete/<int:order_id>/", order_delete, name="order_delete"),
+
+    # ✅ Include app-level URLs (Landing Page)
+    path("", include("app.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-# Add this block for serving static files in development
+# ✅ Add static file serving in development
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
