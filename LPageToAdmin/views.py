@@ -27,6 +27,10 @@ from django.urls import reverse
 from app.models import Order, Customer
 import json  # ✅ Import json module
 import calendar
+from django.contrib.auth.models import User
+from django.http import HttpResponse
+from app.forms import UserCreateForm  # ✅ Import from app/forms.py
+from django.template.response import TemplateResponse  # ✅ Import TemplateResponse
 
 
 # Base Views
@@ -40,28 +44,33 @@ def ADMINBASE(request):
 
 # Home View
 def HOME(request):
-    """Renders the homepage."""
-    context = {"static_example": "/static/assets/img/testimonial-1.jpg"}
+    """Renders the homepage with user info."""
+    context = {
+        "user": request.user,  # ✅ Add this line
+        "static_example": "/static/assets/img/testimonial-1.jpg",
+    }
     return render(request, "pages/index.html", context)
 
 
 # User Registration (Signup)
 def signup(request):
+    form = UserCreateForm()  # ✅ Always create a form instance
+
     if request.method == "POST":
         form = UserCreateForm(request.POST)
         if form.is_valid():
-            new_user = form.save()
+            new_user = form.save(commit=False)
+            new_user.first_name = form.cleaned_data["first_name"]
+            new_user.last_name = form.cleaned_data["last_name"]
+            new_user.save()
             new_user = authenticate(
                 username=form.cleaned_data["username"],
                 password=form.cleaned_data["password1"],
             )
             login(request, new_user)
-            return redirect("login")
-    else:
-        form = UserCreateForm()
+            return redirect("useradmin")
 
-    context = {"form": form}
-    return render(request, "registration/signup.html", context)
+    return render(request, "registration/signup.html", {"form": form})
 
 
 # Email Utility
@@ -76,20 +85,21 @@ def send_quote_email(to_email, subject, message):
     )
 
 
-from django.db.models.functions import ExtractMonth
-from django.utils.timezone import now
-import json
-from calendar import month_name
-from django.db.models import Sum
+
 
 @csrf_protect
 @login_required
 def USERADMIN(request):
-    """
-    Admin Dashboard View - Displays key metrics, recent leads, and sales data.
-    """
-    user = request.user  # ✅ Get the logged-in user
+    """Admin Dashboard View - Displays key metrics, recent leads, and sales data."""
+    
+    # ✅ Define user before using it
+    user = request.user
 
+    context = {
+        "user": user,  # ✅ Ensures 'user' is defined before use
+        "request": request,  # ✅ Fix Missing 'request' in Templates
+        "unread_messages": 3,  # Example (modify as needed)
+    }
     try:
         # Key Metrics
         new_leads_count = Lead.objects.filter(status="new").count()
@@ -135,7 +145,7 @@ def USERADMIN(request):
 
         # ✅ Pass Data to Frontend
         context = {
-            "user": user,
+            "user": user,  # ✅ Ensure user is in context
             "metrics": {
                 "new_leads_count": new_leads_count,
                 "pending_orders_count": pending_orders_count,
@@ -154,6 +164,7 @@ def USERADMIN(request):
     except Exception as e:
         print(f"Error fetching data: {e}")  # Debugging error
         context = {
+            "user": user,  # ✅ Ensure user is still included
             "metrics": {
                 "new_leads_count": 0,
                 "pending_orders_count": 0,
@@ -169,7 +180,7 @@ def USERADMIN(request):
             "sales_chart_data": json.dumps([0] * 12),
         }
 
-    return render(request, "adminPages/adminhome.html", context)
+    return TemplateResponse(request, "adminPages/adminhome.html", context)  # ✅ Now ensures proper context handling
 
 
 # Sidebar Views
@@ -198,8 +209,13 @@ def revenue_view(request):
     """
     Handles the revenue details view.
     """
-    # Example data for demonstration
-    revenue_data = [43300.33]  # Replace with your actual query or calculations
+    # Example revenue data (replace with actual database query)
+    revenue_data = [
+        {"month": "January", "total": 43300.33},
+        {"month": "February", "total": 50200.12},
+        {"month": "March", "total": 39000.45},
+    ]  # Sample monthly revenue
+
     return render(request, "adminPages/revenue.html", {"revenue_data": revenue_data})
 
 
@@ -354,9 +370,13 @@ def admin_inbox(request):
 
 # Logout View
 def logout_view(request):
-    """Logs the user out and redirects to the home page."""
+    """Logs the user out and prevents back navigation."""
     logout(request)
-    return redirect("home")
+    response = redirect("home")  # Redirect to home page
+    response["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response["Pragma"] = "no-cache"
+    response["Expires"] = "0"
+    return response
 
 
 @csrf_protect

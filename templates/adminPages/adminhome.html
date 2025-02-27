@@ -103,27 +103,30 @@
             </div>
         </div>
 
-        <!-- ✅ Monthly Revenue & Conversion Rate -->
-        <div class="row">
-            <div class="col-lg-6 col-md-6 mb-4">
-                <div class="small-box bg-primary text-white shadow">
-                    <div class="inner text-center">
-                        <h4>Monthly Revenue</h4>
-                        <h2>${{ metrics.monthly_revenue|floatformat:2 }}</h2>
-                    </div>
+        <!-- ✅ Monthly Revenue & Conversion Rate (Fixed Layout) -->
+<div class="row">
+    <!-- ✅ Monthly Revenue (Clickable & Fixed Size) -->
+    <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+        <a href="{% url 'revenue' %}" class="text-decoration-none">
+            <div class="card bg-primary text-white shadow h-100 d-flex align-items-center justify-content-center">
+                <div class="card-body text-center">
+                    <h5><i class="fas fa-chart-line"></i> Monthly Revenue</h5>
+                    <h2 class="fw-bold">${{ metrics.monthly_revenue|floatformat:2 }}</h2>
                 </div>
             </div>
+        </a>
+    </div>
 
-            <div class="col-lg-6 col-md-6 mb-4">
-                <div class="small-box bg-secondary text-white shadow">
-                    <div class="inner text-center">
-                        <h4>Conversion Rate</h4>
-                        <h2>{{ metrics.conversion_rate }}%</h2>
-                    </div>
-                </div>
+    <!-- ✅ Conversion Rate (Fixed Box Height & Proper Formatting) -->
+    <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+        <div class="card bg-secondary text-white shadow h-100 d-flex align-items-center justify-content-center">
+            <div class="card-body text-center">
+                <h5><i class="fas fa-percentage"></i> Conversion Rate</h5>
+                <h2 class="fw-bold">{{ metrics.conversion_rate|floatformat:2 }}%</h2>
             </div>
         </div>
-
+    </div>
+</div>
         
     <!-- ✅ Sales Overview Chart -->
 <div class="card">

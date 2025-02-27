@@ -243,25 +243,6 @@ def admin_login(request):
     return render(request, "registration/login.html")  # Render login page
 
 
-@login_required  # Ensure only logged-in admins can access this view
-def admin_signup(request):
-    if not request.user.is_superuser:  # Only allow superusers to create new admins
-        return redirect("admin_home")
-
-    if request.method == "POST":
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save(commit=False)
-            user.is_staff = True  # Make the user an admin
-            user.save()
-            return redirect(
-                "admin_home"
-            )  # Redirect to admin dashboard after successful signup
-    else:
-        form = UserCreationForm()
-
-    return render(request, "registration/signup.html", {"form": form})
-
 
 def submit_lead(request):
     """

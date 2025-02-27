@@ -2,6 +2,8 @@ from django import forms
 from .models import Lead, Message, Quote  # Import your models here
 from .models import Order
 from app.models import Lead  # Ensure this imports the correct Lead model
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
 
 
 class LeadForm(forms.ModelForm):
@@ -65,3 +67,20 @@ class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
         fields = ["date", "amount", "status"]  # Ensure these fields match the model
+
+# ✅ Custom User Registration Form
+class UserCreateForm(UserCreationForm):
+    first_name = forms.CharField(
+        max_length=30,
+        required=True,
+        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "First Name"})
+    )
+    last_name = forms.CharField(
+        max_length=30,
+        required=True,
+        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Last Name"})
+    )
+
+    class Meta:
+        model = User
+        fields = ["first_name", "last_name", "username", "email", "password1", "password2"]

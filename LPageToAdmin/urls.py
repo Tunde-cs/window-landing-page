@@ -5,6 +5,8 @@ from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
 from LPageToAdmin.views import mark_message_read
 from LPageToAdmin.views import reply_message  # Ensure function is imported
+from .views import logout_view
+from LPageToAdmin.views import signup  # ✅ Import the correct signup view
 
 from . import views
 from app import views as app_views  # Import app-level views
@@ -45,6 +47,7 @@ urlpatterns = [
     
     # ✅ Authentication
     path("signup/", views.signup, name="signup"),  # Signup page
+    path("logout/", logout_view, name="logout"),  # ✅ Correct Logout Route
     path("accounts/", include("django.contrib.auth.urls")),  # Default Django authentication
     path(
         "admin/login/",
@@ -55,7 +58,7 @@ urlpatterns = [
     # ✅ Reports
     path("reports/", views.reports_view, name="reports"),
     path("reports/export/", reports_export, name="reports_export"),  # Export route
-    path("admin/revenue/", revenue_view, name="revenue"),  # Revenue reports
+    path("revenue/", revenue_view, name="revenue"),  # Corrected path
 
     # ✅ Messages & Leads Management
     path("view_message/<int:message_id>/", views.view_message, name="view_message"),
