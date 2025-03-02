@@ -27,3 +27,68 @@
     }
 }
 
+/* ✅ Fix for Landing Pages */
+.landing-content {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* ✅ Fix Footer for Landing Pages */
+.footer {
+    margin-top: auto;
+    width: 100%;
+    background: #f8f9fa;
+    padding: 20px 0;
+    text-align: center;
+    position: relative;
+}
+
+/* ✅ Ensure Admin Footer Aligns Correctly */
+.main-footer {
+    width: calc(100% - 250px); /* Matches sidebar width */
+    margin-left: 250px;
+    position: fixed;
+    bottom: 0;
+    background: #f8f9fa;
+    padding: 15px 20px;
+    text-align: center;
+    transition: margin-left 0.3s ease-in-out;
+}
+
+/* ✅ Adjust Footer for Smaller Screens */
+@media (max-width: 992px) {
+    .main-footer {
+        width: 100%;
+        margin-left: 0;
+        position: relative;
+    }
+}
+
+/* ✅ Ensure sidebar and content display side by side */
+@media (min-width: 768px) {
+    .main-sidebar {
+        width: 250px; /* Set sidebar width */
+        position: fixed;
+        height: 100vh;
+        z-index: 1030;
+    }
+
+    .content-wrapper {
+        margin-left: 250px !important; /* Adjust content margin */
+    }
+}
+
+/* ✅ Fix sidebar layout for smaller screens */
+@media (max-width: 768px) {
+    .main-sidebar {
+        width: 250px;
+        position: fixed;
+        height: 100vh;
+        z-index: 1030;
+    }
+
+    .content-wrapper {
+        margin-left: 250px !important; /* Ensure content is next to sidebar */
+    }
+}

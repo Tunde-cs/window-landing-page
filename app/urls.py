@@ -2,7 +2,7 @@ from django.urls import path
 from django.views.generic import TemplateView
 from . import views
 from .views import home, submit_lead, request_quote
-
+from .views import about_page, services_page, contact_page, terms_of_use_page, privacy_policy
 
 urlpatterns = [
     # Core Pages

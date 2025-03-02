@@ -29,32 +29,39 @@
     {% endif %}
 
     <title>{% if request.user.is_staff %}Admin Panel{% else %}Window Replacement{% endif %}</title>
+    
 </head>
 
 <!-- ✅ Body: Full Layout for Admin, No Sidebar for Landing Page -->
-<body class="{% if request.user.is_staff and '/useradmin/' in request.path %} hold-transition sidebar-mini layout-fixed {% else %} landing-page-body {% endif %}">
+<body class="{% if request.user.is_staff %} hold-transition sidebar-mini layout-fixed {% else %} landing-page-body {% endif %}">
 
-    {% if request.user.is_staff and "/useradmin/" in request.path %}
-        <!-- ✅ Admin Sidebar (Only for Admin Users Inside the Admin Panel) -->
+    <!-- ✅ Ensure the sidebar only appears in the admin panel -->
+    {% if request.user.is_staff and '/useradmin/' in request.path %}
         {% include 'includes/adminsidebar.html' %}
     {% endif %}
 
-    {% if not request.user.is_staff %}
-        <!-- ✅ Landing Page Header (Only for Non-Admin Pages) -->
+    <!-- ✅ Ensure the navbar appears ONLY on footer-linked pages -->
+    {% if request.path in '/about/' or request.path in '/contact/' or request.path in '/terms-of-use/' or request.path in '/privacy-policy/' %}
         {% include 'includes/header.html' %}
     {% endif %}
 
     <!-- ✅ Main Content -->
-    <main class="{% if request.user.is_staff and "/useradmin/" in request.path %}content-wrapper{% else %}landing-content{% endif %}">
+    <main class="{% if request.user.is_staff and '/useradmin/' in request.path %} content-wrapper {% else %} landing-content {% endif %}">
         {% block content %}
         {% endblock %}
     </main>
-    <!-- ✅ Ensure Landing Page Footer -->
-    {% block footer %}
-        {% include 'includes/footer.html' %}
-    {% endblock %}
+
+    <!-- ✅ Footer should be properly positioned -->
+{% block footer %}
+    {% if request.path in "/about/, /contact/, /terms-of-use/, /privacy-policy/" %}
+        <footer class="footer">
+            {% include 'includes/footer.html' %}
+        </footer>
+    {% endif %}
+{% endblock %}
 </body>
 </html>
+
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -79,3 +86,4 @@
 
 </body>
 </html>
+

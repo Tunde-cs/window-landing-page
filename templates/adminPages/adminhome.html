@@ -103,30 +103,31 @@
             </div>
         </div>
 
-        <!-- ✅ Monthly Revenue & Conversion Rate (Fixed Layout) -->
+        <!-- ✅ Monthly Revenue & Conversion Rate -->
 <div class="row">
-    <!-- ✅ Monthly Revenue (Clickable & Fixed Size) -->
+    <!-- ✅ Monthly Revenue Section (Clickable) -->
     <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
-        <a href="{% url 'revenue' %}" class="text-decoration-none">
-            <div class="card bg-primary text-white shadow h-100 d-flex align-items-center justify-content-center">
+        <a href="{% url 'revenue' %}">
+            <div class="card bg-primary text-white shadow">
                 <div class="card-body text-center">
-                    <h5><i class="fas fa-chart-line"></i> Monthly Revenue</h5>
-                    <h2 class="fw-bold">${{ metrics.monthly_revenue|floatformat:2 }}</h2>
+                    <h4><i class="fas fa-chart-line"></i> Monthly Revenue</h4>
+                    <h3>${{ metrics.monthly_revenue|floatformat:2 }}</h3>
                 </div>
             </div>
         </a>
     </div>
 
-    <!-- ✅ Conversion Rate (Fixed Box Height & Proper Formatting) -->
+    <!-- ✅ Conversion Rate Section -->
     <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
-        <div class="card bg-secondary text-white shadow h-100 d-flex align-items-center justify-content-center">
+        <div class="card bg-secondary text-white shadow">
             <div class="card-body text-center">
-                <h5><i class="fas fa-percentage"></i> Conversion Rate</h5>
-                <h2 class="fw-bold">{{ metrics.conversion_rate|floatformat:2 }}%</h2>
+                <h4><i class="fas fa-percentage"></i> Conversion Rate</h4>
+                <h3>{{ metrics.conversion_rate }}%</h3>
             </div>
         </div>
     </div>
 </div>
+
         
     <!-- ✅ Sales Overview Chart -->
 <div class="card">
@@ -139,33 +140,33 @@
     </div>
 </div>
 
-<!-- ✅ Load Chart.js -->
+<!-- ✅ Load Chart.js from CDN -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    // ✅ Fetch Data from Django
+    // Get the canvas element for the sales chart
+    const canvas = document.getElementById("salesChart");
+    if (!canvas) return; // Exit if not found
+
+    // Parse chart data passed from Django context
     const salesChartLabels = JSON.parse('{{ sales_chart_labels|safe }}');
     const salesChartData = JSON.parse('{{ sales_chart_data|safe }}');
 
-    console.log("✅ Sales Chart Labels:", salesChartLabels);
-    console.log("✅ Sales Chart Data:", salesChartData);
-
-    if (salesChartLabels.length === 0 || salesChartData.length === 0) {
-        console.warn("⚠️ No sales data available.");
-        return;
+    // Check if a chart instance already exists, and if so, destroy it to prevent duplicates
+    if (window.salesChartInstance) {
+        window.salesChartInstance.destroy();
     }
 
-    // ✅ Render Chart.js Sales Chart
-    const ctx = document.getElementById("salesChart").getContext("2d");
-    new Chart(ctx, {
-        type: "bar",
+    // Create a new chart instance and store it globally
+    window.salesChartInstance = new Chart(canvas.getContext("2d"), {
+        type: "bar", // Using a bar chart; you can mix types if needed
         data: {
             labels: salesChartLabels,
             datasets: [{
                 label: "Monthly Sales",
                 data: salesChartData,
-                backgroundColor: "rgba(75, 192, 192, 0.5)",  // Better color
+                backgroundColor: "rgba(75, 192, 192, 0.5)",
                 borderColor: "rgba(75, 192, 192, 1)",
                 borderWidth: 2
             }]
@@ -176,7 +177,7 @@ document.addEventListener("DOMContentLoaded", function () {
             scales: {
                 y: {
                     beginAtZero: true,
-                    suggestedMax: Math.max(...salesChartData) * 1.2,  // Scale for better balance
+                    suggestedMax: Math.max(...salesChartData) * 1.2
                 }
             }
         }
