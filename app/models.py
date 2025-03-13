@@ -5,6 +5,8 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MinLengthValidator, RegexValidator
 from django.db import models
 from django.utils.timezone import now
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 # User Registration Form
@@ -188,9 +190,9 @@ class Customer(models.Model):
         return self.name
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
-    image = models.ImageField(upload_to="profile_pics/", default="profile_pics/default-profile.png")
-    role = models.CharField(max_length=100, default="Employee")
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    profile_picture = models.ImageField(upload_to='profile_pics/', default='profile_pics/default-profile.png')
 
     def __str__(self):
         return self.user.username
+    

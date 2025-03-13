@@ -31,6 +31,7 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse
 from app.forms import UserCreateForm  # ✅ Import from app/forms.py
 from django.template.response import TemplateResponse  # ✅ Import TemplateResponse
+from django.db.models.functions import ExtractMonth
 
 
 # Base Views
@@ -90,18 +91,32 @@ def send_quote_email(to_email, subject, message):
 @csrf_protect
 @login_required
 def USERADMIN(request):
+    """Redirects Admins to Admin Dashboard & Employees to Employee Dashboard"""
+
+    user = request.user  # ✅ Define user first
+
+    if user.is_superuser:  
+        return admin_dashboard(request)  # ✅ Send Admins to Admin Dashboard
+
+    elif user.groups.filter(name="Employees").exists():
+        return employee_dashboard(request)  # ✅ Send Employees to Employee Dashboard
+
+    else:
+        return redirect("login")  # 🚨 Unauthorized users redirected
+
+
+def admin_dashboard(request):
     """Admin Dashboard View - Displays key metrics, recent leads, and sales data."""
     
-    # ✅ Define user before using it
     user = request.user
-
     context = {
-        "user": user,  # ✅ Ensures 'user' is defined before use
-        "request": request,  # ✅ Fix Missing 'request' in Templates
-        "unread_messages": 3,  # Example (modify as needed)
+        "user": user,
+        "request": request,
+        "unread_messages": 3,  # Example value
     }
+    
     try:
-        # Key Metrics
+        # ✅ Fetch admin-related data
         new_leads_count = Lead.objects.filter(status="new").count()
         pending_orders_count = Order.objects.filter(status="pending").count()
         completed_projects_count = Order.objects.filter(status="completed").count()
@@ -144,8 +159,7 @@ def USERADMIN(request):
         sales_chart_data_json = json.dumps(sales_chart_data)
 
         # ✅ Pass Data to Frontend
-        context = {
-            "user": user,  # ✅ Ensure user is in context
+        context.update({
             "metrics": {
                 "new_leads_count": new_leads_count,
                 "pending_orders_count": pending_orders_count,
@@ -159,12 +173,11 @@ def USERADMIN(request):
             },
             "sales_chart_labels": sales_chart_labels_json,
             "sales_chart_data": sales_chart_data_json,
-        }
+        })
 
     except Exception as e:
         print(f"Error fetching data: {e}")  # Debugging error
-        context = {
-            "user": user,  # ✅ Ensure user is still included
+        context.update({
             "metrics": {
                 "new_leads_count": 0,
                 "pending_orders_count": 0,
@@ -178,9 +191,97 @@ def USERADMIN(request):
             },
             "sales_chart_labels": json.dumps(["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]),
             "sales_chart_data": json.dumps([0] * 12),
-        }
+        })
 
-    return TemplateResponse(request, "adminPages/adminhome.html", context)  # ✅ Now ensures proper context handling
+    return TemplateResponse(request, "adminPages/adminhome.html", context)  # ✅ Ensures proper context handling
+
+
+def employee_dashboard(request):
+    """Employee Dashboard View - Uses same metrics as Admin Dashboard"""
+    
+    user = request.user
+    context = {
+        "user": user,
+        "request": request,
+    }
+
+    try:
+        # ✅ Fetch Employee Metrics (Same as Admin)
+        new_leads_count = Lead.objects.filter(status="new").count()
+        pending_orders_count = Order.objects.filter(status="pending").count()
+        completed_projects_count = Order.objects.filter(status="completed").count()
+        monthly_revenue = (
+            Order.objects.filter(date__month=now().month)
+            .aggregate(Sum("amount"))
+            .get("amount__sum", 0)
+            or 0
+        )
+        total_quotes = Quote.objects.count()
+        orders_in_progress = Order.objects.filter(status="in-progress").count()
+        sales_completed = Order.objects.filter(status="completed").count()
+        message_count = Message.objects.filter(is_read=False).count()
+
+        # ✅ Conversion Rate Fix
+        total_leads = Lead.objects.count()
+        conversion_rate = round((sales_completed / total_leads) * 100, 2) if total_leads > 0 else 0
+
+        # ✅ Fetch Sales Data for Charts
+        raw_sales_data = (
+            Order.objects.annotate(month=ExtractMonth("date"))
+            .values("month")
+            .annotate(total=Sum("amount"))
+            .order_by("month")
+        )
+
+        sales_data_dict = {data["month"]: float(data["total"]) for data in raw_sales_data if data["month"]}
+
+        sales_chart_labels = []
+        sales_chart_data = []
+
+        for month in range(1, 13):  # Loop through all 12 months
+            sales_chart_labels.append(month_name[month])  # Convert number to month name
+            sales_chart_data.append(sales_data_dict.get(month, 0))  # Get sales or default to 0
+
+        # ✅ Convert Data to JSON for Frontend
+        sales_chart_labels_json = json.dumps(sales_chart_labels)
+        sales_chart_data_json = json.dumps(sales_chart_data)
+
+        # ✅ Pass Employee Data to Template
+        context.update({
+            "metrics": {
+                "new_leads_count": new_leads_count,
+                "pending_orders_count": pending_orders_count,
+                "completed_projects_count": completed_projects_count,
+                "monthly_revenue": monthly_revenue,
+                "total_quotes": total_quotes,
+                "orders_in_progress": orders_in_progress,
+                "sales_completed": sales_completed,
+                "conversion_rate": conversion_rate,
+                "message_count": message_count,
+            },
+            "sales_chart_labels": sales_chart_labels_json,
+            "sales_chart_data": sales_chart_data_json,
+        })
+
+    except Exception as e:
+        print(f"Error fetching data: {e}")
+        context.update({
+            "metrics": {
+                "new_leads_count": 0,
+                "pending_orders_count": 0,
+                "completed_projects_count": 0,
+                "monthly_revenue": 0.0,
+                "total_quotes": 0,
+                "orders_in_progress": 0,
+                "sales_completed": 0,
+                "conversion_rate": 0,
+                "message_count": 0,
+            },
+            "sales_chart_labels": json.dumps(["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]),
+            "sales_chart_data": json.dumps([0] * 12),
+        })
+
+    return render(request, "employeePages/employee_dashboard.html", context)
 
 
 # Sidebar Views
@@ -596,3 +697,5 @@ def delete_quote(request, quote_id):
         except Exception as e:
             messages.error(request, f"Error deleting quote: {e}")
         return redirect("adminquotes")
+
+

@@ -2,8 +2,9 @@ from django import forms
 from .models import Lead, Message, Quote  # Import your models here
 from .models import Order
 from app.models import Lead  # Ensure this imports the correct Lead model
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib.auth.forms import UserCreationForm
+from app.models import UserProfile  # ✅ Ensure UserProfile model exists
 
 
 class LeadForm(forms.ModelForm):
@@ -80,7 +81,26 @@ class UserCreateForm(UserCreationForm):
         required=True,
         widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Last Name"})
     )
+    email = forms.EmailField(
+        max_length=254,
+        required=True,
+        widget=forms.EmailInput(attrs={"class": "form-control", "placeholder": "Email Address"})
+    )
 
     class Meta:
         model = User
         fields = ["first_name", "last_name", "username", "email", "password1", "password2"]
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.is_staff = True  # ✅ Mark as staff so they can access the admin page
+
+        if commit:
+            user.save()
+            # ✅ Ensure the "Employees" group exists before adding
+            employee_group, created = Group.objects.get_or_create(name="Employees")
+            user.groups.add(employee_group)  # ✅ Add user to "Employees" group
+        
+        return user
+    
+    

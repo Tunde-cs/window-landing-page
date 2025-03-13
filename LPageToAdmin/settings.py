@@ -12,21 +12,43 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 import os
 from pathlib import Path
-from decouple import config
+import environ
+import logging
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+logging.basicConfig(level=logging.DEBUG)
+
+
+# ✅ Define BASE_DIR FIRST
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# ✅ Initialize environment variables
+env = environ.Env()
+env_file = os.path.join(BASE_DIR, ".env")
+
+# ✅ Load .env file if it exists
+if os.path.exists(env_file):
+    env.read_env(env_file)
+
+
+# Email Backend Settings
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True  # ✅ Keep TLS enabled
+EMAIL_USE_SSL = False  # ❌ Must be False if TLS is True
+
+EMAIL_HOST_USER = env("EMAIL_HOST_USER")  # ✅ Load from .env
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")  # ✅ Load from .env
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-
-SECRET_KEY = config("SECRET_KEY", default="fallback-secret-key")
+SECRET_KEY = env("SECRET_KEY", default="fallback-secret-key")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config("DEBUG", default=True, cast=bool)
+DEBUG = env.bool("DEBUG", default=True)
 
 ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
 
@@ -59,13 +81,6 @@ from django.contrib.messages import constants as messages
 
 MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
 
-# Email Backend Settings
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "smtp.gmail.com"
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = "windowupgrades4u@gmail.com"
-EMAIL_HOST_PASSWORD = "betjgwgmvriwhzrl"
 
 ROOT_URLCONF = "LPageToAdmin.urls"
 

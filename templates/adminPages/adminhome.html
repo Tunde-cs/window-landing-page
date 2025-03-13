@@ -11,7 +11,7 @@
 
 {% block content %}
 
-<!-- ✅ Page Header -->
+<!-- ✅ Page Header (Appears on ALL admin pages) -->
 <div class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
@@ -21,7 +21,7 @@
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="{% url 'useradmin' %}">Home</a></li>
-                    <li class="breadcrumb-item active">Dashboard</li>
+                    <li class="breadcrumb-item active">{% block page_title %} Dashboard {% endblock %}</li>
                 </ol>
             </div>
         </div>
@@ -41,13 +41,13 @@
         
         <!-- ✅ Profile Picture (Use Dynamic Image if Available) -->
         {% if request.user.profile and request.user.profile.image %}
-            <img src="{{ request.user.profile.image.url }}" 
-                 alt="Profile Picture"
-                 class="img-thumbnail mt-2" width="120">
+           <img src="{{ request.user.profile.image.url }}" 
+                alt="Profile Picture"
+                class="img-thumbnail mt-2" width="120">
         {% else %}
-            <img src="{% static 'assets/img/default-profile.png' %}" 
-                 onerror="this.onerror=null;this.src='https://via.placeholder.com/120';" 
-                 alt="Profile Picture" class="img-thumbnail mt-2" width="120">
+           <img src="/media/profile_pics/default-profile.png" 
+                alt="Admin Profile" 
+                class="img-thumbnail mt-2" width="120">
         {% endif %}
     </div>
 </div>
@@ -104,29 +104,25 @@
         </div>
 
         <!-- ✅ Monthly Revenue & Conversion Rate -->
-<div class="row">
-    <!-- ✅ Monthly Revenue Section (Clickable) -->
-    <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
-        <a href="{% url 'revenue' %}">
-            <div class="card bg-primary text-white shadow">
-                <div class="card-body text-center">
-                    <h4><i class="fas fa-chart-line"></i> Monthly Revenue</h4>
-                    <h3>${{ metrics.monthly_revenue|floatformat:2 }}</h3>
+        <div class="row">
+            <div class="col-lg-6 col-md-6 mb-4">
+                <div class="small-box bg-primary text-white shadow">
+                    <div class="inner text-center">
+                        <h4>Monthly Revenue</h4>
+                        <h2>${{ metrics.monthly_revenue|floatformat:2 }}</h2>
+                    </div>
                 </div>
             </div>
-        </a>
-    </div>
 
-    <!-- ✅ Conversion Rate Section -->
-    <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
-        <div class="card bg-secondary text-white shadow">
-            <div class="card-body text-center">
-                <h4><i class="fas fa-percentage"></i> Conversion Rate</h4>
-                <h3>{{ metrics.conversion_rate }}%</h3>
+            <div class="col-lg-6 col-md-6 mb-4">
+                <div class="small-box bg-secondary text-white shadow">
+                    <div class="inner text-center">
+                        <h4>Conversion Rate</h4>
+                        <h2>{{ metrics.conversion_rate }}%</h2>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
 
         
     <!-- ✅ Sales Overview Chart -->
@@ -140,33 +136,33 @@
     </div>
 </div>
 
-<!-- ✅ Load Chart.js from CDN -->
+<!-- ✅ Load Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    // Get the canvas element for the sales chart
-    const canvas = document.getElementById("salesChart");
-    if (!canvas) return; // Exit if not found
-
-    // Parse chart data passed from Django context
+    // ✅ Fetch Data from Django
     const salesChartLabels = JSON.parse('{{ sales_chart_labels|safe }}');
     const salesChartData = JSON.parse('{{ sales_chart_data|safe }}');
 
-    // Check if a chart instance already exists, and if so, destroy it to prevent duplicates
-    if (window.salesChartInstance) {
-        window.salesChartInstance.destroy();
+    console.log("✅ Sales Chart Labels:", salesChartLabels);
+    console.log("✅ Sales Chart Data:", salesChartData);
+
+    if (salesChartLabels.length === 0 || salesChartData.length === 0) {
+        console.warn("⚠️ No sales data available.");
+        return;
     }
 
-    // Create a new chart instance and store it globally
-    window.salesChartInstance = new Chart(canvas.getContext("2d"), {
-        type: "bar", // Using a bar chart; you can mix types if needed
+    // ✅ Render Chart.js Sales Chart
+    const ctx = document.getElementById("salesChart").getContext("2d");
+    new Chart(ctx, {
+        type: "bar",
         data: {
             labels: salesChartLabels,
             datasets: [{
                 label: "Monthly Sales",
                 data: salesChartData,
-                backgroundColor: "rgba(75, 192, 192, 0.5)",
+                backgroundColor: "rgba(75, 192, 192, 0.5)",  // Better color
                 borderColor: "rgba(75, 192, 192, 1)",
                 borderWidth: 2
             }]
@@ -177,7 +173,7 @@ document.addEventListener("DOMContentLoaded", function () {
             scales: {
                 y: {
                     beginAtZero: true,
-                    suggestedMax: Math.max(...salesChartData) * 1.2
+                    suggestedMax: Math.max(...salesChartData) * 1.2,  // Scale for better balance
                 }
             }
         }

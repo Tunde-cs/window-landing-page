@@ -11,6 +11,7 @@
 
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{% static 'assets/favicon.ico' %}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet" />
@@ -31,7 +32,6 @@
     <title>{% if request.user.is_staff %}Admin Panel{% else %}Window Replacement{% endif %}</title>
     
 </head>
-
 <!-- ✅ Body: Full Layout for Admin, No Sidebar for Landing Page -->
 <body class="{% if request.user.is_staff %} hold-transition sidebar-mini layout-fixed {% else %} landing-page-body {% endif %}">
 
@@ -41,26 +41,30 @@
     {% endif %}
 
     <!-- ✅ Ensure the navbar appears ONLY on footer-linked pages -->
-    {% if request.path in '/about/' or request.path in '/contact/' or request.path in '/terms-of-use/' or request.path in '/privacy-policy/' %}
+    {% if request.path == "/signup/" or request.path == "/accounts/login/" or request.path == "/" %}
         {% include 'includes/header.html' %}
     {% endif %}
 
     <!-- ✅ Main Content -->
-    <main class="{% if request.user.is_staff and '/useradmin/' in request.path %} content-wrapper {% else %} landing-content {% endif %}">
-        {% block content %}
-        {% endblock %}
-    </main>
+    <div class="container-fluid mt-3">
+        <div class="row justify-content-center">
+            <div class="col-xl-11 col-lg-12">  <!-- ✅ Adjusted Width to Reduce Side Space -->
+                <div class="border border-primary rounded shadow p-3 bg-white">  <!-- ✅ Smaller padding -->
+                    <main class="{% if request.user.is_staff and '/useradmin/' in request.path %} content-wrapper {% else %} landing-content {% endif %}">
+                        {% block content %}
+                        {% endblock content %}
+                    </main>
 
-    <!-- ✅ Footer should be properly positioned -->
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- ✅ Footer should be properly positioned -->
 {% block footer %}
-    {% if request.path in "/about/, /contact/, /terms-of-use/, /privacy-policy/" %}
-        <footer class="footer">
-            {% include 'includes/footer.html' %}
-        </footer>
-    {% endif %}
+    {% include 'includes/footer.html' %}
 {% endblock %}
-</body>
-</html>
 
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -83,7 +87,6 @@
         console.log('Chatbot script goes here');
     </script>
     {% endif %}
-
 </body>
 </html>
 

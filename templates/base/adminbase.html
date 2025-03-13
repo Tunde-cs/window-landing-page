@@ -9,31 +9,39 @@
 {% endblock %}
 
 {% block content %}
-<div class="wrapper">
+<div class="wrapper sidebar-mini layout-fixed sidebar-open d-flex flex-column" style="min-height: 100vh;">
     {% include 'includes/adminsidebar.html' %}
-    <div class="content-wrapper">
+    <div class="content-wrapper d-flex flex-column" style="flex-grow: 1;">
+        
+        <!-- ✅ Page Header (Appears on ALL admin pages) -->
         <div class="content-header">
             <div class="container-fluid">
-                <h2 class="mb-0">Welcome, Admin!</h2>
-                <nav>
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{% url 'useradmin' %}">Home</a></li>
-                        <li class="breadcrumb-item active">{% block page_title %} Dashboard {% endblock %}</li>
-                    </ol>
-                </nav>
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 class="m-0">Welcome, {{ user.get_full_name|default:user.username }}!</h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="{% url 'useradmin' %}">Home</a></li>
+                            <li class="breadcrumb-item active">{% block page_title %} Dashboard {% endblock %}</li>
+                        </ol>
+                    </div>
+                </div>
             </div>
         </div>
+        <!-- ✅ End of Page Header -->
         <section class="content">
             <div class="container-fluid">
                 {% block page_content %}
-                <!-- Page-specific content will go here -->
+                <!-- ✅ This will be replaced by page-specific content -->
                 {% endblock %}
             </div>
         </section>
     </div>
 </div>
-{% endblock %}
+{% endblock %}  
 
+    <!-- ✅ Footer Wrapper (Moved Outside of content-wrapper) -->
 {% block footer %}
     {% if request.user.is_staff %}
         {% include 'includes/adminfooter.html' %}
@@ -53,4 +61,5 @@
       document.body.classList.add("sidebar-mini", "layout-fixed");
   });
 </script>
+
 

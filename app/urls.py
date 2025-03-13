@@ -4,6 +4,9 @@ from . import views
 from .views import home, submit_lead, request_quote
 from .views import about_page, services_page, contact_page, terms_of_use_page, privacy_policy
 
+
+
+
 urlpatterns = [
     # Core Pages
     path("", home, name="index"),  # Route for the landing page
@@ -23,6 +26,8 @@ urlpatterns = [
     path("submit-lead/", submit_lead, name="submit_lead"),
     path("projects/", views.projects_view, name="projects"),
     path("reports/", views.reports_view, name="reports"),
+    
+    
 
     # Optional: Generic landing page route
     path("", TemplateView.as_view(template_name="pages/index.html"), name="landing_page"),

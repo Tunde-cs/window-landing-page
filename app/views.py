@@ -16,6 +16,13 @@ from django.views.decorators.csrf import csrf_exempt, csrf_protect  # Group csrf
 from django.http import HttpResponseRedirect
 from app.forms import OrderForm  # If OrderForm is used
 from app.models import Lead, Order, Quote
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.contrib.auth import login
+from django.contrib.auth.models import Group
+from .forms import UserCreateForm  # ✅ Use your existing form
 
 
 from .forms import (
@@ -244,49 +251,40 @@ def admin_login(request):
     return render(request, "registration/login.html")  # Render login page
 
 
-
 def submit_lead(request):
-    """
-    Handles lead submissions from frontend, saves to database, and sends email confirmation.
-    """
     if request.method == "POST":
         email = request.POST.get("email")
-        name = request.POST.get(
-            "name", "Anonymous"
-        )  # Default to 'Anonymous' if not provided
+        name = request.POST.get("name", "Anonymous")
         phone = request.POST.get("phone", None)
 
-        # Validate that email exists
         if not email:
             messages.error(request, "Email is required.")
             return redirect("home")  # Redirect to landing page
 
-        # Check for duplicate email
         if Lead.objects.filter(email=email).exists():
             messages.error(request, "This email has already been submitted.")
             return redirect("home")
 
         try:
-            # Save the lead to the database
-            Lead.objects.create(name=name, email=email, phone=phone)
+            # ✅ Save Lead
+            new_lead = Lead.objects.create(name=name, email=email, phone=phone)
 
-            # Send confirmation email
+            # ✅ Test Email Sending & Print Errors
             subject = "Lead Submission Received"
             message = f"Dear {name},\n\nThank you for submitting your details. We'll contact you soon.\n\nPhone: {phone}"
             from_email = settings.DEFAULT_FROM_EMAIL
-            send_mail(subject, message, from_email, [email], fail_silently=True)
 
-            # Success message
-            messages.success(
-                request, "Thank you! Your details have been submitted successfully."
-            )
-            return redirect("home")  # Redirect back to landing page
-        except Exception as e:
-            print(f"Error saving lead or sending email: {e}")
-            messages.error(request, "An error occurred. Please try again later.")
+            send_mail(subject, message, from_email, [email], fail_silently=False)  # ❌ If error, it will be printed
+
+            # ✅ Success Message
+            messages.success(request, "Thank you! Your details have been submitted successfully.")
             return redirect("home")
 
-    # Render the landing page if GET request
+        except Exception as e:
+            print(f"❌ EMAIL ERROR: {e}")  # ✅ This will print the exact error
+            messages.error(request, f"Error sending email: {e}")  # ✅ Show real error message
+            return redirect("home")
+
     return render(request, "pages/index.html")
 
 
@@ -310,3 +308,4 @@ def request_quote(request):
 def admin_logout(request):
     logout(request)  # Use Django's auth logout
     return redirect("admin_login")  # Redirect to admin login page
+

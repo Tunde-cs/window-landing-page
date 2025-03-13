@@ -7,6 +7,10 @@ from LPageToAdmin.views import mark_message_read
 from LPageToAdmin.views import reply_message  # Ensure function is imported
 from .views import logout_view
 from LPageToAdmin.views import signup  # ✅ Import the correct signup view
+from LPageToAdmin.views import USERADMIN  # ✅ Make sure USERADMIN is properly imported
+from .views import USERADMIN, admin_dashboard, employee_dashboard  # ✅ Import necessary views
+from django.conf import settings
+
 
 from . import views
 from app import views as app_views  # Import app-level views
@@ -45,6 +49,9 @@ urlpatterns = [
     path("", views.HOME, name="home"),  # Landing page
     path("useradmin/", views.USERADMIN, name="useradmin"),  # Admin dashboard
     
+
+    
+
     # ✅ Authentication
     path("signup/", views.signup, name="signup"),  # Signup page
     path("logout/", logout_view, name="logout"),  # ✅ Correct Logout Route
@@ -88,4 +95,4 @@ urlpatterns = [
 
 # ✅ Add static file serving in development
 if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

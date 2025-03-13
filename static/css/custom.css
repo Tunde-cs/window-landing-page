@@ -1,30 +1,90 @@
-/* 🔹 Ensure Sidebar Adjusts Responsively */
-@media (max-width: 768px) {
-    /* Move sidebar off-screen by default */
-    .main-sidebar {
-        position: fixed;
-        width: 250px;
-        height: 100%;
-        z-index: 1030;
-        left: -250px;
-        transition: left 0.3s ease-in-out;
-    }
+/* ✅ Ensure Sidebar and Content Stay Side by Side */
+.wrapper {
+    display: flex;
+    flex-direction: row;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
 
-    /* When sidebar is toggled */
-    .main-sidebar.sidebar-open {
-        left: 0;
-    }
+/* ✅ Sidebar - Default Behavior */
+.sidebar {
+    width: 250px; /* Standard Sidebar Width */
+    min-height: 100vh;
+    background: #343a40; /* Dark Gray */
+    color: white;
+    padding: 20px;
+    transition: width 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+}
 
-    /* Ensure the main content wrapper shifts when sidebar is open */
+/* ✅ Sidebar Menu */
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar-menu li {
+    margin-bottom: 10px;
+}
+
+.sidebar-menu a {
+    text-decoration: none;
+    color: white;
+    padding: 10px;
+    display: block;
+    border-radius: 5px;
+    transition: background 0.3s ease;
+}
+
+.sidebar-menu a:hover {
+    background: #495057;
+}
+
+/* ✅ Main Content */
+.content-wrapper {
+    flex-grow: 1;
+    padding: 20px;
+    transition: margin-left 0.3s ease-in-out;
+}
+
+/* ✅ Responsive Adjustments */
+@media (max-width: 992px) {
+    .sidebar {
+        width: 200px; /* Shrink sidebar on medium screens */
+    }
     .content-wrapper {
-        margin-left: 0;
-        transition: margin-left 0.3s ease-in-out;
+        padding: 15px;
     }
+}
 
-    /* Move the main content when the sidebar is open */
-    body.sidebar-open .content-wrapper {
-        margin-left: 250px;
+@media (max-width: 768px) {
+    .sidebar {
+        width: 150px; /* Shrink further for smaller screens */
     }
+    .content-wrapper {
+        padding: 10px;
+    }
+}
+
+@media (max-width: 576px) {
+    .sidebar {
+        width: 80px; /* Minimal width on mobile screens */
+        padding: 10px;
+    }
+    .content-wrapper {
+        padding: 5px;
+    }
+}
+
+/* ✅ Ensure Footer is Always at the Bottom */
+.main-footer {
+    width: 100%;
+    position: relative;
+    bottom: 0;
+    background: #f8f9fa;
+    padding: 15px 20px;
+    text-align: center;
 }
 
 /* ✅ Fix for Landing Pages */
@@ -34,35 +94,47 @@
     min-height: 100vh;
 }
 
-/* ✅ Fix Footer for Landing Pages */
+/* ✅ Shorter Footer for Landing Pages */
 .footer {
-    margin-top: auto;
-    width: 100%;
-    background: #f8f9fa;
-    padding: 20px 0;
+    background: #222 !important;  /* Dark background */
+    color: white;
+    padding: 8px 0 !important;  /* 🔹 Reduce padding to make it shorter */
     text-align: center;
-    position: relative;
+    font-size: 13px !important; /* 🔹 Reduce text size slightly */
+    border-top: 1px solid #444;
+    min-height: 40px; /* 🔹 Limit the height */
 }
 
-/* ✅ Ensure Admin Footer Aligns Correctly */
+/* ✅ Reduce Footer Text Spacing */
+.footer p {
+    margin: 2px 0 !important; /* 🔹 Reduce spacing between text lines */
+}
+
+/* ✅ Ensure Admin Footer Stays Below Content */
 .main-footer {
-    width: calc(100% - 250px); /* Matches sidebar width */
-    margin-left: 250px;
-    position: fixed;
+    width: 100%;
+    margin-left: 0;
+    position: relative;
     bottom: 0;
     background: #f8f9fa;
     padding: 15px 20px;
     text-align: center;
-    transition: margin-left 0.3s ease-in-out;
+}
+.content-wrapper {
+    flex-grow: 1;
 }
 
-/* ✅ Adjust Footer for Smaller Screens */
-@media (max-width: 992px) {
-    .main-footer {
-        width: 100%;
-        margin-left: 0;
-        position: relative;
-    }
+
+/* ✅ Ensure Charts & Cards Use Full Width */
+.card {
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 20px;
+}
+
+.chart-container {
+    width: 100%;
+    min-height: 400px;
 }
 
 /* ✅ Ensure sidebar and content display side by side */
@@ -92,3 +164,97 @@
         margin-left: 250px !important; /* Ensure content is next to sidebar */
     }
 }
+/* ✅ Improve Hero Section */
+.hero {
+    background: url('/static/assets/img/hero-bg.jpg') center/cover no-repeat;
+    padding: 100px 0;
+}
+
+/* ✅ Ensure Navigation Sticks on Scroll */
+.navbar {
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* ✅ Modernize Features Section */
+.features {
+    background-color: #f9f9f9;
+    padding: 50px 0;
+}
+
+/* ✅ Button Hover Effect */
+.btn-lg:hover {
+    background: #f8f9fa;
+    color: #007bff !important;
+    transition: 0.3s ease-in-out;
+}
+
+/* ✅ Floating Chat Button */
+/* ✅ Chatbot Container - Remove Blue Border */
+#chat-window {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 320px;
+    height: 450px;
+    background: white !important;  /* 🔹 Change background to white */
+    color: black;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* ✅ Keep soft shadow */
+    border: none !important; /* ❌ Removes the blue border */
+}
+
+/* ✅ Chat Header - Keep it clean */
+#chat-header {
+    background: #007bff !important; /* 🔹 Keep blue for header */
+    color: white !important;
+    padding: 10px;
+    font-weight: bold;
+    text-align: center;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+/* ✅ Chatbot Messages - Better Contrast */
+#chat-messages {
+    height: 320px;
+    overflow-y: auto;
+    padding: 10px;
+    background: #f8f9fa; /* 🔹 Light gray to separate from white */
+    color: black;
+}
+
+/* ✅ Chat Input Section - Fix Send Button */
+#chat-input-container {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    border-top: 1px solid #ddd;
+    background: white;
+}
+
+/* ✅ Chat Input Field */
+#chat-input {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+}
+
+/* ✅ Send Button */
+#chat-send-button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    margin-left: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#chat-send-button:hover {
+    background: #0056b3; /* Darker blue on hover */
+}
+
+

@@ -11,6 +11,7 @@
 <!-- Bootstrap CSS -->
 <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
 <link rel="stylesheet" href="{% static 'css/custom-styles.css' %}"> <!-- Custom CSS (Optional) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
 
 <!-- Structured Data for SEO -->
 <script type="application/ld+json">
@@ -31,21 +32,39 @@
 <!-- Masthead -->
 <header class="masthead">
     <div class="container position-relative">
-        <!-- ✅ Remove Extra <nav> Nesting (Fixed) -->
-        <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+        <!-- ✅ Improved Navbar for Better Styling & Spacing -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
             <div class="container">
-                <a class="navbar-brand" href="#">Window Replacement Services</a>
+                <a class="navbar-brand fw-bold text-primary" href="#">
+                    <i class="fas fa-home"></i> Window Replacement Services
+                </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item"><a class="nav-link" href="#windows">Window Styles</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#quote-form">Submit Quote</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#testimonials">Testimonials</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#we-finance">Financing</a></li>
+                <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark fw-semibold" href="#windows">
+                                <i class="fas fa-th-large"></i> Window Styles
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark fw-semibold" href="#quote-form">
+                                <i class="fas fa-file-alt"></i> Submit Quote
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark fw-semibold" href="#testimonials">
+                                <i class="fas fa-users"></i> Testimonials
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark fw-semibold" href="#we-finance">
+                                <i class="fas fa-credit-card"></i> Financing
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -65,42 +84,39 @@
                         {% endfor %}
                     </div>
                     {% endif %}
-                    <form action="{% url 'submit_lead' %}" method="post">
+                    <form action="{% url 'submit_lead' %}" method="post" id="leadForm">
                         {% csrf_token %}
                         <div class="row flex">
-                            <!-- Email Address Field -->
                             <div class="col">
-                                <input
-                                    class="form-control form-control-lg {% if form.email.errors %}is-invalid{% endif %}"
-                                    id="email"
-                                    name="email"
-                                    type="email"
-                                    placeholder="Email Address"
-                                    required
-                                />
-                                {% if form.email.errors %}
-                                <div class="invalid-feedback">
-                                    {% for error in form.email.errors %}
-                                    {{ error }}
-                                    {% endfor %}
-                                </div>
-                                {% endif %}
+                                <input class="form-control form-control-lg" id="email" name="email" type="email" placeholder="Email Address" required />
+                                <div id="email-error" class="invalid-feedback"></div>
                             </div>
-                            <!-- Submit Button on the Side -->
                             <div class="col-auto">
                                 <button class="btn btn-primary btn-lg" type="submit">Submit</button>
                             </div>
                         </div>
                     </form>
+                    
+                    <script>
+                    document.getElementById("leadForm").addEventListener("submit", function(event) {
+                        const emailInput = document.getElementById("email");
+                        if (!emailInput.value.includes("@")) {
+                            event.preventDefault();
+                            document.getElementById("email-error").textContent = "Invalid email address.";
+                        }
+                    });
+                    </script>
                 </div>
             </div>
         </div>
     </div>
 </header>
 
+
 <!-- ✅ Bootstrap JavaScript (Placed at the End, Before `</body>`) -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <!-- Horizontal Image Gallery -->
 <section class="image-gallery">
@@ -362,150 +378,241 @@
         </div>
     </div>
 </section>
-<title>Landing Page with Chatbot</title>
-<style>
-    /* Chat Container */
-    #chat-container {
-        max-width: 600px;
-        margin: 50px auto;
-        padding: 20px;
-        background: linear-gradient(to bottom, #f9f9f9, #ffffff);
-        border-radius: 15px;
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        font-family: 'Arial', sans-serif;
-    }
 
-    /* Chat Log */
-    #chat-log {
-        height: 400px;
-        overflow-y: auto;
-        border: 1px solid #ccc;
-        border-radius: 10px;
-        padding: 15px;
-        margin-bottom: 15px;
-        background-color: #fdfdfd;
-    }
 
-    /* Chat Bubbles */
-    .user-message, .bot-message {
-        display: inline-block;
-        padding: 12px 15px;
-        border-radius: 15px;
-        margin: 10px 0;
-        max-width: 80%;
-        word-wrap: break-word;
-    }
+ <!-- ✅ Chatbot Floating Button -->
+<button id="chatbot-button" style="
+position: fixed; 
+bottom: 20px; 
+right: 20px; 
+background-color: #007bff; 
+color: white; 
+padding: 12px 16px; 
+border-radius: 50px; 
+font-size: 16px;
+font-weight: bold;
+cursor: pointer;
+box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+border: none;
+transition: background 0.3s ease;">
+💬 Chat with us!
+</button>
 
-    /* User Message */
-    .user-message {
-        background-color: #007bff;
-        color: #ffffff;
-        text-align: right;
-        float: right;
-        border-top-right-radius: 0;
-    }
+<!-- ✅ Chat Window -->
+<div id="chat-window" style="
+display: none; 
+position: fixed; 
+bottom: 80px; 
+right: 20px; 
+width: 350px; 
+height: 450px; 
+background: white; 
+border-radius: 12px; 
+box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+overflow: hidden;
+border: 1px solid #ddd;
+font-family: Arial, sans-serif;">
 
-    /* Bot Message */
-    .bot-message {
-        background-color: #f1f1f1;
-        color: #333;
-        text-align: left;
-        float: left;
-        border-top-left-radius: 0;
-    }
-
-    /* Clearfix for Messages */
-    .clearfix {
-        clear: both;
-    }
-
-    /* User Input */
-    #user-input {
-        width: calc(100% - 80px);
-        padding: 10px;
-        margin-right: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        outline: none;
-        font-size: 16px;
-    }
-
-    /* Send Button */
-    button {
-        padding: 12px 20px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 16px;
-        transition: background-color 0.3s ease;
-    }
-
-    button:hover {
-        background-color: #0056b3;
-    }
-</style>
-</head>
-<body>
-    <h1>Welcome to My Landing Page</h1>
-
-    <!-- Chatbot UI -->
-    <div id="chat-container">
-        <h2>Chat with Us!</h2>
-        <div id="chat-log"></div>
-        <div>
-            <input type="text" id="user-input" placeholder="Type your message here..." />
-            <button onclick="sendMessage()">Send</button>
-        </div>
+<!-- ✅ Chat Header -->
+<div style="
+    background: #007bff; 
+    color: white; 
+    padding: 12px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    font-size: 16px;
+    font-weight: bold;
+    border-top-left-radius: 12px; 
+    border-top-right-radius: 12px;">
+    Chat with AI
+    <div>
+        <button id="minimize-chat" style="
+            background: none; 
+            border: none; 
+            color: white; 
+            font-size: 18px; 
+            cursor: pointer;
+            margin-right: 5px;">−</button>
+        <button id="close-chat" style="
+            background: none; 
+            border: none; 
+            color: white; 
+            font-size: 18px; 
+            cursor: pointer;">×</button>
     </div>
+</div>
+
+<!-- ✅ Chat Messages -->
+<div id="chat-messages" style="
+    padding: 12px; 
+    height: 330px; 
+    overflow-y: auto; 
+    background: #f8f9fa; 
+    border-bottom: 1px solid #ddd;"></div>
+
+<!-- ✅ Chat Input & Send Button -->
+<div style="
+    display: flex; 
+    align-items: center; 
+    padding: 8px; 
+    background: white;">
+    <input type="text" id="chat-input" autocomplete="off" placeholder="Type a message..." style="
+        flex-grow: 1; 
+        padding: 10px; 
+        border: 1px solid #ccc; 
+        border-radius: 6px;
+        font-size: 14px;
+        outline: none;">
+    <button id="chat-send-button" style="
+        background: #007bff; 
+        color: white; 
+        border: none; 
+        padding: 10px 15px; 
+        margin-left: 8px; 
+        border-radius: 6px; 
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: bold;
+        transition: background 0.3s ease;">
+        Send
+    </button>
+</div>
+</div>
+
+ <!-- ✅ Chatbot JavaScript -->
 <script>
-    async function sendMessage() {
-        const userInput = document.getElementById("user-input").value.trim();
-        const chatLog = document.getElementById("chat-log");
-
-        if (!userInput) {
-            alert("Please type a message!");
-            return;
-        }
-
-        // Display user message
-        const userMessageDiv = document.createElement("div");
-        userMessageDiv.className = "user-message";
-        userMessageDiv.textContent = `You: ${userInput}`;
-        chatLog.appendChild(userMessageDiv);
-
-        // Clear input field
-        document.getElementById("user-input").value = "";
-
-        // Show loading indicator
-        const loadingMessageDiv = document.createElement("div");
-        loadingMessageDiv.className = "bot-message";
-        loadingMessageDiv.textContent = "Bot is typing...";
-        chatLog.appendChild(loadingMessageDiv);
-
-        try {
-            // Call the chatbot backend
-            const response = await fetch("http://127.0.0.1:5000/chat", {
+    document.addEventListener("DOMContentLoaded", function() {
+        const chatbotButton = document.getElementById("chatbot-button");
+        const chatWindow = document.getElementById("chat-window");
+        const chatMessages = document.getElementById("chat-messages");
+        const chatInput = document.getElementById("chat-input");
+        const minimizeChat = document.getElementById("minimize-chat");
+        const closeChat = document.getElementById("close-chat");
+    
+        // ✅ Auto-Show Chatbot When User is Active for 10 Seconds
+        setTimeout(() => {
+            chatWindow.style.display = "block";
+        
+            // ✅ Show Welcome Message if Not Already Shown
+            if (!sessionStorage.getItem("welcomeMessage")) {
+                displayMessage("Chatbot", "Hello! How can I assist you today?");
+                sessionStorage.setItem("welcomeMessage", "shown"); // ✅ Prevent duplicate message
+            }
+        }, 10000); // Adjust time delay if needed
+        
+        // ✅ Toggle Chat Window
+        chatbotButton.addEventListener("click", function() {
+            if (chatWindow.style.display === "none" || chatWindow.style.display === "") {
+                chatWindow.style.display = "block";
+                chatbotButton.style.display = "none";
+                
+                // ✅ Load chat history only if it hasn't already loaded
+                if (!chatWindow.dataset.loaded) {
+                    loadChatHistory();
+                    chatWindow.dataset.loaded = "true"; // Mark as loaded
+                }
+            }
+        });
+    
+        // ✅ Minimize Chat Window
+        minimizeChat.addEventListener("click", function() {
+            chatWindow.style.display = "none";
+            chatbotButton.style.display = "block";
+        });
+    
+        // ✅ Close Chat Completely
+        closeChat.addEventListener("click", function() {
+            chatWindow.style.display = "none";
+        
+            // ✅ Completely wipe chat history
+            chatMessages.innerHTML = "";
+            localStorage.removeItem("chatHistory"); 
+            sessionStorage.removeItem("welcomeMessage"); // Also reset the welcome message for next session
+        });
+    
+        // ✅ Load chat history only once per session
+        function loadChatHistory() {
+            chatMessages.innerHTML = ""; // Clear chat messages
+            let messages = JSON.parse(localStorage.getItem("chatHistory")) || [];
+        
+            // ✅ Check if the welcome message has already been sent in this session
+            if (!sessionStorage.getItem("welcomeMessage") && messages.length === 0) {
+                displayMessage("Chatbot", "Hello! How can I assist you today?");
+                sessionStorage.setItem("welcomeMessage", "shown"); // Prevent duplicate messages
+            }
+        
+            messages.forEach(msg => displayMessage(msg.sender, msg.text));
+        }        
+        // ✅ Send Message on Enter
+        chatInput.addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                sendMessage();
+            }
+        });
+    
+        // ✅ Function to Send Messages
+        function sendMessage() {
+            const userMessage = chatInput.value.trim();
+            if (!userMessage) return;
+    
+            displayMessage("You", userMessage);
+    
+            fetch("http://127.0.0.1:5000/chat", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ message: userInput }),
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: userMessage })
+            })
+            .then(response => response.json())
+            .then(data => {
+                displayMessage("Chatbot", data.reply);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                displayMessage("Chatbot", "Oops! Something went wrong.");
             });
-            const data = await response.json();
-
-            // Replace loading indicator with bot's response
-            loadingMessageDiv.textContent = `Bot: ${data.reply}`;
-        } catch (error) {
-            console.error("Error communicating with the chatbot:", error);
-
-            // Replace loading indicator with error message
-            loadingMessageDiv.textContent = "An error occurred. Please try again later.";
+    
+            chatInput.value = "";
         }
+    
+        // ✅ Function to Display Messages
+        function displayMessage(sender, message) {
+            const msgDiv = document.createElement("div");
+    
+            if (sender === "Chatbot") {
+                msgDiv.style.background = "#f1f1f1";
+                msgDiv.style.color = "#333";
+                msgDiv.style.borderRadius = "8px";
+                msgDiv.style.padding = "8px";
+                msgDiv.style.margin = "5px 0";
+                msgDiv.style.textAlign = "left";
+            } else {
+                msgDiv.style.background = "#007bff";
+                msgDiv.style.color = "white";
+                msgDiv.style.borderRadius = "8px";
+                msgDiv.style.padding = "8px";
+                msgDiv.style.margin = "5px 0";
+                msgDiv.style.textAlign = "right";
+            }
+    
+            msgDiv.textContent = `${sender}: ${message}`;
+            chatMessages.appendChild(msgDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    });
+    
+        // ✅ Load Chat History
+        function loadChatHistory() {
+            chatMessages.innerHTML = ""; // Clear chat messages
+            let messages = JSON.parse(localStorage.getItem("chatHistory")) || [];
+        
+            // ✅ Fix: Ensure the welcome message appears only once per session
+            if (!sessionStorage.getItem("welcomeMessage")) {
+                displayMessage("Chatbot", "Hello! How can I assist you today?");
+                sessionStorage.setItem("welcomeMessage", "shown"); // ✅ Ensures it’s only shown once per session
+            }
 
-        // Scroll to the bottom of the chat log
-        chatLog.scrollTop = chatLog.scrollHeight;
-    }
-</script>
+            messages.forEach(msg => displayMessage(msg.sender, msg.text));
+        }
+    </script>
 {% endblock %}

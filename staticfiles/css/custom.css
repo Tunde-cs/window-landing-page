@@ -44,6 +44,7 @@
     position: relative;
 }
 
+
 /* ✅ Ensure Admin Footer Aligns Correctly */
 .main-footer {
     width: calc(100% - 250px); /* Matches sidebar width */
@@ -92,3 +93,4 @@
         margin-left: 250px !important; /* Ensure content is next to sidebar */
     }
 }
+
