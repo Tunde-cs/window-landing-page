@@ -13,6 +13,7 @@
 <link rel="stylesheet" href="{% static 'css/custom-styles.css' %}"> <!-- Custom CSS (Optional) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
 
+
 <!-- Structured Data for SEO -->
 <script type="application/ld+json">
 {
@@ -379,240 +380,220 @@
     </div>
 </section>
 
-
- <!-- ✅ Chatbot Floating Button -->
-<button id="chatbot-button" style="
-position: fixed; 
-bottom: 20px; 
-right: 20px; 
-background-color: #007bff; 
-color: white; 
-padding: 12px 16px; 
-border-radius: 50px; 
-font-size: 16px;
-font-weight: bold;
-cursor: pointer;
-box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-border: none;
-transition: background 0.3s ease;">
-💬 Chat with us!
-</button>
+ <!-- ✅ Floating Chat Button -->
+<button id="chatbot-button">💬 Chat with us!</button>
 
 <!-- ✅ Chat Window -->
-<div id="chat-window" style="
-display: none; 
-position: fixed; 
-bottom: 80px; 
-right: 20px; 
-width: 350px; 
-height: 450px; 
-background: white; 
-border-radius: 12px; 
-box-shadow: 0 8px 16px rgba(0,0,0,0.15);
-overflow: hidden;
-border: 1px solid #ddd;
-font-family: Arial, sans-serif;">
+<div id="chat-window">
+    <!-- ✅ Chat Header -->
+    <div id="chat-header">
+        Chat with AI
+        <div>
+            <button id="minimize-chat">−</button>
+            <button id="close-chat">×</button>
+        </div>
+    </div>
 
-<!-- ✅ Chat Header -->
-<div style="
-    background: #007bff; 
-    color: white; 
-    padding: 12px; 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    font-size: 16px;
-    font-weight: bold;
-    border-top-left-radius: 12px; 
-    border-top-right-radius: 12px;">
-    Chat with AI
-    <div>
-        <button id="minimize-chat" style="
-            background: none; 
-            border: none; 
-            color: white; 
-            font-size: 18px; 
-            cursor: pointer;
-            margin-right: 5px;">−</button>
-        <button id="close-chat" style="
-            background: none; 
-            border: none; 
-            color: white; 
-            font-size: 18px; 
-            cursor: pointer;">×</button>
+    <!-- ✅ Chat Messages -->
+    <div id="chat-messages"></div>
+
+    <!-- ✅ Chat Input -->
+    <div id="chat-input-container">
+        <textarea id="chat-input" rows="1" placeholder="Type your message..."></textarea>
+        <button id="chat-send-button">Send</button>
     </div>
 </div>
 
-<!-- ✅ Chat Messages -->
-<div id="chat-messages" style="
-    padding: 12px; 
-    height: 330px; 
-    overflow-y: auto; 
-    background: #f8f9fa; 
-    border-bottom: 1px solid #ddd;"></div>
-
-<!-- ✅ Chat Input & Send Button -->
-<div style="
-    display: flex; 
-    align-items: center; 
-    padding: 8px; 
-    background: white;">
-    <input type="text" id="chat-input" autocomplete="off" placeholder="Type a message..." style="
-        flex-grow: 1; 
-        padding: 10px; 
-        border: 1px solid #ccc; 
-        border-radius: 6px;
-        font-size: 14px;
-        outline: none;">
-    <button id="chat-send-button" style="
-        background: #007bff; 
-        color: white; 
-        border: none; 
-        padding: 10px 15px; 
-        margin-left: 8px; 
-        border-radius: 6px; 
-        cursor: pointer;
-        font-size: 14px;
-        font-weight: bold;
-        transition: background 0.3s ease;">
-        Send
-    </button>
-</div>
-</div>
-
- <!-- ✅ Chatbot JavaScript -->
+<!-- ✅ Chatbot JavaScript -->
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const chatbotButton = document.getElementById("chatbot-button");
-        const chatWindow = document.getElementById("chat-window");
-        const chatMessages = document.getElementById("chat-messages");
-        const chatInput = document.getElementById("chat-input");
-        const minimizeChat = document.getElementById("minimize-chat");
-        const closeChat = document.getElementById("close-chat");
-    
-        // ✅ Auto-Show Chatbot When User is Active for 10 Seconds
-        setTimeout(() => {
-            chatWindow.style.display = "block";
-        
-            // ✅ Show Welcome Message if Not Already Shown
-            if (!sessionStorage.getItem("welcomeMessage")) {
-                displayMessage("Chatbot", "Hello! How can I assist you today?");
-                sessionStorage.setItem("welcomeMessage", "shown"); // ✅ Prevent duplicate message
-            }
-        }, 10000); // Adjust time delay if needed
-        
-        // ✅ Toggle Chat Window
-        chatbotButton.addEventListener("click", function() {
-            if (chatWindow.style.display === "none" || chatWindow.style.display === "") {
-                chatWindow.style.display = "block";
-                chatbotButton.style.display = "none";
-                
-                // ✅ Load chat history only if it hasn't already loaded
-                if (!chatWindow.dataset.loaded) {
-                    loadChatHistory();
-                    chatWindow.dataset.loaded = "true"; // Mark as loaded
-                }
-            }
-        });
-    
-        // ✅ Minimize Chat Window
-        minimizeChat.addEventListener("click", function() {
-            chatWindow.style.display = "none";
-            chatbotButton.style.display = "block";
-        });
-    
-        // ✅ Close Chat Completely
-        closeChat.addEventListener("click", function() {
-            chatWindow.style.display = "none";
-        
-            // ✅ Completely wipe chat history
-            chatMessages.innerHTML = "";
-            localStorage.removeItem("chatHistory"); 
-            sessionStorage.removeItem("welcomeMessage"); // Also reset the welcome message for next session
-        });
-    
-        // ✅ Load chat history only once per session
-        function loadChatHistory() {
-            chatMessages.innerHTML = ""; // Clear chat messages
-            let messages = JSON.parse(localStorage.getItem("chatHistory")) || [];
-        
-            // ✅ Check if the welcome message has already been sent in this session
-            if (!sessionStorage.getItem("welcomeMessage") && messages.length === 0) {
-                displayMessage("Chatbot", "Hello! How can I assist you today?");
-                sessionStorage.setItem("welcomeMessage", "shown"); // Prevent duplicate messages
-            }
-        
-            messages.forEach(msg => displayMessage(msg.sender, msg.text));
-        }        
-        // ✅ Send Message on Enter
-        chatInput.addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
-                sendMessage();
-            }
-        });
-    
-        // ✅ Function to Send Messages
-        function sendMessage() {
-            const userMessage = chatInput.value.trim();
-            if (!userMessage) return;
-    
-            displayMessage("You", userMessage);
-    
-            fetch("http://127.0.0.1:5000/chat", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message: userMessage })
-            })
-            .then(response => response.json())
-            .then(data => {
-                displayMessage("Chatbot", data.reply);
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                displayMessage("Chatbot", "Oops! Something went wrong.");
-            });
-    
-            chatInput.value = "";
-        }
-    
-        // ✅ Function to Display Messages
-        function displayMessage(sender, message) {
-            const msgDiv = document.createElement("div");
-    
-            if (sender === "Chatbot") {
-                msgDiv.style.background = "#f1f1f1";
-                msgDiv.style.color = "#333";
-                msgDiv.style.borderRadius = "8px";
-                msgDiv.style.padding = "8px";
-                msgDiv.style.margin = "5px 0";
-                msgDiv.style.textAlign = "left";
-            } else {
-                msgDiv.style.background = "#007bff";
-                msgDiv.style.color = "white";
-                msgDiv.style.borderRadius = "8px";
-                msgDiv.style.padding = "8px";
-                msgDiv.style.margin = "5px 0";
-                msgDiv.style.textAlign = "right";
-            }
-    
-            msgDiv.textContent = `${sender}: ${message}`;
-            chatMessages.appendChild(msgDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+document.addEventListener("DOMContentLoaded", function () {
+    const chatbotButton = document.getElementById("chatbot-button");
+    const chatWindow = document.getElementById("chat-window");
+    const chatMessages = document.getElementById("chat-messages");
+    const chatInput = document.getElementById("chat-input");
+    const sendButton = document.getElementById("chat-send-button");
+    const minimizeChat = document.getElementById("minimize-chat");
+    const closeChat = document.getElementById("close-chat");
+
+    // ✅ Show chat window when button is clicked
+    chatbotButton.addEventListener("click", function () {
+        chatWindow.style.display = "block";
+        chatbotButton.style.display = "none";
+    });
+
+    // ✅ Minimize chat
+    minimizeChat.addEventListener("click", function () {
+        chatWindow.style.display = "none";
+        chatbotButton.style.display = "block";
+    });
+
+    // ✅ Close chat and clear messages
+    closeChat.addEventListener("click", function () {
+        chatWindow.style.display = "none";
+        chatbotButton.style.display = "block";
+        chatMessages.innerHTML = "";
+    });
+
+    // ✅ Send message on Enter key press
+    chatInput.addEventListener("keypress", function (event) {
+        if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault();
+            sendMessage();
         }
     });
-    
-        // ✅ Load Chat History
-        function loadChatHistory() {
-            chatMessages.innerHTML = ""; // Clear chat messages
-            let messages = JSON.parse(localStorage.getItem("chatHistory")) || [];
-        
-            // ✅ Fix: Ensure the welcome message appears only once per session
-            if (!sessionStorage.getItem("welcomeMessage")) {
-                displayMessage("Chatbot", "Hello! How can I assist you today?");
-                sessionStorage.setItem("welcomeMessage", "shown"); // ✅ Ensures it’s only shown once per session
-            }
 
-            messages.forEach(msg => displayMessage(msg.sender, msg.text));
-        }
-    </script>
+    // ✅ Send message on button click
+    sendButton.addEventListener("click", function () {
+        sendMessage();
+    });
+
+    // ✅ Function to send messages
+    function sendMessage() {
+        const userMessage = chatInput.value.trim();
+        if (!userMessage) return;
+
+        displayMessage("You", userMessage, "user");
+
+        fetch("http://127.0.0.1:8000/api/chat/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: userMessage })
+        })
+        .then(response => response.json())
+        .then(data => {
+            displayMessage("Chatbot", data.reply, "chatbot");
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            displayMessage("Chatbot", "Oops! Something went wrong.", "chatbot");
+        });
+
+        chatInput.value = "";
+    }
+
+    // ✅ Function to display messages in chat
+    function displayMessage(sender, message, type) {
+        const msgDiv = document.createElement("div");
+        msgDiv.classList.add(type === "user" ? "user-message" : "chatbot-message");
+        msgDiv.innerHTML = `<strong>${sender}:</strong> ${message}`;
+        chatMessages.appendChild(msgDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+});
+</script>
+
+<!-- ✅ Chat UI Styles -->
+<style>
+/* ✅ Floating Chat Button */
+#chatbot-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #007bff;
+    color: white;
+    padding: 12px 16px;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    border: none;
+    transition: background 0.3s ease;
+}
+
+/* ✅ Chat Window */
+#chat-window {
+    display: none;
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 350px;
+    height: 500px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    border: 1px solid #ddd;
+    font-family: Arial, sans-serif;
+}
+
+/* ✅ Chat Header */
+#chat-header {
+    background: #007bff;
+    color: white;
+    padding: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 16px;
+    font-weight: bold;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+
+/* ✅ Chat Messages */
+#chat-messages {
+    padding: 12px;
+    height: 380px;
+    overflow-y: auto;
+    background: #f8f9fa;
+    border-bottom: 1px solid #ddd;
+}
+
+/* ✅ Chat Input & Send Button */
+#chat-input-container {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    background: white;
+}
+
+#chat-input {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    min-height: 40px;
+    max-height: 120px;
+    resize: vertical;
+}
+
+#chat-send-button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    margin-left: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: background 0.3s ease;
+}
+
+/* ✅ Chat Messages Styling */
+.chatbot-message {
+    background-color: #f1f1f1;
+    color: #333;
+    border-radius: 8px;
+    padding: 8px;
+    margin: 5px 0;
+    text-align: left;
+    width: fit-content;
+    max-width: 70%;
+}
+
+.user-message {
+    background-color: #007bff;
+    color: white;
+    border-radius: 8px;
+    padding: 8px;
+    margin: 5px 0;
+    text-align: right;
+    width: fit-content;
+    max-width: 70%;
+}
+</style>
 {% endblock %}

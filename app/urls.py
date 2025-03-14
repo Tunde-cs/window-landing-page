@@ -1,10 +1,8 @@
-from django.urls import path
+from django.urls import path,include
 from django.views.generic import TemplateView
 from . import views
 from .views import home, submit_lead, request_quote
 from .views import about_page, services_page, contact_page, terms_of_use_page, privacy_policy
-
-
 
 
 urlpatterns = [
@@ -27,7 +25,7 @@ urlpatterns = [
     path("projects/", views.projects_view, name="projects"),
     path("reports/", views.reports_view, name="reports"),
     
-    
+    path("api/", include("chatbot.urls")),  # ✅ Now chatbot API is accessible via /api/chat/
 
     # Optional: Generic landing page route
     path("", TemplateView.as_view(template_name="pages/index.html"), name="landing_page"),

@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "app",
     "django_extensions",
+    "chatbot",  # ✅ Register chatbot app
 ]
 
 MIDDLEWARE = [
@@ -184,3 +185,7 @@ CSFR_FAILURE_VIEW = "app.views.csrf_failure"  # Optional: custom CSRF failure vi
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+# Add this at the bottom of settings.py
+CORS_ALLOW_ALL_ORIGINS = True  # Allow frontend requests
+CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:8000"]  # Add your actual domain if deployed

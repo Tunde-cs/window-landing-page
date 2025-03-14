@@ -49,9 +49,6 @@ urlpatterns = [
     path("", views.HOME, name="home"),  # Landing page
     path("useradmin/", views.USERADMIN, name="useradmin"),  # Admin dashboard
     
-
-    
-
     # ✅ Authentication
     path("signup/", views.signup, name="signup"),  # Signup page
     path("logout/", logout_view, name="logout"),  # ✅ Correct Logout Route
