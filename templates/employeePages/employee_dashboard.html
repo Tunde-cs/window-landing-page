@@ -99,6 +99,7 @@
             </div>
         </div>
 
+        
         <!-- ✅ Monthly Revenue & Conversion Rate -->
         <div class="row">
             <div class="col-lg-6 col-md-6 mb-4">
@@ -119,7 +120,44 @@
                 </div>
             </div>
         </div>
+        <!-- ✅ Send Email Form (Employee Dashboard) -->
+<div class="card">
+    <div class="card-header bg-dark text-white">
+        <h3 class="card-title"><i class="fas fa-envelope"></i> Send Email</h3>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="{% url 'send_email' %}">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="email" class="form-label">Recipient Email:</label>
+                <input type="email" name="email" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="subject" class="form-label">Subject:</label>
+                <input type="text" name="subject" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="message" class="form-label">Message:</label>
+                <textarea name="message" class="form-control" rows="4" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Send Email</button>
+        </form>
+    </div>
+</div>
 
+<!-- ✅ Display Success/Error Messages -->
+{% if messages %}
+    <div class="container">
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-danger{% endif %} alert-dismissible fade show mt-3" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
         
     <!-- ✅ Sales Overview Chart -->
 <div class="card">

@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import Lead, Order, Project, Quote  # No need to add 'app'
-
+from django.core.mail import send_mail
+from django.conf import settings
 
 # Register your models here.
 @admin.register(Order)
@@ -22,6 +23,27 @@ class QuoteAdmin(admin.ModelAdmin):
     list_display = ("name", "email", "phone", "created_at")
     search_fields = ("name", "email")
 
+    # ✅ Add custom admin action
+    actions = ["send_email"]
+
+    def send_email(self, request, queryset):
+        """Send email to selected users in Admin"""
+        sent_count = 0  # ✅ Track emails sent
+        for quote in queryset:
+            if quote.email:  # ✅ Ensure email is not empty
+                send_mail(
+                    subject="Follow-Up on Your Quote Request",
+                    message=f"Dear {quote.name},\n\nWe are following up on your recent quote request. Let us know how we can assist you further.",
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[quote.email],
+                    fail_silently=True,
+                )
+                sent_count += 1  # ✅ Increment count if email sent
+
+        self.message_user(request, f"✅ {sent_count} email(s) sent successfully!")
+
+    send_email.short_description = "📩 Send follow-up email to selected users"
+    
 
 @admin.register(Lead)
 class LeadAdmin(admin.ModelAdmin):
@@ -41,3 +63,4 @@ class LeadAdmin(admin.ModelAdmin):
         "created_at",
     )  # Added 'service' for filtering by type of service
     search_fields = ("name", "email", "phone", "service")  # Remains unchanged
+

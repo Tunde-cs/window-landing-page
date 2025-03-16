@@ -7,6 +7,40 @@ from django.contrib.auth.forms import UserCreationForm
 from app.models import UserProfile  # ✅ Ensure UserProfile model exists
 
 
+# ✅ Custom User Registration Form
+class UserCreateForm(UserCreationForm):
+    first_name = forms.CharField(
+        max_length=30,
+        required=True,
+        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "First Name"})
+    )
+    last_name = forms.CharField(
+        max_length=30,
+        required=True,
+        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Last Name"})
+    )
+    email = forms.EmailField(
+        max_length=254,
+        required=True,
+        widget=forms.EmailInput(attrs={"class": "form-control", "placeholder": "Email Address"})
+    )
+
+    class Meta:
+        model = User
+        fields = ["first_name", "last_name", "username", "email", "password1", "password2"]
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.is_staff = True  # ✅ Mark as staff so they can access the admin page
+
+        if commit:
+            user.save()
+            # ✅ Ensure the "Employees" group exists before adding
+            employee_group, created = Group.objects.get_or_create(name="Employees")
+            user.groups.add(employee_group)  # ✅ Add user to "Employees" group
+
+        return user
+    
 class LeadForm(forms.ModelForm):
     class Meta:
         model = Lead
@@ -69,38 +103,5 @@ class OrderForm(forms.ModelForm):
         model = Order
         fields = ["date", "amount", "status"]  # Ensure these fields match the model
 
-# ✅ Custom User Registration Form
-class UserCreateForm(UserCreationForm):
-    first_name = forms.CharField(
-        max_length=30,
-        required=True,
-        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "First Name"})
-    )
-    last_name = forms.CharField(
-        max_length=30,
-        required=True,
-        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Last Name"})
-    )
-    email = forms.EmailField(
-        max_length=254,
-        required=True,
-        widget=forms.EmailInput(attrs={"class": "form-control", "placeholder": "Email Address"})
-    )
 
-    class Meta:
-        model = User
-        fields = ["first_name", "last_name", "username", "email", "password1", "password2"]
-
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        user.is_staff = True  # ✅ Mark as staff so they can access the admin page
-
-        if commit:
-            user.save()
-            # ✅ Ensure the "Employees" group exists before adding
-            employee_group, created = Group.objects.get_or_create(name="Employees")
-            user.groups.add(employee_group)  # ✅ Add user to "Employees" group
-        
-        return user
-    
     

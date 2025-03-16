@@ -7,7 +7,6 @@ from django.db.models.functions import ExtractMonth
 from django.shortcuts import redirect, render
 from django.utils.timezone import now
 from django.views.decorators.csrf import csrf_protect
-from app.models import Lead, Message, Order, Project, Quote, UserCreateForm
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages  # Import the messages framework
 from django.contrib.auth.decorators import login_required
@@ -32,6 +31,11 @@ from django.http import HttpResponse
 from app.forms import UserCreateForm  # ✅ Import from app/forms.py
 from django.template.response import TemplateResponse  # ✅ Import TemplateResponse
 from django.db.models.functions import ExtractMonth
+from django.contrib.auth.decorators import user_passes_test
+from app.models import Lead, Message, Order, Project, Quote  # ✅ Models only
+from app.forms import UserCreateForm  # ✅ Import UserCreateForm from forms.py
+from django.contrib.auth.decorators import user_passes_test
+from django.conf import settings
 
 
 # Base Views
@@ -41,6 +45,12 @@ def BASE(request):
 
 def ADMINBASE(request):
     return render(request, "base/adminbase.html")
+
+
+def superuser_required(view_func):
+    return user_passes_test(lambda u: u.is_superuser, login_url='/')(
+        view_func
+    )
 
 
 # Home View
@@ -86,24 +96,28 @@ def send_quote_email(to_email, subject, message):
     )
 
 
-
-
 @csrf_protect
 @login_required
 def USERADMIN(request):
-    """Redirects Admins to Admin Dashboard & Employees to Employee Dashboard"""
+    """Ensure 'admin' goes to Admin Dashboard, SuperAdmin to /admin/, and employees to Employee Dashboard"""
 
-    user = request.user  # ✅ Define user first
+    user = request.user  # ✅ Get the logged-in user
 
-    if user.is_superuser:  
-        return admin_dashboard(request)  # ✅ Send Admins to Admin Dashboard
+    # ✅ If SuperAdmin logs in, redirect them to Django Admin
+    if user.username == "SuperAdmin" and user.is_superuser:
+        return redirect("/admin/")
 
-    elif user.groups.filter(name="Employees").exists():
-        return employee_dashboard(request)  # ✅ Send Employees to Employee Dashboard
+    # ✅ If 'admin' logs in, send them to Admin Dashboard
+    elif user.username == "admin" and user.is_staff and not user.is_superuser:
+        return admin_dashboard(request)  # ✅ Redirect `admin` to `adminhome.html`
 
-    else:
-        return redirect("login")  # 🚨 Unauthorized users redirected
+    # ✅ If any other employee (like ediomi12) logs in, send them to Employee Dashboard
+    elif user.is_authenticated and not user.is_superuser:
+        login(request, user)  # ✅ Ensure user session is active
+        return employee_dashboard(request)  # ✅ Redirect to employee dashboard
 
+    # ❌ If unauthorized user, send to login page
+    return redirect("/login/")
 
 def admin_dashboard(request):
     """Admin Dashboard View - Displays key metrics, recent leads, and sales data."""
@@ -112,11 +126,11 @@ def admin_dashboard(request):
     context = {
         "user": user,
         "request": request,
-        "unread_messages": 3,  # Example value
+        "unread_messages": Message.objects.filter(is_read=False).count(),
     }
     
     try:
-        # ✅ Fetch admin-related data
+        # ✅ Fetch main admin-related metrics
         new_leads_count = Lead.objects.filter(status="new").count()
         pending_orders_count = Order.objects.filter(status="pending").count()
         completed_projects_count = Order.objects.filter(status="completed").count()
@@ -131,11 +145,11 @@ def admin_dashboard(request):
         sales_completed = Order.objects.filter(status="completed").count()
         message_count = Message.objects.filter(is_read=False).count()
 
-        # ✅ Conversion Rate Fix
+        # ✅ Conversion Rate Calculation
         total_leads = Lead.objects.count()
         conversion_rate = round((sales_completed / total_leads) * 100, 2) if total_leads > 0 else 0
 
-        # ✅ Fetch Sales Data for ALL 12 Months
+        # ✅ Fetch Monthly Sales Data
         raw_sales_data = (
             Order.objects.annotate(month=ExtractMonth("date"))
             .values("month")
@@ -143,25 +157,32 @@ def admin_dashboard(request):
             .order_by("month")
         )
 
-        # ✅ Ensure ALL 12 Months are Present
-        sales_data_dict = {data["month"]: float(data["total"]) for data in raw_sales_data if data["month"]}
+        # ✅ Fetch Monthly Quote Requests Data
+        raw_quote_data = (
+            Quote.objects.annotate(month=ExtractMonth("created_at"))
+            .values("month")
+            .annotate(total=Count("id"))  # Count number of quote requests
+            .order_by("month")
+        )
 
-        # ✅ Create Full 12-Month Structure
+        # ✅ Ensure all 12 months have data
+        sales_data_dict = {data["month"]: float(data["total"]) for data in raw_sales_data if data["month"]}
+        quote_data_dict = {data["month"]: int(data["total"]) for data in raw_quote_data if data["month"]}
+
+        # ✅ Create the 12-month structured lists
         sales_chart_labels = []
         sales_chart_data = []
+        quote_chart_data = []
 
         for month in range(1, 13):  # Loop through all 12 months
             sales_chart_labels.append(month_name[month])  # Convert number to month name
             sales_chart_data.append(sales_data_dict.get(month, 0))  # Get sales or default to 0
+            quote_chart_data.append(quote_data_dict.get(month, 0))  # Get quote requests or default to 0
 
         # ✅ Convert Data to JSON for Frontend
-        sales_chart_labels_json = json.dumps(sales_chart_labels)
-        sales_chart_data_json = json.dumps(sales_chart_data)
-
-        # ✅ Pass Data to Frontend
         context.update({
             "metrics": {
-                "new_leads_count": new_leads_count,
+                "new_leads_count": new_leads_count + total_quotes,  # Include quotes as leads
                 "pending_orders_count": pending_orders_count,
                 "completed_projects_count": completed_projects_count,
                 "monthly_revenue": monthly_revenue,
@@ -171,8 +192,9 @@ def admin_dashboard(request):
                 "conversion_rate": conversion_rate,
                 "message_count": message_count,
             },
-            "sales_chart_labels": sales_chart_labels_json,
-            "sales_chart_data": sales_chart_data_json,
+            "sales_chart_labels": json.dumps(sales_chart_labels),
+            "sales_chart_data": json.dumps(sales_chart_data),
+            "quote_chart_data": json.dumps(quote_chart_data),
         })
 
     except Exception as e:
@@ -191,17 +213,25 @@ def admin_dashboard(request):
             },
             "sales_chart_labels": json.dumps(["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]),
             "sales_chart_data": json.dumps([0] * 12),
+            "quote_chart_data": json.dumps([0] * 12),
         })
 
-    return TemplateResponse(request, "adminPages/adminhome.html", context)  # ✅ Ensures proper context handling
+    return TemplateResponse(request, "adminPages/adminhome.html", context)
 
 
 def employee_dashboard(request):
-    """Employee Dashboard View - Uses same metrics as Admin Dashboard"""
-    
-    user = request.user
+    """Ensure employees see their own profile picture & details"""
+
+    user = request.user  # ✅ Get the logged-in user
+
+    # ✅ Ensure only employees (not Admin) access this page
+    if user.username == "admin":
+        return redirect("admin_dashboard")  # ✅ Redirect `admin` to Admin Dashboard
+
+    # ✅ If user is an employee, show Employee Dashboard
     context = {
-        "user": user,
+        "user": user,  # ✅ Ensure user data is passed
+        "profile_picture": user.userprofile.profile_picture.url if hasattr(user, "userprofile") else "/static/default-profile.png",  
         "request": request,
     }
 
@@ -698,4 +728,29 @@ def delete_quote(request, quote_id):
             messages.error(request, f"Error deleting quote: {e}")
         return redirect("adminquotes")
 
+@login_required
+def send_email(request):
+    """Send emails from the /useradmin/ dashboard with a confirmation message."""
+    if request.method == "POST":
+        email = request.POST.get("email")
+        subject = request.POST.get("subject")
+        message = request.POST.get("message")
 
+        if email and subject and message:
+            try:
+                send_mail(
+                    subject=subject,
+                    message=message,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[email],
+                    fail_silently=False,  # Set to False to see errors
+                )
+                messages.success(request, f"✅ Email sent successfully to {email}!")
+            except Exception as e:
+                messages.error(request, f"❌ Error sending email: {str(e)}")
+        else:
+            messages.error(request, "❌ All fields are required!")
+
+        return redirect("useradmin")  # Redirect back to the dashboard
+
+    return render(request, "adminPages/adminhome.html")  # Ensure the correct template is used

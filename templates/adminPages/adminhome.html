@@ -102,7 +102,6 @@
                 </a>
             </div>
         </div>
-
         <!-- ✅ Monthly Revenue & Conversion Rate -->
         <div class="row">
             <div class="col-lg-6 col-md-6 mb-4">
@@ -124,14 +123,53 @@
             </div>
         </div>
 
-        
-    <!-- ✅ Sales Overview Chart -->
+        <!-- ✅ Send Email Form (Admin Dashboard) -->
 <div class="card">
     <div class="card-header bg-dark text-white">
-        <h3 class="card-title"><i class="fas fa-chart-bar"></i> Sales Overview</h3>
+        <h3 class="card-title"><i class="fas fa-envelope"></i> Send Email</h3>
     </div>
     <div class="card-body">
-        <!-- ✅ Ensure this ID Matches the JavaScript -->
+        <form method="POST" action="{% url 'send_email' %}">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="email" class="form-label">Recipient Email:</label>
+                <input type="email" name="email" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="subject" class="form-label">Subject:</label>
+                <input type="text" name="subject" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="message" class="form-label">Message:</label>
+                <textarea name="message" class="form-control" rows="4" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Send Email</button>
+        </form>
+    </div>
+</div>
+
+<!-- ✅ Display Success/Error Messages -->
+{% if messages %}
+    <div class="container">
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-danger{% endif %} alert-dismissible fade show mt-3" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+        
+    <!-- ✅ Sales Overview Chart -->
+<!-- ✅ Sales & Quote Requests Overview Chart -->
+<div class="card">
+    <div class="card-header bg-dark text-white">
+        <h3 class="card-title"><i class="fas fa-chart-bar"></i> Sales & Quote Requests Overview</h3>
+    </div>
+    <div class="card-body">
         <canvas id="salesChart" style="width: 100%; height: 400px;"></canvas>
     </div>
 </div>
@@ -144,28 +182,39 @@ document.addEventListener("DOMContentLoaded", function () {
     // ✅ Fetch Data from Django
     const salesChartLabels = JSON.parse('{{ sales_chart_labels|safe }}');
     const salesChartData = JSON.parse('{{ sales_chart_data|safe }}');
+    const quoteChartData = JSON.parse('{{ quote_chart_data|safe }}');  // ✅ New Quote Data
 
     console.log("✅ Sales Chart Labels:", salesChartLabels);
     console.log("✅ Sales Chart Data:", salesChartData);
+    console.log("✅ Quote Chart Data:", quoteChartData);
 
     if (salesChartLabels.length === 0 || salesChartData.length === 0) {
         console.warn("⚠️ No sales data available.");
         return;
     }
 
-    // ✅ Render Chart.js Sales Chart
+    // ✅ Render Chart.js Sales & Quote Requests Chart
     const ctx = document.getElementById("salesChart").getContext("2d");
     new Chart(ctx, {
         type: "bar",
         data: {
             labels: salesChartLabels,
-            datasets: [{
-                label: "Monthly Sales",
-                data: salesChartData,
-                backgroundColor: "rgba(75, 192, 192, 0.5)",  // Better color
-                borderColor: "rgba(75, 192, 192, 1)",
-                borderWidth: 2
-            }]
+            datasets: [
+                {
+                    label: "Monthly Sales ($)",
+                    data: salesChartData,
+                    backgroundColor: "rgba(75, 192, 192, 0.5)",  
+                    borderColor: "rgba(75, 192, 192, 1)",
+                    borderWidth: 2
+                },
+                {
+                    label: "Quote Requests",
+                    data: quoteChartData,  // ✅ Include Quote Requests
+                    backgroundColor: "rgba(255, 99, 132, 0.5)",  
+                    borderColor: "rgba(255, 99, 132, 1)",
+                    borderWidth: 2
+                }
+            ]
         },
         options: {
             responsive: true,
@@ -173,7 +222,7 @@ document.addEventListener("DOMContentLoaded", function () {
             scales: {
                 y: {
                     beginAtZero: true,
-                    suggestedMax: Math.max(...salesChartData) * 1.2,  // Scale for better balance
+                    suggestedMax: Math.max(...salesChartData, ...quoteChartData) * 1.2,  
                 }
             }
         }

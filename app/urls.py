@@ -9,7 +9,7 @@ urlpatterns = [
     # Core Pages
     path("", home, name="index"),  # Route for the landing page
     path("request-quote/", request_quote, name="request_quote"),
-    path("quote-success/", views.quote_success, name="quote-success"),  # Success page
+    path("quote-success/", views.quote_success, name="quote_success"),  # Success page
 
     # ✅ Public Pages (with correct function names)
     path("", views.home, name="home"),  # Landing page

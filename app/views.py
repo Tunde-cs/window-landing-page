@@ -1,38 +1,32 @@
 import logging
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
 from django.core.mail import send_mail
 from django.db import IntegrityError
 from django.db.models import Count, Sum
 from django.db.models.functions import ExtractMonth
-from django.http import JsonResponse
-from django.shortcuts import get_object_or_404, redirect, render
+from django.http import JsonResponse, HttpResponseRedirect
 from django.utils.timezone import now
-from django.views.decorators.csrf import csrf_exempt, csrf_protect  # Group csrf imports
-from django.http import HttpResponseRedirect
-from app.forms import OrderForm  # If OrderForm is used
-from app.models import Lead, Order, Quote
+from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.conf import settings
-from django.contrib.auth.models import User
-from django.contrib.auth import login
-from django.contrib.auth.models import Group
-from .forms import UserCreateForm  # ✅ Use your existing form
+from django.contrib.auth.models import User  # ✅ Keep this for user-related functions
 
-
-from .forms import (
+# ✅ Import Forms (Keep only if used in views)
+from app.forms import (
+    OrderForm,
+    UserCreateForm,  # ✅ This replaces the built-in UserCreationForm
     LeadForm,
-    QuoteForm,  # Ensure forms are used in your views
+    QuoteForm,
     ReplyMessageForm,
 )
 
-# Local app imports
-from .models import Lead, Message, Order, Project, Quote  # Ensure no duplicates
+# ✅ Import Models (Avoid duplicates)
+from app.models import Lead, Message, Order, Project, Quote  # ✅ Keep only once
 
 # Initialize logging
 logger = logging.getLogger(__name__)
@@ -209,9 +203,6 @@ def privacy_policy(request):
     return render(request, "pages/privacy_policy.html")
 
 
-@csrf_protect
-def quote_success(request):
-    return render(request, "pages/quote_success.html")  # Adjust path if necessary
 
 
 @csrf_protect
@@ -287,20 +278,35 @@ def submit_lead(request):
 
     return render(request, "pages/index.html")
 
-
+@csrf_protect
 def request_quote(request):
     if request.method == "POST":
         form = QuoteForm(request.POST)
         if form.is_valid():
-            form.save()
+            quote = form.save()
+
+            # ✅ Send confirmation email
+            send_mail(
+                subject="Your Quote Request Has Been Received!",
+                message=f"Dear {quote.name},\n\nThank you for requesting a quote. Our team will contact you soon.",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[quote.email],
+                fail_silently=True,  # Prevent errors from crashing the form
+            )
+
             messages.success(request, "Your quote request has been submitted!")
-            return redirect("home")  # Redirect to home page after submission
+            return redirect("quote_success")
         else:
             messages.error(request, "There was an error submitting your request.")
+            logger.error("Quote form submission failed: %s", form.errors)
     else:
         form = QuoteForm()
 
     return render(request, "pages/request_quote.html", {"form": form})
+
+@csrf_protect
+def quote_success(request):
+    return render(request, "pages/quote_success.html")  # Adjust path if necessary
 
 
 # Admin Logout

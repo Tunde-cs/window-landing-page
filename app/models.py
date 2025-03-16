@@ -9,39 +9,6 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 
-# User Registration Form
-class UserCreateForm(UserCreationForm):
-    email = forms.EmailField(
-        required=True,
-        label="Email",
-        error_messages={"exists": "This email Already Exists"},
-    )
-
-    class Meta:
-        model = User
-        fields = ("username", "email", "password1", "password2")
-
-    def __init__(self, *args, **kwargs):
-        super(UserCreateForm, self).__init__(*args, **kwargs)
-
-        self.fields["username"].widget.attrs["placeholder"] = "User Name"
-        self.fields["email"].widget.attrs["placeholder"] = "Email"
-        self.fields["password1"].widget.attrs["placeholder"] = "Password"
-        self.fields["password2"].widget.attrs["placeholder"] = "Confirm Password"
-
-    def save(self, commit=True):
-        user = super(UserCreateForm, self).save(commit=False)
-        user.email = self.cleaned_data["email"]
-        if commit:
-            user.save()
-        return user
-
-    def clean_email(self):
-        if User.objects.filter(email=self.cleaned_data["email"]).exists():
-            raise forms.ValidationError(self.fields["email"].error_messages["exists"])
-        return self.cleaned_data["email"]
-
-
 class Order(models.Model):
     STATUS_CHOICES = (
         ("pending", "Pending"),
@@ -94,23 +61,17 @@ class Lead(models.Model):
         ("converted", "Converted"),
     )
 
-    name = models.CharField(
-        max_length=100, blank=False, validators=[MinLengthValidator(2)]
-    )
+    name = models.CharField(max_length=100, blank=False, validators=[MinLengthValidator(2)])
     email = models.EmailField(blank=False)
     phone = models.CharField(
         max_length=15,
         blank=True,
         null=True,
         validators=[
-            RegexValidator(
-                r"^\+?\d{9,15}$", "Enter a valid phone number with 9 to 15 digits."
-            )
+            RegexValidator(r"^\+?\d{9,15}$", "Enter a valid phone number with 9 to 15 digits.")
         ],
     )
-    service = models.CharField(
-        max_length=100, choices=SERVICES, default="window_replacement"
-    )
+    service = models.CharField(max_length=100, choices=SERVICES, default="window_replacement")
     status = models.CharField(max_length=50, choices=STATUSES, default="new")
     created_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
@@ -118,11 +79,10 @@ class Lead(models.Model):
     def __str__(self):
         return f"{self.name} ({self.email})"
 
-
-class Meta:
-    ordering = ["-created_at"]
-    verbose_name = "Lead"
-    verbose_name_plural = "Leads"
+    class Meta:  # ✅ Move `Meta` inside `Lead`
+        ordering = ["-created_at"]
+        verbose_name = "Lead"
+        verbose_name_plural = "Leads"
 
 
 class Message(models.Model):
@@ -158,26 +118,6 @@ class Message(models.Model):
 
     def __str__(self):
         return f"{self.subject} ({'Read' if self.is_read else 'Unread'})"
-
-
-class QuoteForm(forms.ModelForm):
-    class Meta:
-        model = Quote
-        fields = ["name", "email", "phone", "details"]  # Align with model
-        widgets = {
-            "name": forms.TextInput(
-                attrs={"class": "form-control", "placeholder": "Customer Name"}
-            ),
-            "email": forms.EmailInput(
-                attrs={"class": "form-control", "placeholder": "Customer Email"}
-            ),
-            "phone": forms.TextInput(
-                attrs={"class": "form-control", "placeholder": "Customer Phone"}
-            ),
-            "details": forms.Textarea(
-                attrs={"class": "form-control", "placeholder": "Enter details"}
-            ),
-        }
 
 
 class Customer(models.Model):

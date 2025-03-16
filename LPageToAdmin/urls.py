@@ -8,8 +8,10 @@ from LPageToAdmin.views import reply_message  # Ensure function is imported
 from .views import logout_view
 from LPageToAdmin.views import signup  # ✅ Import the correct signup view
 from LPageToAdmin.views import USERADMIN  # ✅ Make sure USERADMIN is properly imported
-from .views import USERADMIN, admin_dashboard, employee_dashboard  # ✅ Import necessary views
+from .views import admin_dashboard, employee_dashboard
 from django.conf import settings
+from django.contrib.auth.decorators import user_passes_test
+from .views import send_email  # Import the new function
 
 
 from . import views
@@ -39,16 +41,18 @@ from .views import (
     view_message,
 )
 
+
 urlpatterns = [
     # ✅ Django Admin Panel
     path("admin/", admin.site.urls),
-        
+            
     # ✅ Base Pages
     path("base/", views.BASE, name="base"),  # Base page
     path("adminpage/base/", views.ADMINBASE, name="adminbase"),  # Admin base
     path("", views.HOME, name="home"),  # Landing page
     path("useradmin/", views.USERADMIN, name="useradmin"),  # Admin dashboard
-    
+    path("useradmin/send-email/", send_email, name="send_email"),  # ✅ Add email send route
+        
     # ✅ Authentication
     path("signup/", views.signup, name="signup"),  # Signup page
     path("logout/", logout_view, name="logout"),  # ✅ Correct Logout Route
