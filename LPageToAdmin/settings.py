@@ -50,8 +50,14 @@ SECRET_KEY = env("SECRET_KEY", default="fallback-secret-key")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DEBUG", default=True)
 
-ALLOWED_HOSTS = ["127.0.0.1", "localhost","windowgeniusai.herokuapp.com", "www.windowgeniusai.com", "windowgeniusai.com"]
-
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "localhost",
+    "windowgeniusai.herokuapp.com",
+    "windowgeniusai-d6c9fb157af2.herokuapp.com",
+    "www.windowgeniusai.com",
+    "windowgeniusai.com",
+]
 
 # Application definition
 
