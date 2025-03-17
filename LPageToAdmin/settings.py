@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+    "whitenoise.runserver_nostatic",  # Ensure this is here
     "django.contrib.staticfiles",
     "app",
     "django_extensions",
