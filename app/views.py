@@ -15,6 +15,7 @@ from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.contrib.auth.models import User  # ✅ Keep this for user-related functions
+from .forms import YourForm  # Ensure you import your form
 
 # ✅ Import Forms (Keep only if used in views)
 from app.forms import (
@@ -82,6 +83,14 @@ def home(request):
 
     # For GET requests, render the landing page
     return render(request, "pages/index.html")
+
+# 🔹 ADD YOUR INDEX VIEW FUNCTION HERE
+def index(request):
+    """
+    Handles the main landing page and ensures the form is included in the context.
+    """
+    form = LeadForm()  # Create an instance of the form
+    return render(request, "pages/index.html", {"form": form})
 
 
 @csrf_protect

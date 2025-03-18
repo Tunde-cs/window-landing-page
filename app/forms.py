@@ -41,30 +41,13 @@ class UserCreateForm(UserCreationForm):
 
         return user
     
-class LeadForm(forms.ModelForm):
-    class Meta:
-        model = Lead
-        fields = ["name", "email", "phone"]  # Specify fields to include in the form
-
-    def clean_email(self):
-        email = self.cleaned_data.get("email")
-        if Lead.objects.filter(email=email).exists():
-            raise forms.ValidationError("This email has already been submitted.")
-        return email
-
-    def clean_phone(self):
-        phone = self.cleaned_data.get("phone")  # Fetch the phone field value
-        if not phone:  # If phone is empty or None, skip validation
-            return phone
-
-        if not phone.isdigit():
-            raise forms.ValidationError("Phone number must contain only digits.")
-
-        if len(phone) < 10:
-            raise forms.ValidationError("Phone number must be at least 10 digits long.")
-
-        return phone
-
+class LeadForm(forms.Form):  # Change from ModelForm to Form
+    email = forms.EmailField(widget=forms.EmailInput(attrs={
+        "class": "form-control form-control-lg",  # Matches your Bootstrap styling
+        "id": "email",  # Matches your HTML input field
+        "placeholder": "Email Address",  # User-friendly placeholder
+        "required": "required",  # Ensures the field is required
+    }))
 
 class QuoteForm(forms.ModelForm):
     class Meta:
