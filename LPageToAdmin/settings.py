@@ -72,9 +72,11 @@ INSTALLED_APPS = [
     "app",
     "django_extensions",
     "chatbot",  # ✅ Register chatbot app
+    "corsheaders",  # ✅ Register corsheaders
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware"
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",  # ✅ Add this for static files
     "django.contrib.sessions.middleware.SessionMiddleware",
