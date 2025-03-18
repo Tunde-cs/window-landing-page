@@ -15,7 +15,7 @@ from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.contrib.auth.models import User  # ✅ Keep this for user-related functions
-from .forms import YourForm  # Ensure you import your form
+from .forms import LeadForm 
 
 # ✅ Import Forms (Keep only if used in views)
 from app.forms import (
