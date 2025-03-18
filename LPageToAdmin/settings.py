@@ -37,18 +37,18 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True  # ✅ Keep TLS enabled
 EMAIL_USE_SSL = False  # ❌ Must be False if TLS is True
 
-EMAIL_HOST_USER = env("EMAIL_HOST_USER")  # ✅ Load from .env
-EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")  # ✅ Load from .env
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")  # ✅ Load from .env
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")  # ✅ Load from .env
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env("SECRET_KEY", default="fallback-secret-key")
+SECRET_KEY = os.environ.get("SECRET_KEY", "fallback-secret-key")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool("DEBUG", default=True)
+DEBUG = os.environ.get("DEBUG", "False") == "True"  # Ensures DEBUG is a boolean
 
 ALLOWED_HOSTS = [
     "127.0.0.1",
