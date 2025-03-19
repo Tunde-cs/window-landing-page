@@ -198,5 +198,21 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 # Add this at the bottom of settings.py
-CORS_ALLOW_ALL_ORIGINS = True  # Allow frontend requests
-CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:8000"]  # Add your actual domain if deployed
+CORS_ALLOW_ALL_ORIGINS = False  # ❌ Change this to False for security
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1:8000",  # Local development
+    "https://windowgeniusai.herokuapp.com",  # Production on Heroku
+    "https://windowgeniusai-d6c9fb157af2.herokuapp.com",  # Temporary Heroku domain
+    "https://www.windowgeniusai.com",  # Custom domain (if set up)
+    "https://windowgeniusai.com",  # Your actual deployed domain
+]
+
+CORS_ALLOW_CREDENTIALS = True  # ✅ Allow cookies & authentication if needed
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://127.0.0.1:8000",  # Local
+    "https://windowgeniusai.herokuapp.com",  # Heroku
+    "https://windowgeniusai-d6c9fb157af2.herokuapp.com",  # Temporary domain
+    "https://www.windowgeniusai.com",  # Custom domain
+    "https://windowgeniusai.com",  # Main domain
+]

@@ -40,56 +40,40 @@ def home(request):
     - Sends email confirmations
     - Displays success messages
     """
+    form = LeadForm()  # ✅ Create an empty form for GET requests
+
     if request.method == "POST":
-        # Handle form submission
-        name = request.POST.get("name")
-        email = request.POST.get("email")
-        phone = request.POST.get("phone")
-        message = request.POST.get("message")
+        form = LeadForm(request.POST)  # ✅ Bind form with submitted data
+        if form.is_valid():
+            try:
+                form.save()  # ✅ Save the form to the database
+            except Exception as e:
+                messages.error(request, "Failed to save your data. Please try again later.")
+                logger.error(f"Database error: {e}")
+                return render(request, "pages/index.html", {"form": form})
 
-        # Ensure all fields are populated
-        if not all([name, email, phone, message]):
-            messages.error(request, "Please fill out all fields.")
-            return render(request, "pages/index.html")
+            # Send email
+            try:
+                send_mail(
+                    subject="Quote Request Received",
+                    message=f"Thank you, {form.cleaned_data['name']}, for reaching out to us!",
+                    from_email="your-email@example.com",  # Replace with your email
+                    recipient_list=[form.cleaned_data['email']],
+                )
+            except Exception as e:
+                messages.error(
+                    request, "Failed to send confirmation email. Please try again later."
+                )
+                logger.error(f"Email error: {e}")
+                return render(request, "pages/index.html", {"form": form})
 
-        # Save to database
-        try:
-            Quote.objects.create(name=name, email=email, phone=phone, message=message)
-        except Exception as e:
-            messages.error(request, "Failed to save your data. Please try again later.")
-            print(f"Database error: {e}")
-            return render(request, "pages/index.html")
-
-        # Send email
-        try:
-            send_mail(
-                subject="Quote Request Received",
-                message=f"Thank you, {name}, for reaching out to us!",
-                from_email="your-email@example.com",  # Replace with your email
-                recipient_list=[email],
+            # Redirect back to the landing page with a success message
+            messages.success(
+                request, "Thank you for your request. We'll get back to you soon!"
             )
-        except Exception as e:
-            messages.error(
-                request, "Failed to send confirmation email. Please try again later."
-            )
-            print(f"Email error: {e}")
-            return render(request, "pages/index.html")
+            return redirect("home")
 
-        # Redirect back to the landing page with a success message
-        messages.success(
-            request, "Thank you for your request. We'll get back to you soon!"
-        )
-        return redirect("home")
-
-    # For GET requests, render the landing page
-    return render(request, "pages/index.html")
-
-# 🔹 ADD YOUR INDEX VIEW FUNCTION HERE
-def index(request):
-    """
-    Handles the main landing page and ensures the form is included in the context.
-    """
-    form = LeadForm()  # Create an instance of the form
+    # ✅ Always pass `form` in the context
     return render(request, "pages/index.html", {"form": form})
 
 
