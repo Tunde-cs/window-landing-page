@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 import os
+import dj_database_url
 from pathlib import Path
 import environ
 import logging
@@ -119,12 +120,18 @@ WSGI_APPLICATION = "LPageToAdmin.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+# Check if running on Heroku (Heroku sets the DATABASE_URL environment variable)
+if "DATABASE_URL" in os.environ:
+    DATABASES = {
+        "default": dj_database_url.config(conn_max_age=600, ssl_require=True)
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
 
 # Password validation
@@ -223,3 +230,13 @@ CSRF_COOKIE_NAME = "csrftoken"  # ✅ Set CSRF cookie name
 CSRF_COOKIE_SECURE = False  # ✅ Set to True in production (only if using HTTPS)
 CSRF_COOKIE_HTTPONLY = False  # ✅ Allows JavaScript to read CSRF cookie
 CSRF_USE_SESSIONS = False  # ✅ Make sure CSRF is stored in cookies (not sessions)
+
+# Import django-heroku at the bottom
+import django_heroku
+
+# Apply Heroku settings
+django_heroku.settings(locals())
+
+# Database settings for Heroku
+import dj_database_url
+DATABASES["default"] = dj_database_url.config(conn_max_age=600, ssl_require=True)

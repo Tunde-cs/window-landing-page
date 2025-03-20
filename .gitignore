@@ -1,2 +1,5 @@
 .envmedia/
 .env
+*.pyc
+__pycache__/
+env/
