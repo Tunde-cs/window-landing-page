@@ -210,7 +210,7 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 # Add this at the bottom of settings.py
-CORS_ALLOW_ALL_ORIGINS = False  # ❌ Change to False for security
+CORS_ALLOW_ALL_ORIGINS = False  # ✅ Set to False for security
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8000",  # Local development
     "https://windowgeniusai.herokuapp.com",  # Production on Heroku

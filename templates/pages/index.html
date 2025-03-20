@@ -492,15 +492,21 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ message: userMessage }),
                 mode: "cors",  
-                cache: "no-cache"
+                cache: "no-cache",
+                credentials: "include"  // ✅ Ensure authentication and cookies work
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(data => {
                 displayMessage("Chatbot", data.reply, "chatbot");
             })
             .catch(error => {
                 console.error("Error:", error);
-                displayMessage("Chatbot", "Oops! Something went wrong.", "chatbot");
+                displayMessage("Chatbot", "Oops! Something went wrong. 😕", "chatbot");
             });
         
             chatInput.value = "";
