@@ -8048,7 +8048,6 @@ var FullCalendar = (function (exports) {
                     });
                     if (url && !ev.defaultPrevented) {
                         // window.location.href = url;
-
                     }
                 }
             };

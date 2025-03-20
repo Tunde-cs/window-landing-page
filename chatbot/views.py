@@ -49,3 +49,11 @@ def chat(request):
             return JsonResponse({"reply": f"Error: {str(e)}"}, status=500)
 
     return JsonResponse({"error": "Invalid request method."}, status=405)
+
+
+def chat(request):
+    response = JsonResponse({"reply": "Hello!"})
+    response["Access-Control-Allow-Origin"] = "*"  # Allow all origins
+    response["Access-Control-Allow-Methods"] = "POST, GET, OPTIONS"
+    response["Access-Control-Allow-Headers"] = "Content-Type"
+    return response

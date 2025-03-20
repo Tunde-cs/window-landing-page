@@ -470,13 +470,20 @@
         function sendMessage() {
             const userMessage = chatInput.value.trim();
             if (!userMessage) return;
-    
+        
             displayMessage("You", userMessage, "user");
-    
-            fetch("http://127.0.0.1:8000/api/chat/", {
+        
+            // ✅ Auto-detect API endpoint (Local vs Heroku vs Custom Domain)
+            const BASE_URL = window.location.hostname.includes("localhost") || window.location.hostname.includes("127.0.0.1")
+                ? "http://127.0.0.1:8000/api/chat/"  // ✅ Local Django server
+                : "https://windowgeniusai.herokuapp.com/chatbot/";  // ✅ Live server (Heroku or Custom Domain)
+        
+            fetch(BASE_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message: userMessage })
+                body: JSON.stringify({ message: userMessage }),
+                mode: "cors",  // ✅ Fix for Apple devices
+                cache: "no-cache"  // ✅ Prevent Safari from caching old responses
             })
             .then(response => response.json())
             .then(data => {
@@ -486,7 +493,7 @@
                 console.error("Error:", error);
                 displayMessage("Chatbot", "Oops! Something went wrong.", "chatbot");
             });
-    
+        
             chatInput.value = "";
         }
     
@@ -620,6 +627,38 @@
     text-align: right;
     width: fit-content;
     max-width: 70%;
+}
+
+/* ✅ Make chatbot full width on small screens */
+@media screen and (max-width: 768px) {
+    #chatbot-container {
+        width: 100%;
+        height: 80vh;
+        bottom: 0;
+        right: 0;
+        position: fixed;
+    }
+}
+
+/* ✅ Fix Safari Display Issues */
+@supports (-webkit-touch-callout: none) {
+    #chat-window {
+        bottom: 90px !important;  /* ✅ Adjust bottom margin for Safari */
+        width: 360px !important;  /* ✅ Increase width slightly */
+        max-width: 90vw !important;
+        border-radius: 10px;
+    }
+}
+
+/* ✅ Fix Chat Input Focus Issue on iPhones */
+#chat-input:focus {
+    outline: none;
+    border: 2px solid #007bff !important;  /* ✅ Ensures input is visible */
+}
+
+/* ✅ Fix Safari Scroll Issue */
+#chat-messages {
+    -webkit-overflow-scrolling: touch;
 }
 </style>
 {% endblock %}

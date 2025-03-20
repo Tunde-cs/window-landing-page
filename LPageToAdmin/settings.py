@@ -75,6 +75,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "whitenoise.runserver_nostatic",
     "django_extensions",
+    "csp",  # ✅ Enables Django CSP Middleware
 ]
 
 MIDDLEWARE = [
@@ -87,6 +88,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",  # ✅ Handles Django's messaging framework
     "django.middleware.clickjacking.XFrameOptionsMiddleware",  # ✅ Prevents clickjacking attacks
     "corsheaders.middleware.CorsMiddleware",  # ✅ CORS should typically be last
+    "csp.middleware.CSPMiddleware",  # ✅ Add this line to enforce CSP
 ]
 
 
@@ -230,6 +232,16 @@ CSRF_COOKIE_NAME = "csrftoken"  # ✅ Set CSRF cookie name
 CSRF_COOKIE_SECURE = False  # ✅ Set to True in production (only if using HTTPS)
 CSRF_COOKIE_HTTPONLY = False  # ✅ Allows JavaScript to read CSRF cookie
 CSRF_USE_SESSIONS = False  # ✅ Make sure CSRF is stored in cookies (not sessions)
+
+
+# ✅ Allow scripts only from self and trusted sources
+CSP_DEFAULT_SRC = ("'self'", "https://windowgeniusai.herokuapp.com")
+CSP_SCRIPT_SRC = ("'self'", "https://cdn.jsdelivr.net", "https://windowgeniusai.herokuapp.com")
+CSP_CONNECT_SRC = ("'self'", "https://windowgeniusai.herokuapp.com")  # ✅ Allows API requests
+CSP_STYLE_SRC = ("'self'", "https://cdn.jsdelivr.net")  # ✅ Allows external CSS
+CSP_IMG_SRC = ("'self'", "data:", "https://windowgeniusai.herokuapp.com")  # ✅ Allows images
+CSP_FONT_SRC = ("'self'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com")
+
 
 # Import django-heroku at the bottom
 import django_heroku
