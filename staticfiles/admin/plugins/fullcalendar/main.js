@@ -8047,7 +8047,7 @@ var FullCalendar = (function (exports) {
                         view: context.viewApi,
                     });
                     if (url && !ev.defaultPrevented) {
-                        window.location.href = url;
+                        // window.location.href = url;
                     }
                 }
             };
