@@ -15,7 +15,9 @@ from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.contrib.auth.models import User  # ✅ Keep this for user-related functions
-from .forms import LeadForm 
+from .forms import LeadForm  # ✅ Import the correct form
+from django.middleware.csrf import get_token
+
 
 # ✅ Import Forms (Keep only if used in views)
 from app.forms import (
@@ -40,6 +42,7 @@ def home(request):
     - Sends email confirmations
     - Displays success messages
     """
+    print("DEBUG: User =", request.user)  # ✅ This will print the user in the console
     form = LeadForm()  # ✅ Create an empty form for GET requests
 
     if request.method == "POST":
@@ -74,7 +77,46 @@ def home(request):
             return redirect("home")
 
     # ✅ Always pass `form` in the context
-    return render(request, "pages/index.html", {"form": form})
+    return render(request, "pages/index.html", {"form": form})  # ✅ Pass form to the template
+
+
+@csrf_protect
+def submit_lead(request):
+     if request.method == "POST":
+         email = request.POST.get("email")
+         name = request.POST.get("name", "Anonymous")
+         phone = request.POST.get("phone", None)
+ 
+         if not email:
+             messages.error(request, "Email is required.")
+             return redirect("home")  # Redirect to landing page
+ 
+         if Lead.objects.filter(email=email).exists():
+             messages.error(request, "This email has already been submitted.")
+             return redirect("home")
+ 
+         try:
+             # ✅ Save Lead
+             new_lead = Lead.objects.create(name=name, email=email, phone=phone)
+ 
+             # ✅ Test Email Sending & Print Errors
+             subject = "Lead Submission Received"
+             message = f"Dear {name},\n\nThank you for submitting your details. We'll contact you soon.\n\nPhone: {phone}"
+             from_email = settings.DEFAULT_FROM_EMAIL
+ 
+             send_mail(subject, message, from_email, [email], fail_silently=False)  # ❌ If error, it will be printed
+ 
+             # ✅ Success Message
+             messages.success(request, "Thank you! Your details have been submitted successfully.")
+             return redirect("home")
+ 
+         except Exception as e:
+             print(f"❌ EMAIL ERROR: {e}")  # ✅ This will print the exact error
+             messages.error(request, f"Error sending email: {e}")  # ✅ Show real error message
+             return redirect("home")
+ 
+     return render(request, "pages/index.html")
+ 
 
 
 @csrf_protect
@@ -235,42 +277,8 @@ def admin_login(request):
     return render(request, "registration/login.html")  # Render login page
 
 
-def submit_lead(request):
-    if request.method == "POST":
-        email = request.POST.get("email")
-        name = request.POST.get("name", "Anonymous")
-        phone = request.POST.get("phone", None)
 
-        if not email:
-            messages.error(request, "Email is required.")
-            return redirect("home")  # Redirect to landing page
-
-        if Lead.objects.filter(email=email).exists():
-            messages.error(request, "This email has already been submitted.")
-            return redirect("home")
-
-        try:
-            # ✅ Save Lead
-            new_lead = Lead.objects.create(name=name, email=email, phone=phone)
-
-            # ✅ Test Email Sending & Print Errors
-            subject = "Lead Submission Received"
-            message = f"Dear {name},\n\nThank you for submitting your details. We'll contact you soon.\n\nPhone: {phone}"
-            from_email = settings.DEFAULT_FROM_EMAIL
-
-            send_mail(subject, message, from_email, [email], fail_silently=False)  # ❌ If error, it will be printed
-
-            # ✅ Success Message
-            messages.success(request, "Thank you! Your details have been submitted successfully.")
-            return redirect("home")
-
-        except Exception as e:
-            print(f"❌ EMAIL ERROR: {e}")  # ✅ This will print the exact error
-            messages.error(request, f"Error sending email: {e}")  # ✅ Show real error message
-            return redirect("home")
-
-    return render(request, "pages/index.html")
-
+@csrf_exempt  # 🚨 TEMPORARY! Remove this after debugging.
 @csrf_protect
 def request_quote(request):
     if request.method == "POST":

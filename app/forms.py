@@ -48,6 +48,7 @@ class LeadForm(forms.Form):  # Change from ModelForm to Form
         "placeholder": "Email Address",  # User-friendly placeholder
         "required": "required",  # Ensures the field is required
     }))
+    
 
 class QuoteForm(forms.ModelForm):
     class Meta:

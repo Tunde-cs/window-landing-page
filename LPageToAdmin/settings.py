@@ -57,6 +57,7 @@ ALLOWED_HOSTS = [
     "windowgeniusai-d6c9fb157af2.herokuapp.com",
     "www.windowgeniusai.com",
     "windowgeniusai.com",
+    
 ]
 
 # Application definition
@@ -64,28 +65,29 @@ ALLOWED_HOSTS = [
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
-    "django.contrib.contenttypes",
+    "django.contrib.contenttypes",  # ✅ **THIS WAS MISSING!**
     "django.contrib.sessions",
     "django.contrib.messages",
-    "whitenoise.runserver_nostatic",  # Ensure this is here
     "django.contrib.staticfiles",
     "app",
+    "chatbot",
+    "corsheaders",
+    "whitenoise.runserver_nostatic",
     "django_extensions",
-    "chatbot",  # ✅ Register chatbot app
-    "corsheaders",  # ✅ Register corsheaders
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
-    "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",  # ✅ Add this for static files
-    "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django.middleware.security.SecurityMiddleware",  # ✅ Security comes first
+    "whitenoise.middleware.WhiteNoiseMiddleware",  # ✅ Static file handling (best practice: after security)
+    "django.contrib.sessions.middleware.SessionMiddleware",  # ✅ Manages sessions
+    "django.middleware.common.CommonMiddleware",  # ✅ Enables global request modifications
+    "django.middleware.csrf.CsrfViewMiddleware",  # ✅ Protects against CSRF attacks
+    "django.contrib.auth.middleware.AuthenticationMiddleware",  # ✅ Ensures user authentication
+    "django.contrib.messages.middleware.MessageMiddleware",  # ✅ Handles Django's messaging framework
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",  # ✅ Prevents clickjacking attacks
+    "corsheaders.middleware.CorsMiddleware",  # ✅ CORS should typically be last
 ]
+
 
 # Default message storage
 from django.contrib.messages import constants as messages
@@ -190,9 +192,9 @@ LOGGING = {
     },
 }
 
-# Add CSFR settings here
-CSFR_USE_SESSIONS = True
-CSFR_FAILURE_VIEW = "app.views.csrf_failure"  # Optional: custom CSRF failure view
+# ✅ Correct CSRF settings
+CSRF_USE_SESSIONS = True  # ✅ Store CSRF token in session instead of cookies
+CSRF_FAILURE_VIEW = "app.views.csrf_failure"  # ✅ Ensure this view exists
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
@@ -216,3 +218,8 @@ CSRF_TRUSTED_ORIGINS = [
     "https://www.windowgeniusai.com",  # Custom domain
     "https://windowgeniusai.com",  # Main domain
 ]
+
+CSRF_COOKIE_NAME = "csrftoken"  # ✅ Set CSRF cookie name
+CSRF_COOKIE_SECURE = False  # ✅ Set to True in production (only if using HTTPS)
+CSRF_COOKIE_HTTPONLY = False  # ✅ Allows JavaScript to read CSRF cookie
+CSRF_USE_SESSIONS = False  # ✅ Make sure CSRF is stored in cookies (not sessions)

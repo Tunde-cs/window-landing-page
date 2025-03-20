@@ -6,22 +6,22 @@ from .views import about_page, services_page, contact_page, terms_of_use_page, p
 
 
 urlpatterns = [
-    # Core Pages
+    # ✅ Core Pages
     path("", home, name="index"),  # Route for the landing page
-    path("request-quote/", request_quote, name="request_quote"),
+    path("request-quote/", views.request_quote, name="request_quote"),
     path("quote-success/", views.quote_success, name="quote_success"),  # Success page
+    
 
-    # ✅ Public Pages (with correct function names)
-    path("", views.home, name="home"),  # Landing page
+    # ✅ Public Pages
     path("about/", views.about_page, name="about"),
     path("services/", views.services_page, name="services"),
     path("contact/", views.contact_page, name="contact"),
     path("terms-of-use/", views.terms_of_use_page, name="terms_of_use"),
     path("privacy-policy/", views.privacy_policy, name="privacy_policy"),
 
-    # Other Routes
+    # ✅ Other Routes
     path("inbox/", views.inbox_view, name="inbox"),
-    path("submit-lead/", submit_lead, name="submit_lead"),
+    path("submit-lead/", submit_lead, name="submit_lead"),  # ✅ Email form submission
     path("projects/", views.projects_view, name="projects"),
     path("reports/", views.reports_view, name="reports"),
     
