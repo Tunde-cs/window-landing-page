@@ -465,6 +465,14 @@
         sendButton.addEventListener("click", function () {
             sendMessage();
         });
+
+        // ✅ Function to get CSRF token from cookies
+        function getCSRFToken() {
+            const cookieValue = document.cookie
+                .split("; ")
+                .find(row => row.startsWith("csrftoken="));
+            return cookieValue ? cookieValue.split("=")[1] : "";
+        }
     
         // ✅ Function to send messages
         function sendMessage() {
@@ -473,17 +481,17 @@
         
             displayMessage("You", userMessage, "user");
         
-            // ✅ Auto-detect API endpoint (Local vs Heroku vs Custom Domain)
-            const BASE_URL = window.location.hostname.includes("localhost") || window.location.hostname.includes("127.0.0.1")
-                ? "http://127.0.0.1:8000/api/chat/"  // ✅ Local Django server
-                : "https://windowgeniusai.herokuapp.com/chatbot/";  // ✅ Live server (Heroku or Custom Domain)
+            // ✅ Choose correct API URL for local and Heroku
+            const apiUrl = window.location.hostname === "127.0.0.1"
+                ? "http://127.0.0.1:8000/api/chat/"  
+                : "https://windowgeniusai.herokuapp.com/api/chat/";  
         
-            fetch(BASE_URL, {
+            fetch(apiUrl, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ message: userMessage }),
-                mode: "cors",  // ✅ Fix for Apple devices
-                cache: "no-cache"  // ✅ Prevent Safari from caching old responses
+                mode: "cors",  
+                cache: "no-cache"
             })
             .then(response => response.json())
             .then(data => {
@@ -496,7 +504,7 @@
         
             chatInput.value = "";
         }
-    
+        
         // ✅ Function to display messages in chat
         function displayMessage(sender, message, type) {
             const msgDiv = document.createElement("div");

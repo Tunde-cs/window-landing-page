@@ -14,7 +14,7 @@ from dotenv import load_dotenv
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-@csrf_exempt  # ✅ Disable CSRF for chatbot API
+@csrf_exempt  # ✅ Disable CSRF for API
 def chat(request):
     if request.method == "POST":
         try:
@@ -31,7 +31,7 @@ def chat(request):
                     {
                         "role": "system",
                         "content": (
-                            "You are a helpful AI assistant for OUR window replacement company. "
+                            "You are a helpful AI assistant for Window Genius AI a window replacement company. "
                             "You help customers with window sales, repairs, and installation inquiries. "
                             "Always promote OUR company’s services and do not refer them to other companies. "
                             "Encourage customers to schedule a consultation and fill out the form above for a quote."
@@ -50,10 +50,3 @@ def chat(request):
 
     return JsonResponse({"error": "Invalid request method."}, status=405)
 
-
-def chat(request):
-    response = JsonResponse({"reply": "Hello!"})
-    response["Access-Control-Allow-Origin"] = "*"  # Allow all origins
-    response["Access-Control-Allow-Methods"] = "POST, GET, OPTIONS"
-    response["Access-Control-Allow-Headers"] = "Content-Type"
-    return response

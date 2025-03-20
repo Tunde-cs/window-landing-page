@@ -64,6 +64,7 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
+    "corsheaders",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",  # ✅ **THIS WAS MISSING!**
@@ -72,13 +73,13 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "app",
     "chatbot",
-    "corsheaders",
     "whitenoise.runserver_nostatic",
     "django_extensions",
     "csp",  # ✅ Enables Django CSP Middleware
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",  # ✅ MUST BE FIRST
     "django.middleware.security.SecurityMiddleware",  # ✅ Security comes first
     "whitenoise.middleware.WhiteNoiseMiddleware",  # ✅ Static file handling (best practice: after security)
     "django.contrib.sessions.middleware.SessionMiddleware",  # ✅ Manages sessions
@@ -87,7 +88,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",  # ✅ Ensures user authentication
     "django.contrib.messages.middleware.MessageMiddleware",  # ✅ Handles Django's messaging framework
     "django.middleware.clickjacking.XFrameOptionsMiddleware",  # ✅ Prevents clickjacking attacks
-    "corsheaders.middleware.CorsMiddleware",  # ✅ CORS should typically be last
     "csp.middleware.CSPMiddleware",  # ✅ Add this line to enforce CSP
 ]
 
@@ -128,6 +128,7 @@ if "DATABASE_URL" in os.environ:
         "default": dj_database_url.config(conn_max_age=600, ssl_require=True)
     }
 else:
+    print("⚠️ Using SQLite for local development")
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
@@ -209,7 +210,7 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 # Add this at the bottom of settings.py
-CORS_ALLOW_ALL_ORIGINS = False  # ❌ Change this to False for security
+CORS_ALLOW_ALL_ORIGINS = False  # ❌ Change to False for security
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8000",  # Local development
     "https://windowgeniusai.herokuapp.com",  # Production on Heroku
@@ -234,14 +235,49 @@ CSRF_COOKIE_HTTPONLY = False  # ✅ Allows JavaScript to read CSRF cookie
 CSRF_USE_SESSIONS = False  # ✅ Make sure CSRF is stored in cookies (not sessions)
 
 
-# ✅ Allow scripts only from self and trusted sources
-CSP_DEFAULT_SRC = ("'self'", "https://windowgeniusai.herokuapp.com")
-CSP_SCRIPT_SRC = ("'self'", "https://cdn.jsdelivr.net", "https://windowgeniusai.herokuapp.com")
-CSP_CONNECT_SRC = ("'self'", "https://windowgeniusai.herokuapp.com")  # ✅ Allows API requests
-CSP_STYLE_SRC = ("'self'", "https://cdn.jsdelivr.net")  # ✅ Allows external CSS
-CSP_IMG_SRC = ("'self'", "data:", "https://windowgeniusai.herokuapp.com")  # ✅ Allows images
-CSP_FONT_SRC = ("'self'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com")
+# ✅ Content Security Policy (CSP) Fixes
+CSP_DEFAULT_SRC = ("'self'", "https://windowgeniusai.herokuapp.com", "https://windowgeniusai.com")
 
+CSP_SCRIPT_SRC = (
+    "'self'",
+    "https://cdn.jsdelivr.net",  # ✅ External JS (Bootstrap, jQuery, etc.)
+    "https://cdnjs.cloudflare.com",  # ✅ Cloudflare scripts
+    "https://code.jquery.com",  # ✅ jQuery CDN
+    "https://www.googletagmanager.com",  # ✅ Google Analytics / Tag Manager
+    "'unsafe-inline'",  # ✅ Allows inline JS (only for debugging, remove in production)
+)
+
+CSP_FONT_SRC = (
+    "'self'",
+    "https://fonts.googleapis.com",
+    "https://fonts.gstatic.com",
+    "https://cdnjs.cloudflare.com",
+    "https://cdn.jsdelivr.net",
+)
+
+CSP_STYLE_SRC = (
+    "'self'",
+    "https://fonts.googleapis.com",
+    "https://cdn.jsdelivr.net",
+    "https://cdnjs.cloudflare.com",
+    "'unsafe-inline'",  # ✅ Allows inline styles (needed for Bootstrap & Google Fonts)
+)
+
+CSP_CONNECT_SRC = (
+    "'self'",
+    "https://windowgeniusai.herokuapp.com",
+    "https://windowgeniusai.com",
+    "https://api.openai.com",  # ✅ If using OpenAI API
+)
+
+CSP_IMG_SRC = (
+    "'self'",
+    "data:",
+    "https://windowgeniusai.herokuapp.com",
+    "https://windowgeniusai.com",
+    "https://cdn.jsdelivr.net",
+    "https://fonts.gstatic.com",
+)
 
 # Import django-heroku at the bottom
 import django_heroku
