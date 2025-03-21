@@ -220,6 +220,12 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 CORS_ALLOW_CREDENTIALS = True  # ✅ Allow cookies & authentication if needed
+CORS_ALLOW_HEADERS = [
+    "content-type",
+    "authorization",
+    "x-requested-with",
+    "x-csrftoken",
+]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:8000",  # Local

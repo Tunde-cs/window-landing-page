@@ -11,8 +11,8 @@ from dotenv import load_dotenv
 
 
 # ✅ Load OpenAI API Key
-load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
+
 
 @csrf_exempt  # ✅ Disable CSRF for API
 def chat(request):
@@ -44,9 +44,16 @@ def chat(request):
             )
             chatbot_reply = response["choices"][0]["message"]["content"].strip()
 
-            return JsonResponse({"reply": chatbot_reply})
+            # ✅ Add CORS Headers
+            response_data = JsonResponse({"reply": chatbot_reply})
+            response_data["Access-Control-Allow-Origin"] = "*"
+            response_data["Access-Control-Allow-Methods"] = "POST, GET, OPTIONS"
+            response_data["Access-Control-Allow-Headers"] = "Content-Type"
+            return response_data
 
         except Exception as e:
             return JsonResponse({"reply": f"⚠️ Error: {str(e)}"}, status=500)
 
     return JsonResponse({"error": "Invalid request method. ❌"}, status=405)
+
+
