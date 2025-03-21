@@ -44,7 +44,7 @@ def chat(request):
             )
             chatbot_reply = response["choices"][0]["message"]["content"].strip()
 
-            # ✅ Add CORS Headers
+            # ✅ Add CORS headers
             response_data = JsonResponse({"reply": chatbot_reply})
             response_data["Access-Control-Allow-Origin"] = "*"
             response_data["Access-Control-Allow-Methods"] = "POST, GET, OPTIONS"
@@ -55,5 +55,4 @@ def chat(request):
             return JsonResponse({"reply": f"⚠️ Error: {str(e)}"}, status=500)
 
     return JsonResponse({"error": "Invalid request method. ❌"}, status=405)
-
 
