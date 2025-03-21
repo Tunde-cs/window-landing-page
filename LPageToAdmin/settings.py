@@ -248,11 +248,7 @@ CSRF_USE_SESSIONS = False  # ✅ Make sure CSRF is stored in cookies (not sessio
 
 
 # ✅ Content Security Policy (CSP) - DEV CONFIG
-CSP_DEFAULT_SRC = (
-    "'self'",
-    "https://windowgeniusai.herokuapp.com",
-    "https://windowgeniusai.com",
-)
+CSP_DEFAULT_SRC = ("'self'", "https://windowgeniusai.herokuapp.com", "https://windowgeniusai.com")
 
 CSP_SCRIPT_SRC = (
     "'self'",
@@ -267,6 +263,7 @@ CSP_STYLE_SRC = (
     "https://fonts.googleapis.com",
     "https://cdn.jsdelivr.net",
     "https://cdnjs.cloudflare.com",
+    "'unsafe-inline'",  # ✅ Allows inline styles (needed for some chatbot styles)
 )
 
 CSP_FONT_SRC = (
@@ -275,13 +272,9 @@ CSP_FONT_SRC = (
     "https://fonts.gstatic.com",
     "https://cdnjs.cloudflare.com",
     "https://cdn.jsdelivr.net",
-)
-
-CSP_CONNECT_SRC = (
-    "'self'",
-    "https://windowgeniusai.herokuapp.com",
-    "https://windowgeniusai.com",
-    "https://api.openai.com",  # ✅ Chatbot backend (OpenAI)
+    "https://use.fontawesome.com",  # ✅ Allow FontAwesome (used for chatbot icons)
+    "https://maxcdn.bootstrapcdn.com",  # ✅ Bootstrap icons
+    "data:"  # ✅ Allow fonts embedded in CSS
 )
 
 CSP_IMG_SRC = (
@@ -289,8 +282,13 @@ CSP_IMG_SRC = (
     "data:",
     "https://windowgeniusai.herokuapp.com",
     "https://windowgeniusai.com",
-    "https://cdn.jsdelivr.net",
-    "https://fonts.gstatic.com",
+)
+
+CSP_CONNECT_SRC = (
+    "'self'",
+    "https://windowgeniusai.herokuapp.com",
+    "https://windowgeniusai.com",
+    "https://api.openai.com",
 )
 
 # Import django-heroku at the bottom

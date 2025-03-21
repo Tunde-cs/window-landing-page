@@ -13,27 +13,42 @@
 <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
 <link rel="stylesheet" href="{% static 'css/custom-styles.css' %}"> <!-- Custom CSS (Optional) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="{% static 'css/chatbot.css' %}">
 
-<!-- ✅ Bootstrap JavaScript (Placed at the End, Before `</body>`) -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- Structured Data for SEO -->
+<!-- ✅ Structured Data for SEO -->
 <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "LocalBusiness",
-  "name": "Luxury Window Replacement",
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "4.8",
-    "reviewCount": "150"
-  }
-}
-
-</script>
+    {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": "Luxury Window Replacement",
+      "url": "https://www.yourwebsite.com",
+      "image": "{% static 'assets/img/window-og-image.jpg' %}",
+      "description": "Affordable, stylish, and durable window replacement services. Get a free quote today!",
+      "telephone": "+1-800-123-4567",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "123 Window St.",
+        "addressLocality": "New York",
+        "addressRegion": "NY",
+        "postalCode": "10001",
+        "addressCountry": "US"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "reviewCount": "150"
+      },
+      "priceRange": "$$",
+      "openingHours": "Mo-Fr 09:00-17:00",
+      "sameAs": [
+        "https://www.facebook.com/YourCompany",
+        "https://www.twitter.com/YourCompany",
+        "https://www.instagram.com/YourCompany"
+      ]
+    }
+    </script>
 {% endblock %}
+
 {% block content %}
 <!-- Masthead -->
 <header class="masthead">
@@ -83,65 +98,43 @@
                     <h1 class="mb-5">Upgrade Your Home with Energy-Efficient Windows!</h1>
                     <p class="mb-4">Our premium window replacement services combine style, affordability, and durability. Get started today!</p>
                    <!-- Quick Lead Form -->
-{% if messages %}
-<div class="alert alert-success">
-    {% for message in messages %}
-        {{ message }}
-    {% endfor %}
-</div>
-{% endif %}
+                    {% if messages %}
+                    <div class="alert alert-success">
+                        {% for message in messages %}
+                            {{ message }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
 
-<form action="{% url 'submit_lead' %}" method="post" id="leadForm">
-    {% csrf_token %}
-    <div class="row flex">
-        <div class="col">
-            <input type="email" name="email" class="form-control" placeholder="Enter your email" id="email" required>
-            <div id="email-error" class="invalid-feedback"></div>
-        </div>
-        <div class="col-auto">
-            <button class="btn btn-primary btn-lg" type="submit">Submit</button>
-        </div>
-    </div>
-</form>
-                <script>
-                    document.addEventListener("DOMContentLoaded", function () {
-                        const leadForm = document.getElementById("leadForm");
-                        const emailInput = document.getElementById("email");
-                        const emailError = document.getElementById("email-error");
-                    
-                        if (!leadForm) {
-                            console.error("❌ Form not found: leadForm is missing from the DOM.");
-                            return;
-                        }
-                    
-                        if (!emailInput || !emailError) {
-                            console.error("❌ Email input or error message container is missing.");
-                            return;
-                        }
-                    
-                        leadForm.addEventListener("submit", function (event) {
-                            if (!emailInput.value.includes("@")) {
-                                event.preventDefault();
-                                emailError.textContent = "Invalid email address.";
-                                emailError.style.display = "block"; // ✅ Ensures error message is visible
-                            }
-                        });
-                    });
-                </script>
-                <script>
-                    // ✅ Auto-close menu after clicking a link
-                    document.querySelectorAll(".nav-link").forEach(item => {
-                        item.addEventListener("click", () => {
-                            document.querySelector(".navbar-collapse").classList.remove("show");
-                        });
-                    });
-                </script>
+                    <form action="{% url 'submit_lead' %}" method="post" id="leadForm">
+                        {% csrf_token %}
+                        <div class="row flex">
+                            <div class="col">
+                                <input type="email" name="email" class="form-control" placeholder="Enter your email" id="email" required>
+                                <div id="email-error" class="invalid-feedback"></div>
+                            </div>
+                            <div class="col-auto">
+                                <button class="btn btn-primary btn-lg" type="submit">Submit</button>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
             </div>
         </div>
     </div>
-</div>
 </header>
 
+<!-- ✅ Bootstrap JavaScript (Placed at the End, Before `</body>`) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- ✅ Include JavaScript Files -->
+<script src="{% static 'js/leadForm.js' %}"></script>
+<script src="{% static 'js/chatbot.js' %}"></script>
+
+</body>
 <!-- Horizontal Image Gallery -->
 <section class="image-gallery">
     <section id="windows">
@@ -426,300 +419,4 @@
         <button id="chat-send-button">Send</button>
     </div>
 </div>
-
-<!-- ✅ Chatbot JavaScript -->
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const chatbotButton = document.getElementById("chatbot-button");
-        const chatWindow = document.getElementById("chat-window");
-        const chatMessages = document.getElementById("chat-messages");
-        const chatInput = document.getElementById("chat-input");
-        const sendButton = document.getElementById("chat-send-button");
-        const minimizeChat = document.getElementById("minimize-chat");
-        const closeChat = document.getElementById("close-chat");
-    
-        // ✅ Automatically open chatbot after 1.5 seconds
-        setTimeout(function () {
-            openChatbot();
-            displayMessage("Chatbot", "👋 Welcome! How can I assist you with your window needs today?", "chatbot");
-        }, 1500);  // Adjust delay if needed
-    
-        // ✅ Show chat window when button is clicked
-        chatbotButton.addEventListener("click", function () {
-            openChatbot();
-        });
-    
-        // ✅ Minimize chat
-        minimizeChat.addEventListener("click", function () {
-            chatWindow.style.display = "none";
-            chatbotButton.style.display = "block";
-        });
-    
-        // ✅ Close chat and clear messages
-        closeChat.addEventListener("click", function () {
-            chatWindow.style.display = "none";
-            chatbotButton.style.display = "block";
-            chatMessages.innerHTML = "";
-        });
-    
-        // ✅ Send message on Enter key press
-        chatInput.addEventListener("keypress", function (event) {
-            if (event.key === "Enter" && !event.shiftKey) {
-                event.preventDefault();
-                sendMessage();
-            }
-        });
-    
-        // ✅ Send message on button click
-        sendButton.addEventListener("click", function () {
-            sendMessage();
-        });
-
-        // ✅ Function to get CSRF token from cookies
-        function getCSRFToken() {
-            const cookieValue = document.cookie
-                .split("; ")
-                .find(row => row.startsWith("csrftoken="));
-            return cookieValue ? cookieValue.split("=")[1] : "";
-        }
-    
-        // ✅ Function to send messages
-        function sendMessage() {
-            const userMessage = chatInput.value.trim();
-            if (!userMessage) return;
-        
-            displayMessage("You", userMessage, "user");
-        
-            // ✅ Choose correct API URL for local and Heroku
-            const apiUrl = window.location.hostname === "127.0.0.1"
-                ? "http://127.0.0.1:8000/api/chat/"  
-                : "https://windowgeniusai.herokuapp.com/api/chat/";  
-        
-            fetch(apiUrl, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message: userMessage }),
-                mode: "cors",  
-                cache: "no-cache",
-                credentials: "include"  // ✅ Ensure authentication and cookies work
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                displayMessage("Chatbot", data.reply, "chatbot");
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                displayMessage("Chatbot", "Oops! Something went wrong. 😕", "chatbot");
-            });
-        
-            chatInput.value = "";
-        }
-        
-        // ✅ Function to display messages in chat
-        function displayMessage(sender, message, type) {
-            const msgDiv = document.createElement("div");
-            msgDiv.classList.add(type === "user" ? "user-message" : "chatbot-message");
-            msgDiv.innerHTML = `<strong>${sender}:</strong> ${message}`;
-            chatMessages.appendChild(msgDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-    
-        // ✅ Function to open chatbot
-        function openChatbot() {
-            chatWindow.style.display = "block";
-            chatbotButton.style.display = "none";
-        }
-    });
-    document.addEventListener("click", function(event) {
-        const chatbot = document.getElementById("chatbot-container");
-        const chatButton = document.getElementById("chatbot-button");
-
-        if (chatbot && !chatbot.contains(event.target) && event.target !== chatButton) {
-            chatbot.classList.add("hidden"); // ✅ Hide chatbot
-        }
-    });
-
-    // ✅ Toggle chatbot visibility when clicking the button
-    document.getElementById("chatbot-button").addEventListener("click", function() {
-        document.getElementById("chatbot-container").classList.toggle("hidden");
-    });
-     </script>
-    
-
-<!-- ✅ Chat UI Styles -->
-<style>
-/* ✅ Floating Chat Button */
-#chatbot-button {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background-color: #007bff;
-    color: white;
-    padding: 12px 16px;
-    border-radius: 50px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    border: none;
-    transition: background 0.3s ease;
-}
-
-/* ✅ Chat Window */
-#chat-window {
-    display: none;
-    position: fixed;
-    bottom: 80px;
-    right: 20px;
-    width: 350px;
-    height: 500px;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-    overflow: hidden;
-    border: 1px solid #ddd;
-    font-family: Arial, sans-serif;
-}
-
-/* ✅ Chat Header */
-#chat-header {
-    background: #007bff;
-    color: white;
-    padding: 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 16px;
-    font-weight: bold;
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
-}
-
-/* ✅ Chat Messages */
-#chat-messages {
-    padding: 12px;
-    height: 380px;
-    overflow-y: auto;
-    background: #f8f9fa;
-    border-bottom: 1px solid #ddd;
-}
-
-/* ✅ Chat Input & Send Button */
-#chat-input-container {
-    display: flex;
-    align-items: center;
-    padding: 8px;
-    background: white;
-}
-
-#chat-input {
-    flex-grow: 1;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 14px;
-    outline: none;
-    min-height: 40px;
-    max-height: 120px;
-    resize: vertical;
-}
-
-#chat-send-button {
-    background: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    margin-left: 8px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: bold;
-    transition: background 0.3s ease;
-}
-
-/* ✅ Chat Messages Styling */
-.chatbot-message {
-    background-color: #f1f1f1;
-    color: #333;
-    border-radius: 8px;
-    padding: 8px;
-    margin: 5px 0;
-    text-align: left;
-    width: fit-content;
-    max-width: 70%;
-}
-
-.user-message {
-    background-color: #007bff;
-    color: white;
-    border-radius: 8px;
-    padding: 8px;
-    margin: 5px 0;
-    text-align: right;
-    width: fit-content;
-    max-width: 70%;
-}
-
-/* ✅ Make chatbot full width on small screens */
-@media screen and (max-width: 768px) {
-    #chatbot-container {
-        width: 100%;
-        height: 80vh;
-        bottom: 0;
-        right: 0;
-        position: fixed;
-    }
-}
-
-/* ✅ Fix Safari Display Issues */
-@supports (-webkit-touch-callout: none) {
-    #chat-window {
-        bottom: 90px !important;  /* ✅ Adjust bottom margin for Safari */
-        width: 360px !important;  /* ✅ Increase width slightly */
-        max-width: 90vw !important;
-        border-radius: 10px;
-    }
-}
-
-/* ✅ Fix Chat Input Focus Issue on iPhones */
-#chat-input:focus {
-    outline: none;
-    border: 2px solid #007bff !important;  /* ✅ Ensures input is visible */
-}
-
-/* ✅ Fix Safari Scroll Issue */
-#chat-messages {
-    -webkit-overflow-scrolling: touch;
-}
-
-#chatbot-container {
-    max-width: 90%;
-    width: 100%;
-    height: auto;
-    position: fixed;
-    bottom: 20px;
-    right: 10px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-}
-
-@media (max-width: 768px) {
-    #chatbot-container {
-        width: 95%;
-        bottom: 10px;
-        right: 5px;
-    }
-}
-
-body {
-    font-family: Arial, sans-serif;
-}
-
-</style>
 {% endblock %}
