@@ -211,19 +211,27 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 # Add this at the bottom of settings.py
 CORS_ALLOW_ALL_ORIGINS = False  # ✅ Set to False for security
+
+# Keep local URLs during development, remove them before final production lockdown
 CORS_ALLOWED_ORIGINS = [
-    "http://127.0.0.1:8000",  # Local development
-    "https://windowgeniusai.herokuapp.com",  # Production on Heroku
-    "https://windowgeniusai-d6c9fb157af2.herokuapp.com",  # Temporary Heroku domain
-    "https://www.windowgeniusai.com",  # Custom domain (if set up)
-    "https://windowgeniusai.com",  # Your actual deployed domain
+    "http://127.0.0.1:8000",  # ✅ Local dev
+    "http://localhost:8000",  # ✅ Alternative local dev
+    "https://windowgeniusai.herokuapp.com",  # ✅ Heroku
+    "https://windowgeniusai-d6c9fb157af2.herokuapp.com",  # ✅ Temporary
+    "https://www.windowgeniusai.com",  # ✅ Custom domain
+    "https://windowgeniusai.com",  # ✅ Main domain
 ]
 
-CORS_ALLOW_CREDENTIALS = True  # ✅ Allow cookies & authentication if needed
-CORS_ALLOW_CREDENTIALS = True  # ✅ Allow credentials
-CORS_ALLOW_METHODS = ["GET", "POST", "OPTIONS"]  # ✅ Allowed methods
-CORS_ALLOW_HEADERS = ["content-type", "authorization", "x-requested-with", "x-csrftoken"]
+CORS_ALLOW_CREDENTIALS = True
 
+CORS_ALLOW_METHODS = ["GET", "POST", "OPTIONS"]
+
+CORS_ALLOW_HEADERS = [
+    "content-type",
+    "authorization",
+    "x-requested-with",
+    "x-csrftoken",
+]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:8000",  # Local
@@ -239,16 +247,26 @@ CSRF_COOKIE_HTTPONLY = False  # ✅ Allows JavaScript to read CSRF cookie
 CSRF_USE_SESSIONS = False  # ✅ Make sure CSRF is stored in cookies (not sessions)
 
 
-# ✅ Content Security Policy (CSP) Fixes
-CSP_DEFAULT_SRC = ("'self'", "https://windowgeniusai.herokuapp.com", "https://windowgeniusai.com")
+# ✅ Content Security Policy (CSP) - DEV CONFIG
+CSP_DEFAULT_SRC = (
+    "'self'",
+    "https://windowgeniusai.herokuapp.com",
+    "https://windowgeniusai.com",
+)
 
 CSP_SCRIPT_SRC = (
     "'self'",
-    "https://cdn.jsdelivr.net",  # ✅ External JS (Bootstrap, jQuery, etc.)
-    "https://cdnjs.cloudflare.com",  # ✅ Cloudflare scripts
-    "https://code.jquery.com",  # ✅ jQuery CDN
-    "https://www.googletagmanager.com",  # ✅ Google Analytics / Tag Manager
-    "'unsafe-inline'",  # ✅ Allows inline JS (only for debugging, remove in production)
+    "https://cdn.jsdelivr.net",
+    "https://cdnjs.cloudflare.com",
+    "https://code.jquery.com",
+    "https://www.googletagmanager.com",
+)
+
+CSP_STYLE_SRC = (
+    "'self'",
+    "https://fonts.googleapis.com",
+    "https://cdn.jsdelivr.net",
+    "https://cdnjs.cloudflare.com",
 )
 
 CSP_FONT_SRC = (
@@ -259,19 +277,11 @@ CSP_FONT_SRC = (
     "https://cdn.jsdelivr.net",
 )
 
-CSP_STYLE_SRC = (
-    "'self'",
-    "https://fonts.googleapis.com",
-    "https://cdn.jsdelivr.net",
-    "https://cdnjs.cloudflare.com",
-    "'unsafe-inline'",  # ✅ Allows inline styles (needed for Bootstrap & Google Fonts)
-)
-
 CSP_CONNECT_SRC = (
     "'self'",
     "https://windowgeniusai.herokuapp.com",
     "https://windowgeniusai.com",
-    "https://api.openai.com",  # ✅ If using OpenAI API
+    "https://api.openai.com",  # ✅ Chatbot backend (OpenAI)
 )
 
 CSP_IMG_SRC = (
