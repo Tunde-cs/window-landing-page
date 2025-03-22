@@ -264,7 +264,6 @@ CSP_STYLE_SRC = (
     "https://fonts.googleapis.com",
     "https://cdn.jsdelivr.net",
     "https://cdnjs.cloudflare.com",
-    "'unsafe-inline'",  # ✅ Allows inline styles (needed for some chatbot styles)
 )
 
 CSP_FONT_SRC = (
