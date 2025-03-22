@@ -61,3 +61,18 @@ async function sendMessage() {
 
     chatLog.scrollTop = chatLog.scrollHeight;
 }
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    const navbarToggler = document.querySelector(".navbar-toggler");
+    const navbarCollapse = document.querySelector(".navbar-collapse");
+
+    // ✅ Close navbar when a link is clicked (for mobile users)
+    document.querySelectorAll(".nav-link").forEach(link => {
+        link.addEventListener("click", function () {
+            if (navbarCollapse.classList.contains("show")) {
+                navbarToggler.click(); // Simulate a click to close the menu
+            }
+        });
+    });
+});

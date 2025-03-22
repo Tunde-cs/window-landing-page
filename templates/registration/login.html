@@ -14,7 +14,7 @@
                         </div>
                     {% endif %}
 
-                    <form action="{% url 'admin_login' %}" method="post">  <!-- Update login URL -->
+                    <form action="{% url 'login' %}" method="post">
                         {% csrf_token %}
                         <div class="form-group">
                             <label for="username">Username:</label>

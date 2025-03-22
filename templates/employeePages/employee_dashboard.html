@@ -169,52 +169,22 @@
         <canvas id="salesChart" style="width: 100%; height: 400px;"></canvas>
     </div>
 </div>
+{% endblock %}
 
-<!-- ✅ Load Chart.js -->
+{% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    // ✅ Fetch Data from Django
-    const salesChartLabels = JSON.parse('{{ sales_chart_labels|safe }}');
-    const salesChartData = JSON.parse('{{ sales_chart_data|safe }}');
+<!-- ✅ Data from Django -->
+<script type="application/json" id="chartLabels">{{ sales_chart_labels|safe }}</script>
+<script type="application/json" id="chartSales">{{ sales_chart_data|safe }}</script>
+{% if quote_chart_data %}
+<script type="application/json" id="chartQuotes">{{ quote_chart_data|safe }}</script>
+{% endif %}
 
-    console.log("✅ Sales Chart Labels:", salesChartLabels);
-    console.log("✅ Sales Chart Data:", salesChartData);
-
-    if (salesChartLabels.length === 0 || salesChartData.length === 0) {
-        console.warn("⚠️ No sales data available.");
-        return;
-    }
-
-    // ✅ Render Chart.js Sales Chart
-    const ctx = document.getElementById("salesChart").getContext("2d");
-    new Chart(ctx, {
-        type: "bar",
-        data: {
-            labels: salesChartLabels,
-            datasets: [{
-                label: "Monthly Sales",
-                data: salesChartData,
-                backgroundColor: "rgba(75, 192, 192, 0.5)",  // Better color
-                borderColor: "rgba(75, 192, 192, 1)",
-                borderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    suggestedMax: Math.max(...salesChartData) * 1.2,  // Scale for better balance
-                }
-            }
-        }
-    });
-});
-</script>
+<!-- ✅ Shared static JS -->
+<script src="{% static 'js/chart.js' %}"></script>
 {% endblock %}
+
 
 
 

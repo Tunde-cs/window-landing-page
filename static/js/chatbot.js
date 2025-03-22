@@ -15,11 +15,13 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
-    // ✅ Automatically open chatbot after 1.5 seconds
+    // ✅ Open chatbot automatically after 3 seconds
     setTimeout(function () {
-        openChatbot();
-        displayMessage("Chatbot", "👋 Welcome! How can I assist you with your window needs today?", "chatbot");
-    }, 1500);
+        if (chatWindow.style.display !== "block") {
+            openChatbot();
+            displayMessage("Chatbot", "👋 Welcome! How can I assist you with your window needs today?", "chatbot");
+        }
+    }, 3000);  // ✅ Delayed chatbot opening (3 seconds)
 
     // ✅ Show chat window when button is clicked
     chatbotButton.addEventListener("click", function () {
@@ -90,7 +92,11 @@ document.addEventListener("DOMContentLoaded", function () {
             return response.json();
         })
         .then(data => {
-            displayMessage("Chatbot", data.reply, "chatbot");
+            if (data && data.reply) {
+                displayMessage("Chatbot", data.reply, "chatbot");
+            } else {
+                displayMessage("Chatbot", "Sorry, I didn't understand that.", "chatbot");
+            }
         })
         .catch(error => {
             console.error("❌ Error:", error);
@@ -103,8 +109,14 @@ document.addEventListener("DOMContentLoaded", function () {
     // ✅ Function to display messages in chat
     function displayMessage(sender, message, type) {
         const msgDiv = document.createElement("div");
+        
+        // ✅ Add a class for user and chatbot messages
         msgDiv.classList.add(type === "user" ? "user-message" : "chatbot-message");
-        msgDiv.innerHTML = `<strong>${sender}:</strong> ${message}`;
+    
+        // ✅ Bold chatbot's name but not the user's
+        msgDiv.innerHTML = `<strong>${type === "chatbot" ? "Chatbot:" : "You:"}</strong> ${message}`;
+        
+        // ✅ Append message to chat window
         chatMessages.appendChild(msgDiv);
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
@@ -123,3 +135,5 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
+
+console.log("Chatbot script initialized (moved from base.html)");

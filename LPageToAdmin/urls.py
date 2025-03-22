@@ -12,6 +12,7 @@ from .views import admin_dashboard, employee_dashboard
 from django.conf import settings
 from django.contrib.auth.decorators import user_passes_test
 from .views import send_email  # Import the new function
+from LPageToAdmin.views import custom_password_reset_done
 
 
 from . import views
@@ -58,9 +59,9 @@ urlpatterns = [
     path("logout/", logout_view, name="logout"),  # ✅ Correct Logout Route
     path("accounts/", include("django.contrib.auth.urls")),  # Default Django authentication
     path(
-        "admin/login/",
+        "accounts/login/",
         auth_views.LoginView.as_view(template_name="registration/login.html"),
-        name="admin_login",
+        name="login"
     ),
 
     # ✅ Reports
@@ -89,6 +90,21 @@ urlpatterns = [
     path("orders/<int:id>/", view_order, name="view_order"),
     path("orders/edit/<int:id>/", edit_order, name="edit_order"),
     path("orders/delete/<int:order_id>/", order_delete, name="order_delete"),
+
+    # ✅ Password Reset URLs
+    path("password-reset/", auth_views.PasswordResetView.as_view(
+        template_name="registration/password_reset.html"
+    ), name="password_reset"),
+
+    path("password-reset/done/", custom_password_reset_done, name="password_reset_done"),
+
+    path("password-reset-confirm/<uidb64>/<token>/", auth_views.PasswordResetConfirmView.as_view(
+        template_name="registration/password_reset_confirm.html"
+    ), name="password_reset_confirm"),
+
+    path("password-reset-complete/", auth_views.PasswordResetCompleteView.as_view(
+        template_name="registration/password_reset_complete.html"
+    ), name="password_reset_complete"),
 
     # ✅ Include app-level URLs (Landing Page)
     path("", include("app.urls")),

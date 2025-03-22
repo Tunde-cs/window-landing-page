@@ -15,20 +15,18 @@
     transition: background 0.3s ease;
 }
 
-/* ✅ Chat Window */
+//* ✅ Chat Container */
 #chat-window {
-    display: none;
     position: fixed;
-    bottom: 80px;
-    right: 20px;
-    width: 350px;
-    height: 500px;
+    bottom: 15px;
+    right: 15px;
+    width: 300px;
+    max-width: 90%;
     background: white;
-    border-radius: 12px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: none;
     overflow: hidden;
-    border: 1px solid #ddd;
-    font-family: Arial, sans-serif;
 }
 
 /* ✅ Chat Header */
@@ -47,11 +45,11 @@
 
 /* ✅ Chat Messages */
 #chat-messages {
-    padding: 12px;
-    height: 380px;
+    height: 250px;
     overflow-y: auto;
-    background: #f8f9fa;
-    border-bottom: 1px solid #ddd;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
 }
 
 /* ✅ Chat Input & Send Button */
@@ -87,36 +85,27 @@
     transition: background 0.3s ease;
 }
 
-/* ✅ Chatbot Message Styling */
+/* ✅ Chatbot Messages */
 .chatbot-message {
-    background-color: #f1f1f1; /* Light gray for chatbot */
-    color: #333;
-    border-radius: 8px;
+    background-color: #f1f1f1;
+    color: black;
     padding: 8px 12px;
-    margin: 5px 0;
-    text-align: left;
-    width: fit-content;
+    border-radius: 15px;
+    align-self: flex-start; /* Align to the left */
     max-width: 80%;
-    display: block;
+    margin: 5px 0;
     font-weight: bold;
-    font-family: Arial, sans-serif;
-    border-left: 4px solid #007bff; /* Add a blue left border for chatbot */
 }
 
-/* ✅ User Message Styling */
+/* ✅ User Messages */
 .user-message {
-    background-color: #007bff; /* Blue for user */
+    background-color: #007bff;
     color: white;
-    border-radius: 8px;
     padding: 8px 12px;
-    margin: 5px 0;
-    text-align: right;
-    width: fit-content;
+    border-radius: 15px;
+    align-self: flex-end; /* Align to the right */
     max-width: 80%;
-    display: block;
-    font-weight: bold;
-    font-family: Arial, sans-serif;
-    border-right: 4px solid #0056b3; /* Add a darker blue right border for user */
+    margin: 5px 0;
 }
 
 /* ✅ Make chatbot responsive on small screens */

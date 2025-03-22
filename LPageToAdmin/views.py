@@ -99,25 +99,25 @@ def send_quote_email(to_email, subject, message):
 @csrf_protect
 @login_required
 def USERADMIN(request):
-    """Ensure 'admin' goes to Admin Dashboard, SuperAdmin to /admin/, and employees to Employee Dashboard"""
+    """Route valid users to their respective dashboards. Block unauthorized access."""
 
-    user = request.user  # ✅ Get the logged-in user
+    user = request.user
 
-    # ✅ If SuperAdmin logs in, redirect them to Django Admin
-    if user.username == "SuperAdmin" and user.is_superuser:
+    # ✅ Redirect SuperAdmin (superuser) to the Django backend only
+    if user.is_superuser:
         return redirect("/admin/")
 
-    # ✅ If 'admin' logs in, send them to Admin Dashboard
-    elif user.username == "admin" and user.is_staff and not user.is_superuser:
-        return admin_dashboard(request)  # ✅ Redirect `admin` to `adminhome.html`
+    # ✅ Admin user (non-superuser staff)
+    elif user.username == "admin" and user.is_staff:
+        return admin_dashboard(request)
 
-    # ✅ If any other employee (like ediomi12) logs in, send them to Employee Dashboard
-    elif user.is_authenticated and not user.is_superuser:
-        login(request, user)  # ✅ Ensure user session is active
-        return employee_dashboard(request)  # ✅ Redirect to employee dashboard
+    # ✅ Employee user like ediomi12
+    elif user.is_authenticated and user.is_staff:
+        return employee_dashboard(request)
 
-    # ❌ If unauthorized user, send to login page
-    return redirect("/login/")
+    # ❌ Deny any other user (shouldn't happen after login_required)
+    return redirect("/accounts/login/")
+
 
 def admin_dashboard(request):
     """Admin Dashboard View - Displays key metrics, recent leads, and sales data."""
@@ -754,3 +754,7 @@ def send_email(request):
         return redirect("useradmin")  # Redirect back to the dashboard
 
     return render(request, "adminPages/adminhome.html")  # Ensure the correct template is used
+
+
+def custom_password_reset_done(request):
+    return render(request, "registration/password_reset_done.html")

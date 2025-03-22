@@ -173,62 +173,21 @@
         <canvas id="salesChart" style="width: 100%; height: 400px;"></canvas>
     </div>
 </div>
+{% endblock %}
 
-<!-- ✅ Load Chart.js -->
+{% block scripts %}
+<!-- ✅ Chart.js CDN -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    // ✅ Fetch Data from Django
-    const salesChartLabels = JSON.parse('{{ sales_chart_labels|safe }}');
-    const salesChartData = JSON.parse('{{ sales_chart_data|safe }}');
-    const quoteChartData = JSON.parse('{{ quote_chart_data|safe }}');  // ✅ New Quote Data
+<!-- ✅ Pass Django data safely -->
+<script type="application/json" id="chartLabels">{{ sales_chart_labels|safe }}</script>
+<script type="application/json" id="chartSales">{{ sales_chart_data|safe }}</script>
+{% if quote_chart_data %}
+<script type="application/json" id="chartQuotes">{{ quote_chart_data|safe }}</script>
+{% endif %}
 
-    console.log("✅ Sales Chart Labels:", salesChartLabels);
-    console.log("✅ Sales Chart Data:", salesChartData);
-    console.log("✅ Quote Chart Data:", quoteChartData);
-
-    if (salesChartLabels.length === 0 || salesChartData.length === 0) {
-        console.warn("⚠️ No sales data available.");
-        return;
-    }
-
-    // ✅ Render Chart.js Sales & Quote Requests Chart
-    const ctx = document.getElementById("salesChart").getContext("2d");
-    new Chart(ctx, {
-        type: "bar",
-        data: {
-            labels: salesChartLabels,
-            datasets: [
-                {
-                    label: "Monthly Sales ($)",
-                    data: salesChartData,
-                    backgroundColor: "rgba(75, 192, 192, 0.5)",  
-                    borderColor: "rgba(75, 192, 192, 1)",
-                    borderWidth: 2
-                },
-                {
-                    label: "Quote Requests",
-                    data: quoteChartData,  // ✅ Include Quote Requests
-                    backgroundColor: "rgba(255, 99, 132, 0.5)",  
-                    borderColor: "rgba(255, 99, 132, 1)",
-                    borderWidth: 2
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    suggestedMax: Math.max(...salesChartData, ...quoteChartData) * 1.2,  
-                }
-            }
-        }
-    });
-});
-</script>
+<!-- ✅ Link your shared static chart.js -->
+<script src="{% static 'js/chart.js' %}"></script>
 {% endblock %}
 
 

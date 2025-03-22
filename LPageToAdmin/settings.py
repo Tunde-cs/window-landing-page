@@ -184,7 +184,7 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 LOGIN_REDIRECT_URL = "/useradmin/"  # Redirect to the Admin Dashboard
-LOGOUT_REDIRECT_URL = "/accounts/login/"  # Redirect users to login page after logout
+LOGOUT_REDIRECT_URL = "/useradmin/"  # Redirect users to login page after logout
 
 LOGGING = {
     "version": 1,
@@ -256,6 +256,7 @@ CSP_SCRIPT_SRC = (
     "https://cdnjs.cloudflare.com",
     "https://code.jquery.com",
     "https://www.googletagmanager.com",
+    "https://maxcdn.bootstrapcdn.com",  # ✅ Needed for Bootstrap 5.3.0 if you're using it
 )
 
 CSP_STYLE_SRC = (
