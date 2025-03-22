@@ -69,10 +69,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
         displayMessage("You", userMessage, "user");
 
-        // ✅ Choose correct API URL for local and Heroku
-        const apiUrl = window.location.hostname === "127.0.0.1"
-            ? "http://127.0.0.1:8000/api/chat/"
-            : "https://windowgeniusai.herokuapp.com/api/chat/";
+        // ✅ Choose correct API URL for local and production dynamically
+        const apiUrl = `${window.location.origin}/api/chat/`;
 
         fetch(apiUrl, {
             method: "POST",

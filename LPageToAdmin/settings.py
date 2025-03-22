@@ -214,12 +214,13 @@ CORS_ALLOW_ALL_ORIGINS = False  # ✅ Set to False for security
 
 # Keep local URLs during development, remove them before final production lockdown
 CORS_ALLOWED_ORIGINS = [
-    "https://windowgeniusai-d6c9fb157af2.herokuapp.com",
     "https://windowgeniusai.herokuapp.com",
+    "https://windowgeniusai-d6c9fb157af2.herokuapp.com",
     "https://www.windowgeniusai.com",
     "https://windowgeniusai.com",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000"
 ]
-
 
 CORS_ALLOW_CREDENTIALS = True
 
