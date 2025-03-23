@@ -109,7 +109,6 @@ class ReplyMessageForm(forms.Form):
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ["date", "amount", "status"]  # Ensure these fields match the model
-
+        exclude = ['date']  # Exclude the non-editable 'date' field
 
     

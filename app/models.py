@@ -16,25 +16,36 @@ class Order(models.Model):
         ("completed", "Completed"),
     )
 
-    customer_name = models.CharField(max_length=255, default="Unknown")  # ✅ Added this field
-    date = models.DateField()
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    status = models.CharField(max_length=50, choices=STATUS_CHOICES)
+    customer_name = models.CharField(max_length=255, default="Unknown", blank=False)  # Make it required
+    date = models.DateField(auto_now_add=True)  # Automatically sets current date when order is created
+    amount = models.DecimalField(max_digits=10, decimal_places=2, blank=False)  # Make it required
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default="pending")  # Default to pending
 
+    class Meta:
+        verbose_name = "Order"
+        verbose_name_plural = "Orders"
+    
     def __str__(self):
         return f"Order {self.id} - {self.customer_name} - {self.status} - ${self.amount}"
-    
+
 
 # Project Model
 class Project(models.Model):
-    window_style = models.CharField(max_length=100)
-    status = models.CharField(
-        max_length=50,
-        choices=(("completed", "Completed"), ("in-progress", "In Progress")),
+    STATUS_CHOICES = (
+        ("completed", "Completed"),
+        ("in-progress", "In Progress"),
     )
 
+    window_style = models.CharField(max_length=100, choices=[("double_hung", "Double Hung"), ("casement", "Casement")], blank=False)  # Choices for window styles
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default="in-progress")  # Default status is in-progress
+
+    class Meta:
+        verbose_name = "Project"
+        verbose_name_plural = "Projects"
+
     def __str__(self):
-        return self.window_style
+        return f"Project - {self.window_style} - {self.status}"
+
 
 
 SERVICE_CHOICES = [
@@ -113,19 +124,11 @@ class Lead(models.Model):
 
 class Message(models.Model):
     sender = models.CharField(max_length=100, verbose_name="Sender Name")  # Sender name
-    receiver = models.CharField(
-        max_length=100, verbose_name="Receiver Name"
-    )  # Receiver name
-    subject = models.CharField(
-        max_length=200, verbose_name="Message Subject"
-    )  # Subject of the message
+    receiver = models.CharField(max_length=100, verbose_name="Receiver Name")  # Receiver name
+    subject = models.CharField(max_length=200, verbose_name="Message Subject")  # Subject of the message
     content = models.TextField(verbose_name="Message Content")  # Message content
-    is_read = models.BooleanField(
-        default=False, verbose_name="Read Status"
-    )  # Read/unread status
-    created_at = models.DateTimeField(
-        auto_now_add=True, verbose_name="Created At"
-    )  # Timestamp for creation
+    is_read = models.BooleanField(default=False, verbose_name="Read Status")  # Read/unread status
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Created At")  # Timestamp for creation
 
     class Meta:
         ordering = ["-created_at"]  # Order messages by newest first
@@ -144,6 +147,7 @@ class Message(models.Model):
 
     def __str__(self):
         return f"{self.subject} ({'Read' if self.is_read else 'Unread'})"
+    
 
 
 class Customer(models.Model):
