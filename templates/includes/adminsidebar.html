@@ -35,7 +35,7 @@
                 </li>
                 <!-- Inbox -->
                 <li class="nav-item">
-                    <a href="{% url 'inbox' %}" class="nav-link">
+                    <a href="{% url 'admininbox' %}" class="nav-link">
                         <i class="nav-icon fas fa-envelope"></i>
                         <p>Inbox</p>
                         <span class="badge badge-danger">{{ unread_messages }}</span>
@@ -53,12 +53,6 @@
                         <i class="fas fa-clock"></i> Pending Orders
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="{% url 'view_order' 5 %}" class="nav-link">
-                        <i class="fas fa-file-invoice"></i>
-                        <p>Order Details</p>
-                    </a>
-                </li>
                 <!-- Quotes -->
                 <li class="nav-item">
                     <a href="{% url 'adminquotes' %}" class="nav-link">
@@ -69,7 +63,7 @@
 
                 <!-- Projects -->
                 <li class="nav-item">
-                    <a href="{% url 'projects' %}" class="nav-link">
+                    <a href="{% url 'adminprojects' %}" class="nav-link">
                         <i class="nav-icon fas fa-tools"></i>
                         <p>Projects</p>
                     </a>

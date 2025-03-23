@@ -132,6 +132,7 @@ def admin_dashboard(request):
     try:
         # ✅ Fetch main admin-related metrics
         new_leads_count = Lead.objects.filter(status="new").count()
+        quote_leads_count = Quote.objects.count() 
         pending_orders_count = Order.objects.filter(status="pending").count()
         completed_projects_count = Order.objects.filter(status="completed").count()
         monthly_revenue = (
@@ -159,7 +160,7 @@ def admin_dashboard(request):
 
         # ✅ Fetch Monthly Quote Requests Data
         raw_quote_data = (
-            Quote.objects.annotate(month=ExtractMonth("created_at"))
+            Quote.objects.annotate(month=ExtractMonth("submitted_at"))
             .values("month")
             .annotate(total=Count("id"))  # Count number of quote requests
             .order_by("month")
@@ -182,7 +183,7 @@ def admin_dashboard(request):
         # ✅ Convert Data to JSON for Frontend
         context.update({
             "metrics": {
-                "new_leads_count": new_leads_count + total_quotes,  # Include quotes as leads
+                "new_leads_count": new_leads_count + quote_leads_count,
                 "pending_orders_count": pending_orders_count,
                 "completed_projects_count": completed_projects_count,
                 "monthly_revenue": monthly_revenue,
@@ -399,12 +400,11 @@ def orders_view(request):
     )
 
 
-def view_order(request, id):
-    # Fetch the order with the given id, or return a 404 if not found
-    order = get_object_or_404(Order, id=id)
-
-    # Return the order details page
+@csrf_protect
+def view_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
     return render(request, "adminPages/order_details.html", {"order": order})
+
 
 
 def projects_view(request):
@@ -480,6 +480,13 @@ def reports_export(request):
     return response
 
 
+@csrf_protect
+def projects_view(request):
+    """Handles rendering the Projects page."""
+    projects = Project.objects.all()
+    return render(request, "adminPages/adminprojects.html", {"projects": projects})
+
+
 # Admin Inbox View
 @staff_member_required
 def admin_inbox(request):
@@ -497,6 +504,8 @@ def admin_inbox(request):
         "lead_count": leads.count(),  # Total leads
     }
     return render(request, "adminPages/admininbox.html", context)
+
+
 
 
 # Logout View

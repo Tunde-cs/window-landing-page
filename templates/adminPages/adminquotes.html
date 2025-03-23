@@ -84,7 +84,18 @@
         <p><strong>Name:</strong> {{ quote.name }}</p>
         <p><strong>Email:</strong> {{ quote.email }}</p>
         <p><strong>Phone:</strong> {{ quote.phone }}</p>
-        <p><strong>Requested At:</strong> {{ quote.created_at|date:"M d, Y H:i" }}</p>
+        <p><strong>Requested At:</strong> {{ quote.submitted_at|date:"M d, Y H:i" }}</p>
+        <p><strong>Service:</strong> {{ quote.get_service_display }}</p>
+        <p><strong>Window Type:</strong> {{ quote.get_windowType_display }}</p>
+        <p><strong>City:</strong> {{ quote.city }}</p>
+        <p><strong>State:</strong> {{ quote.state }}</p>
+        <p><strong>Zipcode:</strong> {{ quote.zipcode }}</p>
+        <p><strong>Property Address:</strong> {{ quote.property_address }}</p>
+        <p><strong>Financing:</strong>
+            {% if quote.financing == True %}Yes
+            {% elif quote.financing == False %}No
+            {% else %}Not Specified{% endif %}
+        </p>
         <p><strong>Details:</strong> {{ quote.details }}</p>
     </div>
 </div>

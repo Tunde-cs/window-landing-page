@@ -10,7 +10,7 @@ urlpatterns = [
     path("", home, name="index"),  # Route for the landing page
     path("request-quote/", views.request_quote, name="request_quote"),
     path("quote-success/", views.quote_success, name="quote_success"),  # Success page
-    
+    path("submit-lead/", submit_lead, name="submit_lead"),  # ✅ Email form submission
 
     # ✅ Public Pages
     path("about/", views.about_page, name="about"),
@@ -19,12 +19,7 @@ urlpatterns = [
     path("terms-of-use/", views.terms_of_use_page, name="terms_of_use"),
     path("privacy-policy/", views.privacy_policy, name="privacy_policy"),
 
-    # ✅ Other Routes
-    path("inbox/", views.inbox_view, name="inbox"),
-    path("submit-lead/", submit_lead, name="submit_lead"),  # ✅ Email form submission
-    path("projects/", views.projects_view, name="projects"),
-    path("reports/", views.reports_view, name="reports"),
-    
+            
     path("api/", include("chatbot.urls")),  # ✅ Now chatbot API is accessible via /api/chat/
 
     # Optional: Generic landing page route

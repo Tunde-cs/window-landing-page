@@ -8,7 +8,7 @@ from LPageToAdmin.views import reply_message  # Ensure function is imported
 from .views import logout_view
 from LPageToAdmin.views import signup  # ✅ Import the correct signup view
 from LPageToAdmin.views import USERADMIN  # ✅ Make sure USERADMIN is properly imported
-from .views import admin_dashboard, employee_dashboard
+from .views import admin_dashboard, employee_dashboard,projects_view
 from django.conf import settings
 from django.contrib.auth.decorators import user_passes_test
 from .views import send_email  # Import the new function
@@ -78,6 +78,7 @@ urlpatterns = [
     path("adminmessages/delete/<int:message_id>/", delete_message, name="delete_message"),
     path("admininbox/", admin_inbox, name="admininbox"),
     path("adminleads/", admin_leads_view, name="adminleads"),
+    path("adminprojects/", projects_view, name="adminprojects"),
 
     # ✅ Admin Quotes Management
     path("adminquotes/", admin_quotes_view, name="adminquotes"),  # Main admin quotes view
@@ -87,7 +88,7 @@ urlpatterns = [
     # ✅ Orders Management
     path("orders/", orders_view, name="orders"),
     path("orders/pending/", pending_orders_view, name="pending_orders"),  # Pending orders
-    path("orders/<int:id>/", view_order, name="view_order"),
+    path("orders/<int:order_id>/", view_order, name="view_order"),
     path("orders/edit/<int:id>/", edit_order, name="edit_order"),
     path("orders/delete/<int:order_id>/", order_delete, name="order_delete"),
 

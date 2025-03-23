@@ -118,82 +118,6 @@ def submit_lead(request):
              return redirect("home")
  
      return render(request, "pages/index.html")
- 
-
-
-@csrf_protect
-def inbox_view(request):
-    """Handles rendering the Inbox page."""
-    messages = Message.objects.all().order_by(
-        "-created_at"
-    )  # Fetch all messages, sorted by creation date
-    return render(request, "adminPages/admininbox.html", {"messages": messages})
-
-
-@csrf_protect
-def view_order(request, order_id):
-    """Handles viewing a specific order."""
-    order = get_object_or_404(Order, id=order_id)
-    return render(request, "adminPages/adminorder_detail.html", {"order": order})
-
-
-@csrf_protect
-def projects_view(request):
-    """Handles rendering the Projects page."""
-    projects = Project.objects.all()
-    return render(request, "adminPages/adminprojects.html", {"projects": projects})
-
-
-@csrf_protect
-def reports_view(request):
-    """Handles rendering the Reports page."""
-    context = {
-        "report_data": [],
-    }
-    return render(request, "adminPages/adminreports.html", context)
-
-
-@csrf_protect
-def add_message(request):
-    if request.method == "POST":
-        subject = request.POST.get("subject")
-        body = request.POST.get("body")
-
-        Message.objects.create(subject=subject, body=body)
-        messages.success(request, "Message added successfully.")
-        return redirect("inbox")
-
-
-@csrf_protect
-def mark_message_read(request, message_id):
-    if request.method == "POST":
-        message = get_object_or_404(Message, id=message_id)
-        message.is_read = True
-        message.save()
-        messages.success(request, "Message marked as read.")
-        return redirect("inbox")
-
-
-@csrf_protect
-def reply_message(request, message_id):
-    """Handles replying to a specific message."""
-    message = get_object_or_404(Message, id=message_id)
-    if request.method == "POST":
-        form = ReplyMessageForm(request.POST)
-        if form.is_valid():
-            reply = form.save(commit=False)
-            reply.sender = request.user.username
-            reply.receiver = message.sender
-            reply.save()
-            messages.success(request, "Your reply has been sent.")
-            return redirect("inbox")
-    else:
-        form = ReplyMessageForm()
-    return render(
-        request,
-        "adminPages/adminmessages_reply.html",
-        {"form": form, "message": message},
-    )
 
 
 def csrf_failure(request, reason=""):
@@ -285,6 +209,15 @@ def request_quote(request):
         form = QuoteForm(request.POST)
         if form.is_valid():
             quote = form.save()
+
+            # 📩 Create a message for admin inbox
+            Message.objects.create(
+                 sender=quote.name,
+                 receiver="admin",
+                 subject="New Quote Submitted",
+                 content=f"{quote.name} submitted a new quote request for {quote.service}.",
+                 is_read=False
+            )
 
             # Optional email
             send_mail(
