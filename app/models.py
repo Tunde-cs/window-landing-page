@@ -16,7 +16,10 @@ class Order(models.Model):
         ("completed", "Completed"),
     )
 
-    customer_name = models.CharField(max_length=255, default="Unknown", blank=False)  # Make it required
+    # Foreign key to the Quote model
+    customer = models.ForeignKey('Quote', on_delete=models.CASCADE, related_name='orders')
+
+    # Date and amount fields
     date = models.DateField(auto_now_add=True)  # Automatically sets current date when order is created
     amount = models.DecimalField(max_digits=10, decimal_places=2, blank=False)  # Make it required
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, default="pending")  # Default to pending
@@ -26,8 +29,8 @@ class Order(models.Model):
         verbose_name_plural = "Orders"
     
     def __str__(self):
-        return f"Order {self.id} - {self.customer_name} - {self.status} - ${self.amount}"
-
+        # Use customer name from the related Quote object
+        return f"Order {self.id} - {self.customer.name} - {self.status} - ${self.amount}"
 
 # Project Model
 class Project(models.Model):
