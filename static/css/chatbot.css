@@ -15,7 +15,7 @@
     transition: background 0.3s ease;
 }
 
-//* ✅ Chat Container */
+/* ✅ Chat Container */
 #chat-window {
     position: fixed;
     bottom: 15px;
@@ -85,92 +85,55 @@
     transition: background 0.3s ease;
 }
 
-/* ✅ Chatbot Messages */
+/* ✅ CHATBOT MESSAGE */
 .chatbot-message {
     background-color: #f1f1f1;
-    color: black;
     padding: 8px 12px;
-    border-radius: 15px;
-    align-self: flex-start; /* Align to the left */
-    max-width: 80%;
-    margin: 5px 0;
+    border-radius: 10px;
+    margin: 6px 0;
+    font-weight: normal; /* <- Fix this line */
+    color: #333;
+}
+
+/* Only bold the "Chatbot:" label via JS, not the full text */
+.chatbot-message strong {
     font-weight: bold;
+    margin-right: 6px;
 }
 
-/* ✅ User Messages */
+/* ✅ USER MESSAGE */
 .user-message {
-    background-color: #007bff;
-    color: white;
-    padding: 8px 12px;
-    border-radius: 15px;
-    align-self: flex-end; /* Align to the right */
-    max-width: 80%;
-    margin: 5px 0;
+    background-color: #e0f7fa;
+    color: #003344;
+    text-align: right;
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 12px 0 12px 12px;
+    font-weight: 500;
 }
 
-/* ✅ Make chatbot responsive on small screens */
-@media screen and (max-width: 768px) {
-    #chatbot-container {
-        width: 90%;  /* ✅ Takes 90% of screen width */
-        max-width: 400px;  /* ✅ Prevents it from becoming too wide */
-        height: 65vh;  /* ✅ 65% of the screen height */
-        bottom: 20px;
-        right: 5%;
-        left: 5%; /* ✅ Centers the chatbot horizontally */
-        border-radius: 12px; /* ✅ Keeps rounded corners for a smooth UI */
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* ✅ Adds a slight shadow for depth */
-    }
 
-    #chat-messages {
-        height: 50vh; /* ✅ Adjusts message area height for better scrolling */
-    }
-
-    #chat-input-container {
-        padding: 10px; /* ✅ Adds padding to input for a better touch experience */
-    }
-}
-
-/* ✅ Fix Safari Display Issues */
-@supports (-webkit-touch-callout: none) {
-    #chat-window {
-        bottom: 90px !important;  /* ✅ Adjust bottom margin for Safari */
-        width: 360px !important;  /* ✅ Increase width slightly */
-        max-width: 90vw !important;
-        border-radius: 10px;
-    }
-}
-
-/* ✅ Fix Chat Input Focus Issue on iPhones */
-#chat-input:focus {
-    outline: none;
-    border: 2px solid #007bff !important;  /* ✅ Ensures input is visible */
-}
-
-/* ✅ Fix Safari Scroll Issue */
-#chat-messages {
-    -webkit-overflow-scrolling: touch;
-}
-
+/* ✅ Chatbot Container (General Styling) */
 #chatbot-container {
-    max-width: 90%;
-    width: 100%;
-    height: auto;
     position: fixed;
     bottom: 20px;
     right: 10px;
+    max-width: 360px;
+    width: 100%;
     background: white;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    z-index: 9999;
 }
 
-@media (max-width: 768px) {
-    #chatbot-container {
-        width: 95%;
-        bottom: 10px;
-        right: 5px;
-    }
+/* ✅ Chat Input Focus Fix (iPhones) */
+#chat-input:focus {
+    outline: none;
+    border: 2px solid #007bff !important;
 }
 
+/* ✅ Global Font */
 body {
     font-family: Arial, sans-serif;
 }
+

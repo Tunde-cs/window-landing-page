@@ -203,7 +203,6 @@ LOGGING = {
 }
 
 # ✅ Correct CSRF settings
-CSRF_USE_SESSIONS = True  # ✅ Store CSRF token in session instead of cookies
 CSRF_FAILURE_VIEW = "app.views.csrf_failure"  # ✅ Ensure this view exists
 
 MEDIA_URL = "/media/"
@@ -297,6 +296,3 @@ import django_heroku
 # Apply Heroku settings
 django_heroku.settings(locals())
 
-# Database settings for Heroku
-import dj_database_url
-DATABASES["default"] = dj_database_url.config(conn_max_age=600, ssl_require=True)

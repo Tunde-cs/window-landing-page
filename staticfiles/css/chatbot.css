@@ -1,4 +1,23 @@
-/* ✅ Floating Chat Button */
+/* ✅ Base Chatbot Container (hidden until triggered) */
+#chatbot-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    max-width: 360px;
+    width: 100%;
+    display: none; /* ✅ Hidden by default */
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    z-index: 9999;
+}
+
+/* ✅ When active, show the chatbot */
+#chatbot-container.active {
+    display: block;
+}
+
+/* ✅ Floating Button */
 #chatbot-button {
     position: fixed;
     bottom: 20px;
@@ -10,22 +29,18 @@
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     border: none;
-    transition: background 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-//* ✅ Chat Container */
+/* ✅ Chat Window */
 #chat-window {
-    position: fixed;
-    bottom: 15px;
-    right: 15px;
-    width: 300px;
-    max-width: 90%;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    display: none;
+    width: 100%;
+    height: 65vh;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    border-radius: 12px;
     overflow: hidden;
 }
 
@@ -39,138 +54,60 @@
     align-items: center;
     font-size: 16px;
     font-weight: bold;
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
 }
 
 /* ✅ Chat Messages */
 #chat-messages {
-    height: 250px;
-    overflow-y: auto;
+    flex-grow: 1;
     padding: 10px;
-    display: flex;
-    flex-direction: column;
+    overflow-y: auto;
 }
 
-/* ✅ Chat Input & Send Button */
+/* ✅ Input Container */
 #chat-input-container {
     display: flex;
-    align-items: center;
-    padding: 8px;
-    background: white;
+    padding: 10px;
+    background: #fff;
 }
 
 #chat-input {
-    flex-grow: 1;
+    flex: 1;
     padding: 10px;
-    border: 1px solid #ccc;
     border-radius: 6px;
+    border: 1px solid #ccc;
     font-size: 14px;
-    outline: none;
-    min-height: 40px;
-    max-height: 120px;
-    resize: vertical;
 }
 
 #chat-send-button {
-    background: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 15px;
     margin-left: 8px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: bold;
-    transition: background 0.3s ease;
-}
-
-/* ✅ Chatbot Messages */
-.chatbot-message {
-    background-color: #f1f1f1;
-    color: black;
-    padding: 8px 12px;
-    border-radius: 15px;
-    align-self: flex-start; /* Align to the left */
-    max-width: 80%;
-    margin: 5px 0;
-    font-weight: bold;
-}
-
-/* ✅ User Messages */
-.user-message {
-    background-color: #007bff;
+    padding: 10px 15px;
+    background: #007bff;
+    border: none;
     color: white;
-    padding: 8px 12px;
-    border-radius: 15px;
-    align-self: flex-end; /* Align to the right */
-    max-width: 80%;
-    margin: 5px 0;
+    border-radius: 6px;
+    font-weight: bold;
 }
 
-/* ✅ Make chatbot responsive on small screens */
-@media screen and (max-width: 768px) {
-    #chatbot-container {
-        width: 90%;  /* ✅ Takes 90% of screen width */
-        max-width: 400px;  /* ✅ Prevents it from becoming too wide */
-        height: 65vh;  /* ✅ 65% of the screen height */
-        bottom: 20px;
+/* ✅ Mobile Responsiveness */
+@media (max-width: 576px) {
+    #chatbot-container.active {
+        width: 90%;
+        left: 5%;
         right: 5%;
-        left: 5%; /* ✅ Centers the chatbot horizontally */
-        border-radius: 12px; /* ✅ Keeps rounded corners for a smooth UI */
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* ✅ Adds a slight shadow for depth */
+        bottom: 20px;
+        height: 70vh;
+    }
+
+    #chat-window {
+        height: 100%;
+        border-radius: 1rem;
     }
 
     #chat-messages {
-        height: 50vh; /* ✅ Adjusts message area height for better scrolling */
+        max-height: 45vh;
     }
 
-    #chat-input-container {
-        padding: 10px; /* ✅ Adds padding to input for a better touch experience */
+    #chat-input {
+        font-size: 14px;
     }
-}
-
-/* ✅ Fix Safari Display Issues */
-@supports (-webkit-touch-callout: none) {
-    #chat-window {
-        bottom: 90px !important;  /* ✅ Adjust bottom margin for Safari */
-        width: 360px !important;  /* ✅ Increase width slightly */
-        max-width: 90vw !important;
-        border-radius: 10px;
-    }
-}
-
-/* ✅ Fix Chat Input Focus Issue on iPhones */
-#chat-input:focus {
-    outline: none;
-    border: 2px solid #007bff !important;  /* ✅ Ensures input is visible */
-}
-
-/* ✅ Fix Safari Scroll Issue */
-#chat-messages {
-    -webkit-overflow-scrolling: touch;
-}
-
-#chatbot-container {
-    max-width: 90%;
-    width: 100%;
-    height: auto;
-    position: fixed;
-    bottom: 20px;
-    right: 10px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-}
-
-@media (max-width: 768px) {
-    #chatbot-container {
-        width: 95%;
-        bottom: 10px;
-        right: 5px;
-    }
-}
-
-body {
-    font-family: Arial, sans-serif;
 }

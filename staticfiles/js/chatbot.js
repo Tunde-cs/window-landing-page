@@ -107,14 +107,8 @@ document.addEventListener("DOMContentLoaded", function () {
     // ✅ Function to display messages in chat
     function displayMessage(sender, message, type) {
         const msgDiv = document.createElement("div");
-        
-        // ✅ Add a class for user and chatbot messages
         msgDiv.classList.add(type === "user" ? "user-message" : "chatbot-message");
-    
-        // ✅ Bold chatbot's name but not the user's
-        msgDiv.innerHTML = `<strong>${type === "chatbot" ? "Chatbot:" : "You:"}</strong> ${message}`;
-        
-        // ✅ Append message to chat window
+        msgDiv.innerHTML = `<strong>${sender}:</strong> ${message}`;
         chatMessages.appendChild(msgDiv);
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }

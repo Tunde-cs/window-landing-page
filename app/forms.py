@@ -57,23 +57,28 @@ class QuoteForm(forms.ModelForm):
             "name",
             "email",
             "phone",
+            "service",
+            "windowType",
             "details",
-        ]  # Use existing fields in Quote model
+            "city",
+            "state",
+            "zipcode",
+            "property_address",
+            "financing",
+        ]
         widgets = {
-            "name": forms.TextInput(
-                attrs={"class": "form-control", "placeholder": "Customer Name"}
-            ),
-            "email": forms.EmailInput(
-                attrs={"class": "form-control", "placeholder": "Customer Email"}
-            ),
-            "phone": forms.TextInput(
-                attrs={"class": "form-control", "placeholder": "Customer Phone"}
-            ),
-            "details": forms.Textarea(
-                attrs={"class": "form-control", "placeholder": "Additional Details"}
-            ),
+            "name": forms.TextInput(attrs={"class": "form-control", "placeholder": "Customer Name"}),
+            "email": forms.EmailInput(attrs={"class": "form-control", "placeholder": "Customer Email"}),
+            "phone": forms.TextInput(attrs={"class": "form-control", "placeholder": "Phone Number"}),
+            "service": forms.TextInput(attrs={"class": "form-control", "placeholder": "Requested Service"}),
+            "windowType": forms.Select(attrs={"class": "form-select"}),
+            "details": forms.Textarea(attrs={"class": "form-control", "placeholder": "Additional Details (Optional)"}),
+            "city": forms.TextInput(attrs={"class": "form-control", "placeholder": "City (Optional)"}),
+            "state": forms.TextInput(attrs={"class": "form-control", "placeholder": "State (Optional)"}),
+            "zipcode": forms.TextInput(attrs={"class": "form-control", "placeholder": "Zip Code (Optional)"}),
+            "property_address": forms.TextInput(attrs={"class": "form-control", "placeholder": "Property Address (Optional)"}),
+            "financing": forms.CheckboxInput(attrs={"class": "form-check-input"}),
         }
-
 
 class ReplyMessageForm(forms.Form):
     subject = forms.CharField(

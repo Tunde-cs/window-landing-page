@@ -20,8 +20,9 @@ class ProjectAdmin(admin.ModelAdmin):
 
 @admin.register(Quote)
 class QuoteAdmin(admin.ModelAdmin):
-    list_display = ("name", "email", "phone", "created_at")
+    list_display = ("name", "email", "phone", "city", "state", "financing", "submitted_at")
     search_fields = ("name", "email")
+    
 
     # ✅ Add custom admin action
     actions = ["send_email"]

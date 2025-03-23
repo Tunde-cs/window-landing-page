@@ -17,6 +17,8 @@ from django.conf import settings
 from django.contrib.auth.models import User  # ✅ Keep this for user-related functions
 from .forms import LeadForm  # ✅ Import the correct form
 from django.middleware.csrf import get_token
+from django.utils.decorators import method_decorator
+import json
 
 
 # ✅ Import Forms (Keep only if used in views)
@@ -277,8 +279,6 @@ def admin_login(request):
     return render(request, "registration/login.html")  # Render login page
 
 
-
-@csrf_exempt  # 🚨 TEMPORARY! Remove this after debugging.
 @csrf_protect
 def request_quote(request):
     if request.method == "POST":
@@ -286,28 +286,27 @@ def request_quote(request):
         if form.is_valid():
             quote = form.save()
 
-            # ✅ Send confirmation email
+            # Optional email
             send_mail(
                 subject="Your Quote Request Has Been Received!",
                 message=f"Dear {quote.name},\n\nThank you for requesting a quote. Our team will contact you soon.",
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[quote.email],
-                fail_silently=True,  # Prevent errors from crashing the form
+                fail_silently=True,
             )
 
-            messages.success(request, "Your quote request has been submitted!")
+            # Redirect back to landing or a success page
             return redirect("quote_success")
         else:
             messages.error(request, "There was an error submitting your request.")
-            logger.error("Quote form submission failed: %s", form.errors)
     else:
         form = QuoteForm()
 
     return render(request, "pages/request_quote.html", {"form": form})
 
-@csrf_protect
+
 def quote_success(request):
-    return render(request, "pages/quote_success.html")  # Adjust path if necessary
+    return render(request, "pages/quote_success.html")
 
 
 # Admin Logout

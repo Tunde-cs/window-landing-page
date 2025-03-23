@@ -37,18 +37,38 @@ class Project(models.Model):
         return self.window_style
 
 
-# Quote Model
 class Quote(models.Model):
-    name = models.CharField(max_length=255)
+    WINDOW_TYPES = (
+        ("double_hung", "Double Hung"),
+        ("casement", "Casement"),
+        ("sliding", "Sliding"),
+        ("bay_bow", "Picture"),
+        ("custom", "Custom"),
+    )
+
+    name = models.CharField(max_length=100)
     email = models.EmailField()
-    phone = models.CharField(max_length=15, blank=True, null=True)
-    details = models.TextField(blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    phone = models.CharField(max_length=30)
+    service = models.CharField(max_length=100)
+    windowType = models.CharField(max_length=50, choices=WINDOW_TYPES)
+    details = models.TextField(blank=True)
+
+    # 🏡 Location Fields
+    city = models.CharField(max_length=100, blank=True)
+    state = models.CharField(max_length=100, blank=True)
+    zipcode = models.CharField(max_length=10, blank=True)
+    property_address = models.CharField(max_length=255, blank=True)
+
+    # 💰 Financing Option (Yes/No)
+    financing = models.BooleanField(null=True, blank=True)
+
+    # 📅 Timestamp
+    submitted_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.name} - {self.email}"
-
-
+        return f"{self.name} - {self.service}"
+    
+    
 class Lead(models.Model):
     SERVICES = (
         ("window_replacement", "Window Replacement"),
