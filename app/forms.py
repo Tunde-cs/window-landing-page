@@ -5,6 +5,7 @@ from app.models import Lead  # Ensure this imports the correct Lead model
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.forms import UserCreationForm
 from app.models import UserProfile  # ✅ Ensure UserProfile model exists
+from .models import SERVICE_CHOICES
 
 
 # ✅ Custom User Registration Form
@@ -51,13 +52,20 @@ class LeadForm(forms.Form):  # Change from ModelForm to Form
     
 
 class QuoteForm(forms.ModelForm):
+    # Define SERVICE_CHOICES at the top
+    SERVICE_CHOICES = [
+        ('window_replacement', 'Window Replacement'),
+        ('door_installation', 'Door Installation'),
+        ('roof_repair', 'Roof Repair'),
+    ]
+
     class Meta:
         model = Quote
         fields = [
             "name",
             "email",
             "phone",
-            "service",
+            "service",  # This field will use the dropdown menu
             "windowType",
             "details",
             "city",
@@ -70,7 +78,7 @@ class QuoteForm(forms.ModelForm):
             "name": forms.TextInput(attrs={"class": "form-control", "placeholder": "Customer Name"}),
             "email": forms.EmailInput(attrs={"class": "form-control", "placeholder": "Customer Email"}),
             "phone": forms.TextInput(attrs={"class": "form-control", "placeholder": "Phone Number"}),
-            "service": forms.TextInput(attrs={"class": "form-control", "placeholder": "Requested Service"}),
+            "service": forms.Select(choices=SERVICE_CHOICES, attrs={"class": "form-select"}),  # Dropdown for services
             "windowType": forms.Select(attrs={"class": "form-select"}),
             "details": forms.Textarea(attrs={"class": "form-control", "placeholder": "Additional Details (Optional)"}),
             "city": forms.TextInput(attrs={"class": "form-control", "placeholder": "City (Optional)"}),
@@ -80,6 +88,17 @@ class QuoteForm(forms.ModelForm):
             "financing": forms.CheckboxInput(attrs={"class": "form-check-input"}),
         }
 
+        def clean_financing(self):
+            financing = self.cleaned_data.get("financing")
+            if financing == "True":
+                return True
+            elif financing == "False":
+                return False
+            return None  # or False based on your logic
+
+
+
+    
 class ReplyMessageForm(forms.Form):
     subject = forms.CharField(
         max_length=200, widget=forms.TextInput(attrs={"class": "form-control"})

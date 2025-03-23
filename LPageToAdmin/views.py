@@ -758,3 +758,13 @@ def send_email(request):
 
 def custom_password_reset_done(request):
     return render(request, "registration/password_reset_done.html")
+
+
+def user_login_redirect(request):
+    if request.user.is_superuser:
+        return redirect('/admin/')  # Redirect SuperAdmin to Django Admin
+    elif request.user.is_staff:
+        return redirect('/useradmin/')  # Redirect Admin to custom Admin page
+    else:
+        return redirect('/employee_dashboard/')  # Redirect ediomi12 to employee dashboard
+    

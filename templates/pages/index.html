@@ -242,7 +242,13 @@
         
                     <!-- Requested Service -->
                     <div class="col-md-6">
-                        <input class="form-control form-control-lg" id="service" name="service" type="text" placeholder="Requested Service" required>
+                        <label for="service" class="form-label mt-2">Requested Service</label>
+                        <select class="form-select form-control-lg" id="service" name="service" required>
+                            <option value="" disabled selected>Select Requested Service</option>
+                            <option value="window_replacement">Window Replacement</option>
+                            <option value="door_installation">Door Installation</option>
+                            <option value="roof_repair">Roof Repair</option>
+                        </select>
                     </div>
         
                     <!-- Type of Windows -->
@@ -282,8 +288,8 @@
                         <label for="financing" class="form-label mt-2">Interested in Financing? (Optional)</label>
                         <select class="form-select form-control-lg" id="financing" name="financing">
                             <option value="" selected>-- Select an Option --</option>
-                            <option value="true">Yes</option>
-                            <option value="false">No</option>
+                            <option value="True">Yes</option>
+                            <option value="False">No</option>
                         </select>
                     </div>
         

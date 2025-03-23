@@ -37,6 +37,12 @@ class Project(models.Model):
         return self.window_style
 
 
+SERVICE_CHOICES = [
+    ('window_replacement', 'Window Replacement'),
+    ('door_installation', 'Door Installation'),
+    ('roof_repair', 'Roof Repair'),
+]
+
 class Quote(models.Model):
     WINDOW_TYPES = (
         ("double_hung", "Double Hung"),
@@ -49,7 +55,7 @@ class Quote(models.Model):
     name = models.CharField(max_length=100)
     email = models.EmailField()
     phone = models.CharField(max_length=30)
-    service = models.CharField(max_length=100)
+    service = models.CharField(max_length=100, choices=SERVICE_CHOICES)
     windowType = models.CharField(max_length=50, choices=WINDOW_TYPES)
     details = models.TextField(blank=True)
 

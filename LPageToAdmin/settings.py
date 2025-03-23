@@ -296,3 +296,18 @@ import django_heroku
 # Apply Heroku settings
 django_heroku.settings(locals())
 
+
+# Session engine to store session data in the database
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Stores sessions in the database
+
+# Duration of the session cookie in seconds
+SESSION_COOKIE_AGE = 3600  # 1 hour (set to your desired duration)
+
+# Set the session cookie to be secure (only sent over HTTPS)
+SESSION_COOKIE_SECURE = False  # Set to True if you are using HTTPS
+
+# Set the session cookie to HttpOnly (to prevent JavaScript access)
+SESSION_COOKIE_HTTPONLY = True
+
+# Whether the session cookie should expire when the user closes the browser
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # Set to True to expire sessions when the browser is closed
