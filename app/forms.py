@@ -90,9 +90,9 @@ class QuoteForm(forms.ModelForm):
 
         def clean_financing(self):
             financing = self.cleaned_data.get("financing")
-            if financing == "True":
+            if financing == "yes":
                 return True
-            elif financing == "False":
+            elif financing == "no":
                 return False
             return None  # or False based on your logic
 
