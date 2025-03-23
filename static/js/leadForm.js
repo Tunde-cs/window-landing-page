@@ -1,33 +1,34 @@
-console.log("✅ leadForm.js loaded");
-
-// ✅ Ensure DOM is fully loaded before executing
+// ✅ Simple email validation for native form submission (no fetch, no JSON)
 document.addEventListener("DOMContentLoaded", function () {
-    // ✅ Select lead form and input elements
     const leadForm = document.getElementById("leadForm");
     const emailInput = document.getElementById("email");
     const emailError = document.getElementById("email-error");
 
     if (!leadForm) {
-        console.error("❌ Form not found: leadForm is missing from the DOM.");
-    } else {
-        if (!emailInput || !emailError) {
-            console.error("❌ Email input or error message container is missing.");
-        } else {
-            // ✅ Email validation on form submit
-            leadForm.addEventListener("submit", function (event) {
-                if (!emailInput.value.includes("@")) {
-                    event.preventDefault();
-                    emailError.textContent = "Invalid email address.";
-                    emailError.style.display = "block";
-                }
-            });
-        }
+        console.warn("⚠️ leadForm not found in DOM.");
+        return;
     }
 
-    // ✅ Auto-close menu after clicking a link
+    // ✅ Basic client-side email check
+    leadForm.addEventListener("submit", function (event) {
+        if (emailInput && !emailInput.value.includes("@")) {
+            event.preventDefault();
+            if (emailError) {
+                emailError.textContent = "Invalid email address.";
+                emailError.style.display = "block";
+            } else {
+                alert("Please enter a valid email address.");
+            }
+        }
+    });
+
+    // ✅ Auto-close mobile nav menu after clicking a link
     document.querySelectorAll(".nav-link").forEach(item => {
         item.addEventListener("click", () => {
-            document.querySelector(".navbar-collapse").classList.remove("show");
+            const nav = document.querySelector(".navbar-collapse");
+            if (nav && nav.classList.contains("show")) {
+                nav.classList.remove("show");
+            }
         });
     });
 });
