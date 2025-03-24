@@ -13,7 +13,9 @@ from django.conf import settings
 from django.contrib.auth.decorators import user_passes_test
 from .views import send_email  # Import the new function
 from LPageToAdmin.views import custom_password_reset_done
-
+from .views import mark_order_complete
+from app.forms import OrderForm
+from LPageToAdmin.views import mark_order_pending
 
 from . import views
 from app import views as app_views  # Import app-level views
@@ -88,7 +90,9 @@ urlpatterns = [
     # ✅ Orders Management
     path("orders/", orders_view, name="orders"),
     path("orders/pending/", pending_orders_view, name="pending_orders"),  # Pending orders
+    path("orders/pending/<int:order_id>/", mark_order_pending, name="mark_order_pending"),
     path("orders/<int:order_id>/", view_order, name="view_order"),
+    path("orders/<int:order_id>/complete/", mark_order_complete, name="mark_order_complete"),
     path("orders/edit/<int:id>/", edit_order, name="edit_order"),
     path("orders/delete/<int:order_id>/", order_delete, name="order_delete"),
 

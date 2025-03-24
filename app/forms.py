@@ -105,10 +105,9 @@ class ReplyMessageForm(forms.Form):
     )
     content = forms.CharField(widget=forms.Textarea(attrs={"class": "form-control"}))
 
-
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
-        exclude = ['date']  # Exclude the non-editable 'date' field
+        fields = ['customer', 'amount', 'status']  # ✅ Do NOT include 'date'
 
-    
+        

@@ -36,7 +36,7 @@ from app.models import Lead, Message, Order, Project, Quote  # ✅ Models only
 from app.forms import UserCreateForm  # ✅ Import UserCreateForm from forms.py
 from django.contrib.auth.decorators import user_passes_test
 from django.conf import settings
-
+from app.forms import OrderForm
 
 # Base Views
 def BASE(request):
@@ -399,6 +399,20 @@ def orders_view(request):
         },
     )
 
+def edit_order(request, id):
+    order = get_object_or_404(Order, id=id)
+
+    if request.method == "POST":
+        form = OrderForm(request.POST, instance=order)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f"Order {order.id} updated successfully!")
+            return redirect("view_order", order_id=order.id)
+    else:
+        form = OrderForm(instance=order)
+
+    return render(request, "adminPages/edit_order.html", {"form": form})
+
 
 @csrf_protect
 def view_order(request, order_id):
@@ -406,10 +420,49 @@ def view_order(request, order_id):
     return render(request, "adminPages/order_details.html", {"order": order})
 
 
+@csrf_protect
+@login_required
+def mark_order_pending(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    order.status = "pending"
+    order.save()
+    messages.info(request, f"Order {order.id} marked as pending.")
+    return redirect("view_order", order_id=order.id)
 
+
+@csrf_protect
+def mark_order_complete(request, order_id):
+    """Marks a specific order as completed."""
+    if request.method == "POST":
+        order = get_object_or_404(Order, id=order_id)
+        order.status = "completed"
+        order.save()
+    return redirect("view_order", order_id=order_id)
+
+
+def order_delete(request, order_id):
+    """
+    Deletes a specific order by ID and redirects to the orders list with a success message.
+    """
+    if not request.user.is_staff:
+        messages.error(request, "You do not have permission to delete this order.")
+        return redirect("orders")  # Redirect to all orders page
+
+    # Get the order or return 404 if it doesn’t exist
+    order = get_object_or_404(Order, id=order_id)
+    order.delete()
+
+    # ✅ Add a success message
+    messages.success(request, f"Order {order_id} deleted successfully.")
+
+    # ✅ Redirect to the correct orders page
+    return redirect("orders")  # Ensure this matches your URLs
+
+
+# views.py
 def projects_view(request):
-    projects = Project.objects.all()
-    return render(request, "adminPages/adminprojects.html", {"projects": projects})
+    completed_orders = Order.objects.filter(status="completed")
+    return render(request, "adminPages/adminprojects.html", {"projects": completed_orders})
 
 
 def reports_view(request):
@@ -482,9 +535,8 @@ def reports_export(request):
 
 @csrf_protect
 def projects_view(request):
-    """Handles rendering the Projects page."""
-    projects = Project.objects.all()
-    return render(request, "adminPages/adminprojects.html", {"projects": projects})
+    completed_orders = Order.objects.filter(status="completed")
+    return render(request, "adminPages/adminprojects.html", {"projects": completed_orders})
 
 
 # Admin Inbox View
@@ -493,9 +545,6 @@ def admin_inbox(request):
     messages = Message.objects.order_by("-created_at")  # Ordered messages
     leads = Lead.objects.order_by("-created_at")  # Ordered leads
 
-    # ✅ Debugging
-    print("Total Messages:", messages.count())
-    print("Total Leads:", leads.count())
 
     context = {
         "messages": messages,
@@ -504,8 +553,6 @@ def admin_inbox(request):
         "lead_count": leads.count(),  # Total leads
     }
     return render(request, "adminPages/admininbox.html", context)
-
-
 
 
 # Logout View
@@ -650,28 +697,6 @@ def admin_quotes_view(request, quote_id=None):
     )
 
 
-def edit_order(request, id):
-    """
-    View to edit an existing order.
-    """
-    # Fetch the order by its ID or return a 404 if not found
-    order = get_object_or_404(Order, id=id)
-
-    if request.method == "POST":
-        # Get updated status from form data
-        new_status = request.POST.get("status")
-        if new_status:
-            order.status = new_status  # Update order status
-        # Update additional fields if needed
-        order.save()
-
-        messages.success(request, f"Order {order.id} updated successfully!")
-        
-        # Redirect back to order details page
-        return redirect(reverse("view_order", kwargs={"id": order.id}))
-
-    # Pass order data to template
-    return render(request, "adminPages/edit_order.html", {"order": order})
 
 @login_required
 @csrf_protect
@@ -686,23 +711,6 @@ def delete_message(request, message_id):
     return redirect("inbox")
 
 
-def order_delete(request, order_id):
-    """
-    Deletes a specific order by ID and redirects to the orders list with a success message.
-    """
-    if not request.user.is_staff:
-        messages.error(request, "You do not have permission to delete this order.")
-        return redirect("orders")  # Redirect to all orders page
-
-    # Get the order or return 404 if it doesn’t exist
-    order = get_object_or_404(Order, id=order_id)
-    order.delete()
-
-    # ✅ Add a success message
-    messages.success(request, f"Order {order_id} deleted successfully.")
-
-    # ✅ Redirect to the correct orders page
-    return redirect("orders")  # Ensure this matches your URLs
 
 
 @staff_member_required

@@ -84,40 +84,43 @@ def home(request):
 
 @csrf_protect
 def submit_lead(request):
-     if request.method == "POST":
-         email = request.POST.get("email")
-         name = request.POST.get("name", "Anonymous")
-         phone = request.POST.get("phone", None)
- 
-         if not email:
-             messages.error(request, "Email is required.")
-             return redirect("home")  # Redirect to landing page
- 
-         if Lead.objects.filter(email=email).exists():
-             messages.error(request, "This email has already been submitted.")
-             return redirect("home")
- 
-         try:
-             # ✅ Save Lead
-             new_lead = Lead.objects.create(name=name, email=email, phone=phone)
- 
-             # ✅ Test Email Sending & Print Errors
-             subject = "Lead Submission Received"
-             message = f"Dear {name},\n\nThank you for submitting your details. We'll contact you soon.\n\nPhone: {phone}"
-             from_email = settings.DEFAULT_FROM_EMAIL
- 
-             send_mail(subject, message, from_email, [email], fail_silently=False)  # ❌ If error, it will be printed
- 
-             # ✅ Success Message
-             messages.success(request, "Thank you! Your details have been submitted successfully.")
-             return redirect("home")
- 
-         except Exception as e:
-             print(f"❌ EMAIL ERROR: {e}")  # ✅ This will print the exact error
-             messages.error(request, f"Error sending email: {e}")  # ✅ Show real error message
-             return redirect("home")
- 
-     return render(request, "pages/index.html")
+    if request.method == "POST":
+        email = request.POST.get("email")
+        name = request.POST.get("name", "Anonymous")
+        phone = request.POST.get("phone", None)
+
+        if not email:
+            messages.error(request, "Email is required.")
+            return redirect("home")
+
+        if Lead.objects.filter(email=email).exists():
+            messages.error(request, "This email has already been submitted.")
+            return redirect("home")
+
+        try:
+            new_lead = Lead.objects.create(name=name, email=email, phone=phone)
+
+            subject = "Thanks for Reaching Out to Window Genius AI"
+            message = f"""Dear {name},
+
+            Thank you for submitting your details to Window Genius AI. Our team will review your inquiry and reach out to discuss your window replacement needs shortly.
+
+            Best regards,  
+            Window Genius AI – Window Replacement Experts
+            """
+            from_email = settings.DEFAULT_FROM_EMAIL
+
+            send_mail(subject, message, from_email, [email], fail_silently=False)
+
+            # ✅ Redirect to shared success page with 'lead' source
+            return render(request, "pages/quote_success.html", {"source": "lead"})
+
+        except Exception as e:
+            print(f"❌ EMAIL ERROR: {e}")
+            messages.error(request, f"Error sending email: {e}")
+            return redirect("home")
+
+    return render(request, "pages/index.html")
 
 
 def csrf_failure(request, reason=""):
@@ -162,8 +165,6 @@ def terms_of_use_page(request):
 def privacy_policy(request):
     """Render the Privacy Policy page."""
     return render(request, "pages/privacy_policy.html")
-
-
 
 
 @csrf_protect
@@ -221,8 +222,13 @@ def request_quote(request):
 
             # Optional email
             send_mail(
-                subject="Your Quote Request Has Been Received!",
-                message=f"Dear {quote.name},\n\nThank you for requesting a quote. Our team will contact you soon.",
+                subject="Your Window Quote Request Has Been Received",
+                message=f"""Dear {quote.name},
+            Thank you for requesting a quote from Window Genius AI. We’ve received your information and will contact you soon with your personalized window replacement options.
+
+            Best regards,  
+            Window Genius AI – Window Replacement Experts    
+            """,
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[quote.email],
                 fail_silently=True,

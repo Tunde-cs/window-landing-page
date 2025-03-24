@@ -2,9 +2,14 @@
 
 {% block content %}
 <div class="container mt-5 text-center">
-    <h2 class="mb-3">🎉 Thank You!</h2>
-    <p>Your quote request has been submitted successfully. We'll contact you shortly.</p>
+    {% if source == "lead" %}
+        <h2 class="mb-3">🎉 Thanks for submitting your lead!</h2>
+        <p>Our team will reach out to you shortly.</p>
+    {% else %}
+        <h2 class="mb-3">🎉 Thank You!</h2>
+        <p>Your quote request has been submitted successfully. We'll contact you shortly.</p>
+    {% endif %}
 
-    <a href="{% url 'index' %}" class="btn btn-primary mt-3">Return to Home</a>
+    <a href="{% url 'index' %}" class="btn btn-primary mt-4">Return to Home</a>
 </div>
 {% endblock %}

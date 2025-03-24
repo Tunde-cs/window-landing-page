@@ -4,47 +4,43 @@
     <!-- Header Section -->
     <div class="content-header">
         <h1 class="m-0">Projects</h1>
-        <p class="text-muted">Manage and view all ongoing and completed projects.</p>
+        <p class="text-muted">All completed orders shown here as completed projects.</p>
     </div>
-    <!-- Projects Section -->
+
+    <!-- Completed Projects -->
     <div class="content">
         <div class="card">
-            <div class="card-header">
-                <h3 class="card-title"><i class="fas fa-tools"></i> All Projects</h3>
+            <div class="card-header bg-dark text-white">
+                <h3 class="card-title"><i class="fas fa-check-circle"></i> Completed Projects</h3>
             </div>
             <div class="card-body">
                 {% if projects %}
-                <table class="table table-striped table-bordered">
+                <table class="table table-bordered">
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Window Style</th>
+                            <th>Customer</th>
+                            <th>Order Amount</th>
                             <th>Status</th>
+                            <th>Date</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for project in projects %}
+                        {% for order in projects %}
                         <tr>
                             <td>{{ forloop.counter }}</td>
-                            <td>{{ project.window_style }}</td>
-                            <td>
-                                {% if project.status == "completed" %}
-                                <span class="badge bg-success">{{ project.status }}</span>
-                                {% elif project.status == "in-progress" %}
-                                <span class="badge bg-warning">{{ project.status }}</span>
-                                {% else %}
-                                <span class="badge bg-secondary">{{ project.status }}</span>
-                                {% endif %}
-                            </td>
+                            <td>{{ order.customer.name }}</td>
+                            <td>${{ order.amount|default:"0.00" }}</td>
+                            <td><span class="badge bg-success">{{ order.status }}</span></td>
+                            <td>{{ order.date|date:"M d, Y" }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
                 {% else %}
-                <p>No projects available.</p>
+                <p>No completed projects found.</p>
                 {% endif %}
             </div>
         </div>
     </div>
-</div>
 {% endblock %}

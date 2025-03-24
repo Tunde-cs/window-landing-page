@@ -29,8 +29,28 @@
                 <a href="{% url 'edit_order' order.id %}" class="btn btn-warning">
                     <i class="fas fa-edit"></i> Edit Order
                 </a>
+            
+                {% if order.status != "completed" %}
+                    <form method="post" action="{% url 'mark_order_complete' order.id %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-check-circle"></i> Mark as Completed
+                        </button>
+                    </form>
+                {% else %}
+                    <span class="badge badge-success ml-3">Order already completed</span>
+                {% endif %}
             </div>
-        </div>
-    </div>
+
+            {% if order.status != "pending" %}
+            <form method="post" action="{% url 'mark_order_pending' order.id %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-warning">
+                    <i class="fas fa-hourglass-half"></i> Mark as Pending
+                </button>
+            </form>
+        {% else %}
+            <span class="badge badge-warning ml-3">Order is pending</span>
+        {% endif %}
 {% endblock %}
 

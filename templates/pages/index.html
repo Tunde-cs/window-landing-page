@@ -220,7 +220,7 @@
 
         <!-- Detailed Quote Request Form -->
         <section id="quote-form">
-            <form id="leadForm" method="POST" action="{% url 'request_quote' %}" class="needs-validation" novalidate>
+            <form id="leadForm" method="POST" action="{% url 'request_quote' %}" class="needs-validation">
                 {% csrf_token %}
                 
                 <div class="row g-3">
