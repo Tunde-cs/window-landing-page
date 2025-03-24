@@ -175,6 +175,7 @@
 </div>
 {% endblock %}
 
+
 {% block scripts %}
 <!-- ✅ Chart.js CDN -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -182,9 +183,7 @@
 <!-- ✅ Pass Django data safely -->
 <script type="application/json" id="chartLabels">{{ sales_chart_labels|safe }}</script>
 <script type="application/json" id="chartSales">{{ sales_chart_data|safe }}</script>
-{% if quote_chart_data %}
 <script type="application/json" id="chartQuotes">{{ quote_chart_data|safe }}</script>
-{% endif %}
 
 <!-- ✅ Link your shared static chart.js -->
 <script src="{% static 'js/chart.js' %}"></script>

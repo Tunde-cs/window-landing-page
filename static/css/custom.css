@@ -188,75 +188,9 @@
     transition: 0.3s ease-in-out;
 }
 
-/* ✅ Floating Chat Button */
-/* ✅ Chatbot Container - Remove Blue Border */
-#chat-window {
-    position: fixed;
-    bottom: 80px;
-    right: 20px;
-    width: 320px;
-    height: 450px;
-    background: white !important;  /* 🔹 Change background to white */
-    color: black;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* ✅ Keep soft shadow */
-    border: none !important; /* ❌ Removes the blue border */
+/* Make sales chart responsive and fixed height */
+canvas#salesChart {
+    max-width: 100%;
+    height: 400px;
 }
-
-/* ✅ Chat Header - Keep it clean */
-#chat-header {
-    background: #007bff !important; /* 🔹 Keep blue for header */
-    color: white !important;
-    padding: 10px;
-    font-weight: bold;
-    text-align: center;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-}
-
-/* ✅ Chatbot Messages - Better Contrast */
-#chat-messages {
-    height: 320px;
-    overflow-y: auto;
-    padding: 10px;
-    background: #f8f9fa; /* 🔹 Light gray to separate from white */
-    color: black;
-}
-
-/* ✅ Chat Input Section - Fix Send Button */
-#chat-input-container {
-    display: flex;
-    align-items: center;
-    padding: 8px;
-    border-top: 1px solid #ddd;
-    background: white;
-}
-
-/* ✅ Chat Input Field */
-#chat-input {
-    flex-grow: 1;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    outline: none;
-}
-
-/* ✅ Send Button */
-#chat-send-button {
-    background: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    margin-left: 5px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-#chat-send-button:hover {
-    background: #0056b3; /* Darker blue on hover */
-}
-
-
-
 
