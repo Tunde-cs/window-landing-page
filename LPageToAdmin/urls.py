@@ -81,6 +81,8 @@ urlpatterns = [
     path("admininbox/", admin_inbox, name="admininbox"),
     path("adminleads/", admin_leads_view, name="adminleads"),
     path("adminprojects/", projects_view, name="adminprojects"),
+    path("adminmessages/", admin_inbox, name="admin_inbox"),
+
 
     # ✅ Admin Quotes Management
     path("adminquotes/", admin_quotes_view, name="adminquotes"),  # Main admin quotes view

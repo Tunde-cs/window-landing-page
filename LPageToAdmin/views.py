@@ -555,15 +555,6 @@ def admin_inbox(request):
     return render(request, "adminPages/admininbox.html", context)
 
 
-# Logout View
-def logout_view(request):
-    """Logs the user out and prevents back navigation."""
-    logout(request)
-    response = redirect("home")  # Redirect to home page
-    response["Cache-Control"] = "no-cache, no-store, must-revalidate"
-    response["Pragma"] = "no-cache"
-    response["Expires"] = "0"
-    return response
 
 
 @csrf_protect
@@ -698,19 +689,15 @@ def admin_quotes_view(request, quote_id=None):
 
 
 
-@login_required
+@staff_member_required
 @csrf_protect
 def delete_message(request, message_id):
-    if not request.user.is_staff:
-        messages.error(request, "You do not have permission to delete this message.")
-        return redirect("inbox")
-
     message = get_object_or_404(Message, id=message_id)
-    message.delete()
-    messages.success(request, "Message deleted successfully.")
-    return redirect("inbox")
 
-
+    if request.method == "POST":
+        message.delete()
+        messages.success(request, "✅ Message deleted successfully ✅")
+        return redirect("admin_inbox")  # ✅ This name must match the one in your urls.py
 
 
 @staff_member_required
@@ -785,3 +772,12 @@ def user_login_redirect(request):
     else:
         return redirect('/employee_dashboard/')  # Redirect ediomi12 to employee dashboard
     
+    # Logout View
+def logout_view(request):
+    """Logs the user out and prevents back navigation."""
+    logout(request)
+    response = redirect("home")  # Redirect to home page
+    response["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response["Pragma"] = "no-cache"
+    response["Expires"] = "0"
+    return response

@@ -8,7 +8,7 @@ import os
 import json
 import logging
 from dotenv import load_dotenv
-
+from app.models import Message  
 
 # ✅ Load OpenAI API Key
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -23,6 +23,14 @@ def chat(request):
 
             if not user_message:
                 return JsonResponse({"reply": "❗ Please enter a message. 😊"}, status=400)
+            
+            # ✅ 🔽 Save message to the Message model
+            Message.objects.create(
+                sender="Chatbot User",
+                subject="Chatbot Inquiry",
+                content=user_message,
+                is_read=False
+            )
 
             # ✅ Generate AI response using GPT-3.5-Turbo with emoji-enhanced responses
             response = openai.ChatCompletion.create(
