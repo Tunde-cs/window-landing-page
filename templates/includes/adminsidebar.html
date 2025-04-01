@@ -5,10 +5,9 @@
     <!-- Brand Logo -->
     <a href="{% url 'useradmin' %}" class="brand-link">
         <img 
-            src="{% static 'admin/dist/img/AdminLTELogo.png' %}" 
+            src="{% static 'admin/dist/img/AdminLTELogo.png' %}"
             alt="AdminLTE Logo" 
-            class="brand-image img-circle elevation-3" 
-            style="opacity: .8">
+            class="brand-image img-circle elevation-3 opacity-80">
         <span class="brand-text font-weight-light">Window Replacement</span>
     </a>
 
@@ -83,12 +82,17 @@
                         <p>Revenue</p>
                     </a>
                 </li>
-                                
+                <li class="nav-item">
+                    <a href="{% url 'update_profile_picture' %}" class="nav-link">
+                        <i class="nav-icon fas fa-user"></i>
+                        <p>My Profile</p>
+                    </a>
+                </li>
                 <!-- Logout -->
                 <li class="nav-item">
                     <form method="post" action="{% url 'logout' %}" class="nav-link p-0">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-link nav-link text-white" style="border: none; background: none; width: 100%; text-align: left;">
+                        <button class="btn-link-reset w-100 text-start">
                             <i class="nav-icon fas fa-sign-out-alt"></i>
                             <p>Logout</p>
                         </button>

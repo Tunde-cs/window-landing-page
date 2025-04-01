@@ -163,9 +163,17 @@ class Customer(models.Model):
         return self.name
 
 class UserProfile(models.Model):
+    ROLE_CHOICES = [
+        ("Employee", "Employee"),
+        ("Admin", "Admin"),
+        ("Sales", "Sales"),
+        ("Technician", "Technician"),
+        ("Manager", "Manager"),
+    ]
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    profile_picture = models.ImageField(upload_to='profile_pics/', default='profile_pics/default-profile.png')
+    profile_picture = models.ImageField(upload_to='profile_pics/', default='default-profile.png')
+    role = models.CharField(max_length=50, choices=ROLE_CHOICES, default="Employee")  # ✅ Added roles
 
     def __str__(self):
         return self.user.username
-    

@@ -2,6 +2,8 @@ from django.contrib import admin
 from .models import Lead, Order, Project, Quote  # No need to add 'app'
 from django.core.mail import send_mail
 from django.conf import settings
+from .models import UserProfile  # ✅ Import the model
+
 
 # Register your models here.
 @admin.register(Order)
@@ -65,3 +67,8 @@ class LeadAdmin(admin.ModelAdmin):
     )  # Added 'service' for filtering by type of service
     search_fields = ("name", "email", "phone", "service")  # Remains unchanged
 
+@admin.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = ("user", "role", "profile_picture")
+    list_filter = ("role",)
+    search_fields = ("user__username", "role")

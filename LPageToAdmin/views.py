@@ -99,25 +99,15 @@ def send_quote_email(to_email, subject, message):
 @csrf_protect
 @login_required
 def USERADMIN(request):
-    """Route valid users to their respective dashboards. Block unauthorized access."""
-
-    user = request.user
-
-    # ✅ Redirect SuperAdmin (superuser) to the Django backend only
-    if user.is_superuser:
-        return redirect("/admin/")
-
-    # ✅ Admin user (non-superuser staff)
-    elif user.username == "admin" and user.is_staff:
-        return admin_dashboard(request)
-
-    # ✅ Employee user like ediomi12
-    elif user.is_authenticated and user.is_staff:
-        return employee_dashboard(request)
-
-    # ❌ Deny any other user (shouldn't happen after login_required)
-    return redirect("/accounts/login/")
-
+    if request.user.is_superuser:
+        return redirect("/admin/")  # Superuser sees Django admin
+    elif request.user.username == "ediomi12":
+        return employee_dashboard(request)  # 👈 DIRECTLY call the employee dashboard
+    elif request.user.is_staff:
+        return admin_dashboard(request)     # 👈 DIRECTLY call the admin dashboard
+    else:
+        return redirect("login")  # Or show custom error
+    
 
 def admin_dashboard(request):
     """Admin Dashboard View - Displays key metrics, recent leads, and sales data."""
@@ -221,24 +211,28 @@ def admin_dashboard(request):
 
 
 def employee_dashboard(request):
-    """Ensure employees see their own profile picture & details"""
+    print("🔍 View: employee_dashboard")
+    print("Template path: employeePages/employee_dashboard.html")
+    print("Extends from:", "base/adminbase.html")
+    
+    """Employee Dashboard View - Mirrors Admin Dashboard Metrics but shows employee-specific template"""
 
-    user = request.user  # ✅ Get the logged-in user
+    user = request.user
 
-    # ✅ Ensure only employees (not Admin) access this page
+    # 🔐 Prevent access from 'admin' account
     if user.username == "admin":
-        return redirect("admin_dashboard")  # ✅ Redirect `admin` to Admin Dashboard
+        return redirect("admin_dashboard")
 
-    # ✅ If user is an employee, show Employee Dashboard
     context = {
-        "user": user,  # ✅ Ensure user data is passed
-        "profile_picture": user.userprofile.profile_picture.url if hasattr(user, "userprofile") else "/static/default-profile.png",  
+        "user": user,
         "request": request,
+        "unread_messages": Message.objects.filter(is_read=False).count(),
     }
 
     try:
-        # ✅ Fetch Employee Metrics (Same as Admin)
+        # ✅ Metrics
         new_leads_count = Lead.objects.filter(status="new").count()
+        quote_leads_count = Quote.objects.count() 
         pending_orders_count = Order.objects.filter(status="pending").count()
         completed_projects_count = Order.objects.filter(status="completed").count()
         monthly_revenue = (
@@ -252,11 +246,10 @@ def employee_dashboard(request):
         sales_completed = Order.objects.filter(status="completed").count()
         message_count = Message.objects.filter(is_read=False).count()
 
-        # ✅ Conversion Rate Fix
         total_leads = Lead.objects.count()
         conversion_rate = round((sales_completed / total_leads) * 100, 2) if total_leads > 0 else 0
 
-        # ✅ Fetch Sales Data for Charts
+        # ✅ Sales Data
         raw_sales_data = (
             Order.objects.annotate(month=ExtractMonth("date"))
             .values("month")
@@ -264,23 +257,30 @@ def employee_dashboard(request):
             .order_by("month")
         )
 
+        # ✅ Quote Data
+        raw_quote_data = (
+            Quote.objects.annotate(month=ExtractMonth("submitted_at"))
+            .values("month")
+            .annotate(total=Count("id"))
+            .order_by("month")
+        )
+
         sales_data_dict = {data["month"]: float(data["total"]) for data in raw_sales_data if data["month"]}
+        quote_data_dict = {data["month"]: int(data["total"]) for data in raw_quote_data if data["month"]}
 
         sales_chart_labels = []
         sales_chart_data = []
+        quote_chart_data = []
 
-        for month in range(1, 13):  # Loop through all 12 months
-            sales_chart_labels.append(month_name[month])  # Convert number to month name
-            sales_chart_data.append(sales_data_dict.get(month, 0))  # Get sales or default to 0
+        for month in range(1, 13):
+            sales_chart_labels.append(month_name[month])
+            sales_chart_data.append(sales_data_dict.get(month, 0))
+            quote_chart_data.append(quote_data_dict.get(month, 0))
 
-        # ✅ Convert Data to JSON for Frontend
-        sales_chart_labels_json = json.dumps(sales_chart_labels)
-        sales_chart_data_json = json.dumps(sales_chart_data)
-
-        # ✅ Pass Employee Data to Template
+        # ✅ Add to context
         context.update({
             "metrics": {
-                "new_leads_count": new_leads_count,
+                "new_leads_count": new_leads_count + quote_leads_count,
                 "pending_orders_count": pending_orders_count,
                 "completed_projects_count": completed_projects_count,
                 "monthly_revenue": monthly_revenue,
@@ -290,12 +290,13 @@ def employee_dashboard(request):
                 "conversion_rate": conversion_rate,
                 "message_count": message_count,
             },
-            "sales_chart_labels": sales_chart_labels_json,
-            "sales_chart_data": sales_chart_data_json,
+            "sales_chart_labels": json.dumps(sales_chart_labels),
+            "sales_chart_data": json.dumps(sales_chart_data),
+            "quote_chart_data": json.dumps(quote_chart_data),
         })
 
     except Exception as e:
-        print(f"Error fetching data: {e}")
+        print(f"Error fetching employee dashboard data: {e}")
         context.update({
             "metrics": {
                 "new_leads_count": 0,
@@ -308,11 +309,15 @@ def employee_dashboard(request):
                 "conversion_rate": 0,
                 "message_count": 0,
             },
-            "sales_chart_labels": json.dumps(["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]),
+            "sales_chart_labels": json.dumps([
+                "January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"
+            ]),
             "sales_chart_data": json.dumps([0] * 12),
+            "quote_chart_data": json.dumps([0] * 12),
         })
 
-    return render(request, "employeePages/employee_dashboard.html", context)
+    return TemplateResponse(request, "employeePages/employee_dashboard.html", context)
 
 
 # Sidebar Views

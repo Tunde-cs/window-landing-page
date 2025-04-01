@@ -9,11 +9,11 @@
 <meta property="og:type" content="website">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-
 <!-- Bootstrap CSS -->
-<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
-<link rel="stylesheet" href="{% static 'css/custom-styles.css' %}"> <!-- Custom CSS (Optional) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+<!-- Font Awesome -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+
 
 <!-- ✅ Structured Data for SEO -->
 <script type="application/ld+json">
@@ -54,43 +54,7 @@
 <header class="masthead">
     <div class="container position-relative">
         <!-- ✅ Improved Navbar for Better Styling & Spacing -->
-        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
-            <div class="container">
-                <a class="navbar-brand fw-bold text-primary" href="javascript:void(0);">
-                    <i class="fas fa-home"></i> Window Replacement Services
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark fw-semibold" href="#windows">
-                                <i class="fas fa-th-large"></i> Window Styles
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark fw-semibold" href="#quote-form">
-                                <i class="fas fa-file-alt"></i> Submit Quote
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark fw-semibold" href="#testimonials">
-                                <i class="fas fa-users"></i> Testimonials
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark fw-semibold" href="#we-finance">
-                                <i class="fas fa-credit-card"></i> Financing
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-
+        
         <div class="row justify-content-center">
             <div class="col-xl-6">
                 <div class="text-center text-white">
@@ -232,7 +196,7 @@
                     <!-- Email -->
                     <div class="col-md-6">
                         <input class="form-control form-control-lg" id="email" name="email" type="email" placeholder="Your Email" autocomplete="email" required>
-                        <div id="email-error" style="color:red; display:none;"></div>
+                        <div id="email-error" class="email-error"></div>
                     </div>
         
                     <!-- Phone -->
@@ -454,11 +418,11 @@
     </div>
 </div>
 <!-- ✅ Bootstrap JavaScript (Placed at the End, Before `</body>`) -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <!-- ✅ Your custom scripts -->
 <script src="{% static 'js/leadForm.js' %}"></script>
 <script src="{% static 'js/chatbot.js' %}"></script>
-
 {% endblock %}

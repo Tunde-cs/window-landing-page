@@ -6,6 +6,7 @@ from django.contrib.auth.models import User, Group
 from django.contrib.auth.forms import UserCreationForm
 from app.models import UserProfile  # ✅ Ensure UserProfile model exists
 from .models import SERVICE_CHOICES
+from .models import UserProfile
 
 
 # ✅ Custom User Registration Form
@@ -110,4 +111,8 @@ class OrderForm(forms.ModelForm):
         model = Order
         fields = ['customer', 'amount', 'status']  # ✅ Do NOT include 'date'
 
-        
+
+class ProfilePictureForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['profile_picture']        

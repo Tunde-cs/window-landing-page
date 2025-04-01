@@ -66,7 +66,7 @@
             </div>
 
             <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
-                <a href="{% url 'inbox' %}">
+                <a href="{% url 'admininbox' %}">
                     <div class="card bg-primary text-white shadow">
                         <div class="card-body text-center">
                             <h4><i class="fas fa-envelope"></i> Inbox</h4>
@@ -88,7 +88,7 @@
             </div>
 
             <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
-                <a href="{% url 'projects' %}">
+                <a href="{% url 'adminprojects' %}">
                     <div class="card bg-success text-white shadow">
                         <div class="card-body text-center">
                             <h4><i class="fas fa-check-circle"></i> Completed Projects</h4>
@@ -130,15 +130,15 @@
             {% csrf_token %}
             <div class="mb-3">
                 <label for="email" class="form-label">Recipient Email:</label>
-                <input type="email" name="email" class="form-control" required>
+                <input id="email" name="email" type="email">
             </div>
             <div class="mb-3">
                 <label for="subject" class="form-label">Subject:</label>
-                <input type="text" name="subject" class="form-control" required>
+                <input id="subject" name="subject" type="text">
             </div>
             <div class="mb-3">
                 <label for="message" class="form-label">Message:</label>
-                <textarea name="message" class="form-control" rows="4" required></textarea>
+                <textarea id="message" name="message"></textarea>
             </div>
             <button type="submit" class="btn btn-primary">Send Email</button>
         </form>
@@ -166,7 +166,7 @@
     </div>
     <div class="card-body">
         <!-- ✅ Ensure this ID Matches the JavaScript -->
-        <canvas id="salesChart" style="width: 100%; height: 400px;"></canvas>
+        <canvas id="salesChart" class="w-100 h-400"></canvas>
     </div>
 </div>
 {% endblock %}

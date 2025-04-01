@@ -8,98 +8,76 @@
     <meta name="keywords" content="window replacement, energy-efficient windows, custom windows, stylish windows, home improvement, free window quote" />
     <meta name="author" content="Window Genius Ai" />
     <meta name="robots" content="index, follow" />
-    
 
-
-    <!-- Favicon -->
+    <!-- ✅ Favicon & Apple Icon -->
     <link rel="icon" type="image/x-icon" href="{% static 'assets/favicon.ico' %}" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'assets/apple-touch-icon.png' %}">
 
-    <!-- Bootstrap Icons -->
+    <!-- ✅ Font Awesome & Bootstrap Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet" />
-    
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-        <!-- Google Fonts -->
+    <!-- ✅ Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous">
+
+
+    <!-- ✅ Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
 
-    <!-- ✅ Core Theme CSS -->
+    <!-- ✅ Custom Styles -->
     <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
-    <link href="{% static 'css/custom.css' %}" rel="stylesheet">
-    <link href="{% static 'css/chatbot.css' %}" rel="stylesheet">
+    <link href="{% static 'css/custom.css' %}" rel="stylesheet" />
+    <link href="{% static 'css/chatbot.css' %}" rel="stylesheet" />
 
-    {% if request.user.is_staff %}
-        <!-- ✅ Load AdminLTE Styles (For Admin Users Only) -->
+    {% block head %}{% endblock %}
+
+    {% if request.user.is_authenticated and request.user.is_staff %}
+        <!-- ✅ AdminLTE Styles (Only for Admin Staff) -->
         <link rel="stylesheet" href="{% static 'admin/dist/css/adminlte.min.css' %}">
         <link rel="stylesheet" href="{% static 'admin/plugins/overlayScrollbars/css/OverlayScrollbars.min.css' %}">
     {% endif %}
 
-    <title>{% if request.user.is_staff %}Admin Panel{% else %}Window Replacement{% endif %}</title>
-    
+    <title>{% block title %}{% if request.user.is_staff %}Admin Panel{% else %}Window Replacement{% endif %}{% endblock %}</title>
 </head>
-<!-- ✅ Body: Full Layout for Admin, No Sidebar for Landing Page -->
-<body class="{% if request.user.is_staff %} hold-transition sidebar-mini layout-fixed {% else %} landing-page-body {% endif %}">
 
-    <!-- ✅ Ensure the sidebar only appears in the admin panel -->
-    {% if request.user.is_staff and '/useradmin/' in request.path %}
-        {% include 'includes/adminsidebar.html' %}
-    {% endif %}
+<body class="{% block body_class %}landing-page{% endblock %}">
+    <div class="d-flex flex-column min-vh-100">
 
-    <!-- ✅ Ensure the navbar appears ONLY on footer-linked pages -->
-    {% if request.path == "/signup/" or request.path == "/accounts/login/" or request.path == "/" %}
-        {% include 'includes/header.html' %}
-    {% endif %}
+        {% block header %}
+            {% if request.path == "/" or request.path == "/signup/" or request.path == "/accounts/login/" %}
+                {% include 'includes/header.html' %}
+            {% endif %}
+        {% endblock %}
 
-    <!-- ✅ Main Content -->
-    <div class="container-fluid mt-3">
-        <div class="row justify-content-center">
-            <div class="col-xl-11 col-lg-12">  <!-- ✅ Adjusted Width to Reduce Side Space -->
-                <div class="border border-primary rounded shadow p-3 bg-white">  <!-- ✅ Smaller padding -->
-                    <main class="{% if request.user.is_staff and '/useradmin/' in request.path %} content-wrapper {% else %} landing-content {% endif %}">
-                        {% block content %}
-                        {% endblock content %}
-                    </main>
-
-
-                </div>
-            </div>
-        </div>
+        <main class="flex-fill">
+            {% block content %}{% endblock %}
+        </main>
+        <!-- ✅ Footer should be properly positioned -->
+        {% block footer %}
+            {% include 'includes/footer.html' %}
+        {% endblock %}
     </div>
 
-<!-- ✅ Footer should be properly positioned -->
-{% block footer %}
-    {% include 'includes/footer.html' %}
-{% endblock %}
-
-    <!-- jQuery -->
+    <!-- ✅ Core JS -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <!-- Bootstrap core JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
+    <script src="{% static 'js/scripts.js' %}"></script>
+    
 
     {% if request.user.is_staff and "/useradmin/" in request.path %}
-        <!-- ✅ Load AdminLTE Scripts (Only for Admin Users Inside the Admin Panel) -->
+        <!-- ✅ AdminLTE JS (Only for Staff in Admin Panel) -->
         <script src="{% static 'admin/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js' %}"></script>
         <script src="{% static 'admin/dist/js/adminlte.js' %}"></script>
     {% endif %}
 
-           <!-- ✅ Core Theme JS -->
-    <script src="{% static 'js/scripts.js' %}"></script>
-
-    <!-- ✅ Load Chatbot JS Only on Landing Page for Non-Staff Users -->
     {% if not request.user.is_staff and request.path == '/' %}
+        <!-- ✅ Chatbot Script for Visitors -->
         <script src="{% static 'js/chatbot.js' %}"></script>
     {% endif %}
 
-    <!-- ✅ Page-Specific Scripts -->
-    {% block scripts %}
-    {% endblock %}
-    
+    {% block scripts %}{% endblock %}
 </body>
 </html>
-
-

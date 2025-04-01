@@ -387,7 +387,7 @@
     class: 'mr-1'
   }).on('click', function () {
     if ($(this).is(':checked')) {
-      $('.main-footer').addClass('text-sm')
+      // $('.main-footer').addClass('text-sm')
     } else {
       $('.main-footer').removeClass('text-sm')
     }
