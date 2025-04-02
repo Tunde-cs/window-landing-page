@@ -9,24 +9,7 @@
     <link rel="stylesheet" href="{% static 'css/custom.css' %}">
 {% endblock %}
 
-{% block content %}
-
-<!-- ✅ Page Header (Appears on ALL admin pages) -->
-<div class="content-header">
-    <div class="container-fluid">
-        <div class="row mb-2">
-            <div class="col-sm-6">
-                <h1 class="m-0">Welcome, {{ user.get_full_name|default:user.username }}!</h1>
-            </div>
-            <div class="col-sm-6">
-                <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item"><a href="{% url 'useradmin' %}">Home</a></li>
-                    <li class="breadcrumb-item active">{% block page_title %} Dashboard {% endblock %}</li>
-                </ol>
-            </div>
-        </div>
-    </div>
-</div>
+{% block page_content %}
 
 <!-- ✅ User Profile Section -->
 <div class="card mb-4 shadow-sm">
@@ -40,14 +23,13 @@
         <p>Last login: {{ request.user.last_login|date:"M d, Y H:i A" }}</p>
         
        <!-- Profile Picture -->
-       {% if request.user.profile and request.user.profile.profile_picture %}
-           <img src="{{ request.user.profile.profile_picture.url }}" alt="Profile Picture" class="img-thumbnail mt-2" width="120">
+       {% if request.user.userprofile and request.user.userprofile.profile_picture %}
+           <img src="{{ request.user.userprofile.profile_picture.url }}" alt="Profile Picture" class="img-thumbnail mt-2" width="120">
        {% else %}
-           <img src="/media/profile_pics/ediomi12.jpg" alt="Ediomi12 Profile" class="img-thumbnail mt-2" width="120">
+       <img src="{% static 'img/default-profile.png' %}" alt="Default Profile" class="img-thumbnail mt-2" width="120">
        {% endif %}
     </div>
 </div>
-
 <!-- ✅ Main Content -->
 <section class="content">
     <div class="container-fluid">
@@ -171,15 +153,13 @@
 </div>
 {% endblock %}
 
-{% block scripts %}
+{% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <!-- ✅ Data from Django -->
 <script type="application/json" id="chartLabels">{{ sales_chart_labels|safe }}</script>
 <script type="application/json" id="chartSales">{{ sales_chart_data|safe }}</script>
-{% if quote_chart_data %}
 <script type="application/json" id="chartQuotes">{{ quote_chart_data|safe }}</script>
-{% endif %}
 
 <!-- ✅ Shared static JS -->
 <script src="{% static 'js/chart.js' %}"></script>

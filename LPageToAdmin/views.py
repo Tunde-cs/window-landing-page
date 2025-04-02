@@ -37,6 +37,9 @@ from app.forms import UserCreateForm  # ✅ Import UserCreateForm from forms.py
 from django.contrib.auth.decorators import user_passes_test
 from django.conf import settings
 from app.forms import OrderForm
+from app.forms import ProfilePictureForm
+from app.models import UserProfile
+
 
 # Base Views
 def BASE(request):
@@ -309,13 +312,12 @@ def employee_dashboard(request):
                 "conversion_rate": 0,
                 "message_count": 0,
             },
-            "sales_chart_labels": json.dumps([
-                "January", "February", "March", "April", "May", "June",
-                "July", "August", "September", "October", "November", "December"
-            ]),
-            "sales_chart_data": json.dumps([0] * 12),
-            "quote_chart_data": json.dumps([0] * 12),
+            "sales_chart_labels": json.dumps(sales_chart_labels),
+            "sales_chart_data": json.dumps(sales_chart_data),
+            "quote_chart_data": json.dumps(quote_chart_data),
         })
+        print("✅ sales_chart_data:", sales_chart_data)
+
 
     return TemplateResponse(request, "employeePages/employee_dashboard.html", context)
 
@@ -763,6 +765,24 @@ def send_email(request):
         return redirect("useradmin")  # Redirect back to the dashboard
 
     return render(request, "adminPages/adminhome.html")  # Ensure the correct template is used
+
+
+@login_required
+def update_profile_picture(request):
+    user = request.user
+
+    # ✅ Create profile if missing
+    profile, _ = UserProfile.objects.get_or_create(user=user)
+
+    if request.method == 'POST':
+        form = ProfilePictureForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect('/useradmin/')
+    else:
+        form = ProfilePictureForm(instance=profile)
+
+    return render(request, 'employeePages/update_profile_picture.html', {'form': form})
 
 
 def custom_password_reset_done(request):

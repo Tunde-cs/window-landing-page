@@ -97,8 +97,6 @@ class QuoteForm(forms.ModelForm):
                 return False
             return None  # or False based on your logic
 
-
-
     
 class ReplyMessageForm(forms.Form):
     subject = forms.CharField(

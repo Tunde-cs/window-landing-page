@@ -19,8 +19,6 @@ from .forms import LeadForm  # ✅ Import the correct form
 from django.middleware.csrf import get_token
 from django.utils.decorators import method_decorator
 import json
-from .forms import ProfilePictureForm
-from .models import UserProfile 
 
 
 # ✅ Import Forms (Keep only if used in views)
@@ -248,23 +246,6 @@ def request_quote(request):
 
 def quote_success(request):
     return render(request, "pages/quote_success.html")
-
-@login_required
-def update_profile_picture(request):
-    user = request.user
-
-    # ✅ Create profile if missing
-    profile, created = UserProfile.objects.get_or_create(user=user)
-
-    if request.method == 'POST':
-        form = ProfilePictureForm(request.POST, request.FILES, instance=profile)
-        if form.is_valid():
-            form.save()
-            return redirect('/useradmin/')
-    else:
-        form = ProfilePictureForm(instance=profile)
-
-    return render(request, 'employeePages/update_profile_picture.html', {'form': form})
 
 
 # Admin Logout

@@ -16,7 +16,8 @@ from LPageToAdmin.views import custom_password_reset_done
 from .views import mark_order_complete
 from app.forms import OrderForm
 from LPageToAdmin.views import mark_order_pending
-from app.views import update_profile_picture
+from LPageToAdmin.views import update_profile_picture
+
 
 from . import views
 from app import views as app_views  # Import app-level views
@@ -100,6 +101,7 @@ urlpatterns = [
     path("orders/delete/<int:order_id>/", order_delete, name="order_delete"),
 
     path("profile/", update_profile_picture, name="update_profile_picture"),
+
     
 
     # ✅ Password Reset URLs

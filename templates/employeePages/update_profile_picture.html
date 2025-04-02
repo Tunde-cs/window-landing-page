@@ -1,11 +1,23 @@
 {% extends "base/adminbase.html" %}
+{% load static %}  <!-- ✅ THIS LINE FIXES IT -->
 
 {% block page_title %}Update Profile Picture{% endblock %}
 {% block breadcrumb_title %}Update Profile{% endblock %}
 
 {% block page_content %}
 <div class="container mt-4">
-    <h3>Update Profile Picture</h3>
+    <h3 class="mb-3">Update Profile Picture</h3>
+
+    <div class="text-center mb-4">
+        {% if user.userprofile.profile_picture %}
+            <img src="{{ user.userprofile.profile_picture.url }}" alt="Profile Picture"
+                 class="img-fluid rounded-circle shadow" width="150">
+        {% else %}
+            <img src="{% static 'img/default-profile.png' %}" alt="Default Profile"
+                 class="img-fluid rounded-circle shadow" width="150">
+        {% endif %}
+    </div>
+
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}

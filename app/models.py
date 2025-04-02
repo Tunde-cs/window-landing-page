@@ -7,6 +7,7 @@ from django.db import models
 from django.utils.timezone import now
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from cloudinary.models import CloudinaryField
 
 
 class Order(models.Model):
@@ -172,7 +173,7 @@ class UserProfile(models.Model):
     ]
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    profile_picture = models.ImageField(upload_to='profile_pics/', default='default-profile.png')
+    profile_picture = CloudinaryField('image', blank=True, null=True)
     role = models.CharField(max_length=50, choices=ROLE_CHOICES, default="Employee")  # ✅ Added roles
 
     def __str__(self):

@@ -15,6 +15,8 @@ import dj_database_url
 from pathlib import Path
 import environ
 import logging
+import cloudinary
+
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -51,6 +53,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "fallback-secret-key")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG", "False") == "True"  # Ensures DEBUG is a boolean
 
+
 ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost",
@@ -76,7 +79,10 @@ INSTALLED_APPS = [
     "whitenoise.runserver_nostatic",
     "django_extensions",
     "csp",  # ✅ Enables Django CSP Middleware
+    "cloudinary",
+    "cloudinary_storage",
 ]
+
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",  # ✅ MUST BE FIRST
@@ -279,6 +285,7 @@ CSP_FONT_SRC = (
 CSP_IMG_SRC = (
     "'self'",
     "data:",
+    "https://res.cloudinary.com",
     "https://windowgeniusai.herokuapp.com",
     "https://windowgeniusai.com",
 )
@@ -311,3 +318,20 @@ SESSION_COOKIE_HTTPONLY = True
 
 # Whether the session cookie should expire when the user closes the browser
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # Set to True to expire sessions when the browser is closed
+
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': env("CLOUDINARY_CLOUD_NAME"),   # ✅ Updated
+    'API_KEY': env("CLOUDINARY_API_KEY"),
+    'API_SECRET': env("CLOUDINARY_API_SECRET"),
+}
+
+cloudinary.config(
+    cloud_name=env("CLOUDINARY_CLOUD_NAME"),      # ✅ Updated
+    api_key=env("CLOUDINARY_API_KEY"),
+    api_secret=env("CLOUDINARY_API_SECRET"),
+    secure=True,
+)
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
