@@ -24,13 +24,13 @@
         <p>Last login: {{ request.user.last_login|date:"M d, Y H:i A" }}</p>
         
         <!-- ✅ Profile Picture (Use Dynamic Image if Available) -->
-        {% if request.user.profile and request.user.profile.image %}
-           <img src="{{ request.user.profile.image.url }}" 
+        {% if request.user.userprofile and request.user.userprofile.profile_picture %}
+           <img src="{{ request.user.userprofile.profile_picture.url }}"
                 alt="Profile Picture"
                 class="img-thumbnail mt-2" width="120">
         {% else %}
-           <img src="/media/profile_pics/default-profile.png" 
-                alt="Admin Profile" 
+           <img src="{% static 'img/default-profile.png' %}"
+                alt="Default Profile" 
                 class="img-thumbnail mt-2" width="120">
         {% endif %}
     </div>
