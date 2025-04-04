@@ -2,12 +2,33 @@
 {% load static %}
 
 {% block head %}
-<meta property="og:title" content="Upgrade Your Home with Energy-Efficient Windows">
-<meta property="og:description" content="Affordable, stylish, and durable window replacement services. Get a free quote today!">
-<meta property="og:image" content="{% static 'assets/img/window-og-image.jpg' %}">
-<meta property="og:url" content="https://www.yourwebsite.com">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+<!-- ✅ SEO Meta Tags -->
+<meta name="description" content="Top-rated window replacement and installation experts in the U.S. Get a free quote today from WindowGeniusAI – Smarter windows, smarter homes.">
+<meta name="keywords" content="window replacement, energy-efficient windows, custom windows, window installation, free quote, Window Genius AI, home improvement">
+<meta name="author" content="WindowGeniusAI">
+<meta name="robots" content="index, follow">
+
+<!-- ✅ Open Graph / Facebook -->
+<meta property="og:title" content="WindowGeniusAI | Smarter Window Solutions">
+<meta property="og:description" content="Free window quotes, expert installation, and stylish upgrades. Let WindowGeniusAI help you improve your home today.">
+<meta property="og:image" content="{% static 'assets/img/window-2.jpg' %}">
+<meta property="og:url" content="https://www.windowgeniusai.com/">
 <meta property="og:type" content="website">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<!-- ✅ LinkedIn Preview -->
+<meta name="image" property="og:image" content="{% static 'assets/img/window-2.jpg' %}" />
+<meta name="author" content="WindowGeniusAI" />
+<meta name="og:site_name" content="WindowGeniusAI">
+
+<!-- ✅ Twitter Cards -->
+<meta name="twitter:title" content="WindowGeniusAI | Smarter Window Solutions">
+<meta name="twitter:description" content="Free quotes and expert window installation services nationwide.">
+<meta name="twitter:image" content="{% static 'assets/img/window-2.jpg' %}">
+<meta name="twitter:card" content="summary_large_image">
+
 
 <!-- Bootstrap CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
@@ -20,30 +41,37 @@
     {
       "@context": "https://schema.org",
       "@type": "LocalBusiness",
-      "name": "Luxury Window Replacement",
-      "url": "https://www.yourwebsite.com",
-      "image": "{% static 'assets/img/window-og-image.jpg' %}",
-      "description": "Affordable, stylish, and durable window replacement services. Get a free quote today!",
-      "telephone": "+1-800-123-4567",
+      "name": "WindowGeniusAI",
+      "url": "https://www.windowgeniusai.com",
+      "image": "https://www.windowgeniusai.com/static/assets/img/window-og-image.jpg",
+      "description": "Top-rated window replacement and installation experts near Atlanta. Get fast quotes and expert guidance — smarter windows, smarter homes!",
+      "telephone": "+1-800-000-0000",  <!-- Update when you get one -->
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "123 Window St.",
-        "addressLocality": "New York",
-        "addressRegion": "NY",
-        "postalCode": "10001",
+        "addressLocality": "Atlanta",
+        "addressRegion": "GA",
         "addressCountry": "US"
+      },
+      "areaServed": {
+        "@type": "GeoCircle",
+        "geoMidpoint": {
+          "@type": "GeoCoordinates",
+          "latitude": 33.7490,
+          "longitude": -84.3880
+        },
+        "geoRadius": 96560  <!-- Approx 60 miles in meters -->
       },
       "aggregateRating": {
         "@type": "AggregateRating",
-        "ratingValue": "4.8",
-        "reviewCount": "150"
+        "ratingValue": "4.9",
+        "reviewCount": "200"
       },
       "priceRange": "$$",
-      "openingHours": "Mo-Fr 09:00-17:00",
+      "openingHours": "Mo-Sa 08:00-18:00",
       "sameAs": [
-        "https://www.facebook.com/YourCompany",
-        "https://www.twitter.com/YourCompany",
-        "https://www.instagram.com/YourCompany"
+        "https://www.yelp.com/biz/windowgeniusai-atlanta",  <!-- Once live -->
+        "https://www.facebook.com/windowgeniusai",           <!-- Add once created -->
+        "https://www.linkedin.com/company/windowgeniusai"    <!-- Add once created -->
       ]
     }
     </script>
