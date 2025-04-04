@@ -61,8 +61,11 @@
         {% endblock %}
 
         <main class="flex-fill">
-            {% block content %}{% endblock %}
+            <div class="container-fluid py-4 page-wrapper">
+              {% block content %}{% endblock %}
+            </div>
         </main>
+          
         <!-- ✅ Footer should be properly positioned -->
         {% block footer %}
             {% include 'includes/footer.html' %}

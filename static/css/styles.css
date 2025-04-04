@@ -11798,4 +11798,11 @@ button:hover {
   background: #0056b3;
 }
 
+.page-wrapper {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
 
