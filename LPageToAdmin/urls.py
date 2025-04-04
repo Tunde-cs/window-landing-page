@@ -17,6 +17,9 @@ from .views import mark_order_complete
 from app.forms import OrderForm
 from LPageToAdmin.views import mark_order_pending
 from LPageToAdmin.views import update_profile_picture
+from django.views.generic import TemplateView
+from django.contrib.sitemaps.views import sitemap
+from app.sitemaps import StaticViewSitemap
 
 
 from . import views
@@ -46,6 +49,10 @@ from .views import (
     view_message,
 )
 
+# ✅ Sitemap dictionary
+sitemaps = {
+    "static": StaticViewSitemap,
+}
 
 urlpatterns = [
     # ✅ Django Admin Panel
@@ -102,7 +109,11 @@ urlpatterns = [
 
     path("profile/", update_profile_picture, name="update_profile_picture"),
 
-    
+    # ✅ Sitemap route
+    path("sitemap.xml", sitemap, {"sitemaps": sitemaps}, name="sitemap"),
+    path("robots.txt", TemplateView.as_view(template_name="robots.txt", content_type="text/plain")),
+    path("google126635fbdb4f1c73.html", TemplateView.as_view(template_name="google126635fbdb4f1c73.html", content_type="text/html")),
+
 
     # ✅ Password Reset URLs
     path("password-reset/", auth_views.PasswordResetView.as_view(

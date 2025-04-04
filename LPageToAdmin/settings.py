@@ -81,6 +81,7 @@ INSTALLED_APPS = [
     "csp",  # ✅ Enables Django CSP Middleware
     "cloudinary",
     "cloudinary_storage",
+    "django.contrib.sitemaps",
 ]
 
 
