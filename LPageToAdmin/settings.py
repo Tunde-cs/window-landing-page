@@ -86,6 +86,7 @@ INSTALLED_APPS = [
 
 
 MIDDLEWARE = [
+    "app.middleware.remove_robots.RemoveXRobotsTagMiddleware",
     "corsheaders.middleware.CorsMiddleware",  # ✅ MUST BE FIRST
     "django.middleware.security.SecurityMiddleware",  # ✅ Security comes first
     "whitenoise.middleware.WhiteNoiseMiddleware",  # ✅ Static file handling (best practice: after security)
