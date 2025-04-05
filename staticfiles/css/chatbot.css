@@ -25,8 +25,12 @@
     background: white;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    display: none;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 350px;
+    max-height: 90vh;
+    z-index: 9999;
 }
 
 /* ✅ Chat Header */
@@ -58,6 +62,10 @@
     align-items: center;
     padding: 8px;
     background: white;
+    margin-bottom: 0 !important;
+    padding-bottom: 8px;
+    box-sizing: border-box;
+    gap: 8px;
 }
 
 #chat-input {
@@ -67,9 +75,9 @@
     border-radius: 6px;
     font-size: 14px;
     outline: none;
-    min-height: 40px;
-    max-height: 120px;
-    resize: vertical;
+    height: 40px;
+    resize: none;
+    box-sizing: border-box;
 }
 
 #chat-send-button {
@@ -83,6 +91,7 @@
     font-size: 14px;
     font-weight: bold;
     transition: background 0.3s ease;
+    margin-bottom: 0 !important;
 }
 
 /* ✅ CHATBOT MESSAGE */
@@ -112,7 +121,6 @@
     font-weight: 500;
 }
 
-
 /* ✅ Chatbot Container (General Styling) */
 #chatbot-container {
     position: fixed;
@@ -137,21 +145,6 @@ body {
     font-family: Arial, sans-serif;
 }
 
-#chat-window {
-    display: flex;
-    flex-direction: column;
-    height: 350px; /* You can adjust this */
-    max-height: 90vh;
-}
 
-#chat-input-container {
-    margin-bottom: 0 !important;
-    padding-bottom: 8px;
-    box-sizing: border-box;
-}
-
-#chat-send-button {
-    margin-bottom: 0 !important;
-}
 
 
