@@ -1,75 +1,102 @@
-<!-- Detailed Quote Request Form -->
-<div class="container my-5">
-    <!-- Card for Request Quote Form -->
-    <div class="card shadow-lg">
-        <div class="card-header bg-primary text-white text-center">
-            <h3>Request a Quote</h3>
-        </div>
-        <div class="card-body">
-            <form method="POST" action="{% url 'request_quote' %}" class="p-4">
-                {% csrf_token %}
-                <div class="row g-3">
-                    <!-- Name -->
-                    <div class="col-md-6">
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="fas fa-user"></i></span>
-                            <input class="form-control form-control-lg" id="name" name="name" type="text" placeholder="Your Name" required>
+{% extends "base/base.html" %}
+
+{% block content %}
+<!-- 🧾 Detailed Quote Request Form -->
+<section id="quote-form" class="py-5 bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 col-xl-8">
+                <div class="card shadow-lg rounded-4 p-4 border-0">
+                    <h2 class="text-center mb-4">Request Your Free Quote</h2>
+
+                    <form id="leadForm" method="POST" action="{% url 'request_quote' %}" class="needs-validation">
+                        {% csrf_token %}
+                        <div class="row g-3">
+                            <!-- Name -->
+                            <div class="col-md-6">
+                                <input class="form-control form-control-lg" id="name" name="name" type="text" placeholder="Your Name" autocomplete="name" required>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="col-md-6">
+                                <input class="form-control form-control-lg" id="email" name="email" type="email" placeholder="Your Email" autocomplete="email" required>
+                                <div id="email-error" class="email-error"></div>
+                            </div>
+
+                            <!-- Phone -->
+                            <div class="col-md-6">
+                                <input class="form-control form-control-lg" id="phone" name="phone" type="text" placeholder="Your Phone Number" autocomplete="tel" required>
+                            </div>
+
+                            <!-- Requested Service -->
+                            <div class="col-md-6">
+                                <label for="service" class="form-label mt-2">Requested Service</label>
+                                <select class="form-select form-control-lg" id="service" name="service" autocomplete="off" required>
+                                    <option value="" disabled selected>Select Requested Service</option>
+                                    <option value="window_replacement">Window Replacement</option>
+                                    <option value="door_installation">Door Installation</option>
+                                    <option value="roof_repair">Roof Repair</option>
+                                </select>
+                            </div>
+
+                            <!-- Type of Windows -->
+                            <div class="col-md-6 mt-3">
+                                <select class="form-select form-control-lg" id="windowType" name="windowType" autocomplete="off" required>
+                                    <option value="" disabled selected>Select Type of Window</option>
+                                    <option value="double_hung">Double Hung</option>
+                                    <option value="casement">Casement</option>
+                                    <option value="sliding">Sliding</option>
+                                    <option value="bay_bow">Picture</option>
+                                    <option value="custom">Custom</option>
+                                </select>
+                            </div>
+
+                            <!-- City -->
+                            <div class="col-md-6 mt-3">
+                                <input class="form-control form-control-lg" id="city" name="city" type="text" placeholder="City" autocomplete="address-level2">
+                            </div>
+
+                            <!-- State -->
+                            <div class="col-md-6">
+                                <input class="form-control form-control-lg" id="state" name="state" type="text" placeholder="State" autocomplete="address-level1">
+                            </div>
+
+                            <!-- Zip Code -->
+                            <div class="col-md-6">
+                                <input class="form-control form-control-lg" id="zipcode" name="zipcode" type="text" placeholder="Zip Code" autocomplete="postal-code">
+                            </div>
+
+                            <!-- Property Address -->
+                            <div class="col-12">
+                                <input class="form-control form-control-lg" id="property_address" name="property_address" type="text" placeholder="Property Address (Optional)" autocomplete="street-address">
+                            </div>
+
+                            <!-- Financing Option -->
+                            <div class="col-md-6">
+                                <label for="financing" class="form-label mt-2">Interested in Financing? (Optional)</label>
+                                <select class="form-select form-control-lg" id="financing" name="financing" autocomplete="off">
+                                    <option value="" selected>-- Select an Option --</option>
+                                    <option value="True">Yes</option>
+                                    <option value="False">No</option>
+                                </select>
+                            </div>
+
+                            <!-- Additional Details -->
+                            <div class="col-12 mt-3">
+                                <textarea class="form-control" placeholder="Additional Details (Optional)" name="details" rows="4" autocomplete="off"></textarea>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="col-12 mt-3">
+                                <button type="submit" class="btn btn-primary btn-lg w-100">Submit Quote</button>
+                            </div>
                         </div>
-                    </div>
+                    </form>
+                </div> <!-- end card -->
+            </div> <!-- end col -->
+        </div> <!-- end row -->
+    </div> <!-- end container -->
+</section>
+{% endblock %}
 
-                    <!-- Email -->
-                    <div class="col-md-6">
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                            <input class="form-control form-control-lg" id="email" name="email" type="email" placeholder="Your Email" required>
-                        </div>
-                    </div>
 
-                    <!-- Phone -->
-                    <div class="col-md-6">
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="fas fa-phone-alt"></i></span>
-                            <input class="form-control form-control-lg" id="phone" name="phone" type="text" placeholder="Your Phone Number" required>
-                        </div>
-                    </div>
-
-                    <!-- Requested Service -->
-                    <div class="col-md-6">
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="fas fa-cogs"></i></span>
-                            <input class="form-control form-control-lg" id="service" name="service" type="text" placeholder="Requested Service" required>
-                        </div>
-                    </div>
-
-                    <!-- Type of Windows -->
-                    <div class="col-md-6">
-                        <label for="windowType" class="form-label">Type of Window</label>
-                        <select class="form-select form-control-lg" id="windowType" name="windowType" required>
-                            <option value="" disabled selected>Select Type of Window</option>
-                            <option value="double_hung">Double Hung</option>
-                            <option value="casement">Casement</option>
-                            <option value="sliding">Sliding</option>
-                            <option value="bay_bow">Bay/Bow</option>
-                            <option value="custom">Custom</option>
-                        </select>
-                    </div>
-
-                    <!-- Additional Details -->
-                    <div class="col-12">
-                        <label for="details" class="form-label">Additional Details (Optional)</label>
-                        <textarea id="details" class="form-control" placeholder="Add any extra details here..." name="details" rows="4"></textarea>
-                    </div>
-
-                    <!-- Submit Button -->
-                    <div class="col-12 mt-3">
-                        <button type="submit" class="btn btn-primary btn-lg w-100">Submit Quote</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Bootstrap JS & Dependencies -->
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
