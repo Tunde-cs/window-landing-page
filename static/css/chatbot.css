@@ -137,13 +137,6 @@ body {
     font-family: Arial, sans-serif;
 }
 
-#chat-window {
-    display: flex;
-    flex-direction: column;
-    height: 350px; /* You can adjust this */
-    max-height: 90vh;
-}
-
 #chat-input-container {
     margin-bottom: 0 !important;
     padding-bottom: 8px;
