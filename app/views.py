@@ -254,3 +254,6 @@ def admin_logout(request):
     logout(request)  # Use Django's auth logout
     return redirect("admin_login")  # Redirect to admin login page
 
+
+def saas_landing(request):
+    return render(request, 'saas/landing.html')
