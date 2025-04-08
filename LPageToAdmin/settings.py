@@ -264,6 +264,7 @@ CSP_SCRIPT_SRC = (
     "https://code.jquery.com",
     "https://www.googletagmanager.com",
     "https://maxcdn.bootstrapcdn.com",  # ✅ Needed for Bootstrap 5.3.0 if you're using it
+    "'sha256-l7/IgRTUMWS/lF9FI7LgrWO6UfRclOkyIFb7mn1Tg6Y='",
 )
 
 CSP_STYLE_SRC = (
@@ -297,6 +298,7 @@ CSP_CONNECT_SRC = (
     "https://windowgeniusai.herokuapp.com",
     "https://windowgeniusai.com",
     "https://api.openai.com",
+    "https://www.google-analytics.com", 
 )
 
 # Import django-heroku at the bottom
