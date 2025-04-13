@@ -211,31 +211,55 @@ def request_quote(request):
         if form.is_valid():
             quote = form.save()
 
-            # 📩 Create a message for admin inbox
+            # 📩 Create a message for admin inbox (dashboard)
             Message.objects.create(
-                 sender=quote.name,
-                 receiver="admin",
-                 subject="New Quote Submitted",
-                 content=f"{quote.name} submitted a new quote request for {quote.service}.",
-                 is_read=False
+                sender=quote.name,
+                receiver="admin",
+                subject="New Quote Submitted",
+                content=f"{quote.name} submitted a new quote request for {quote.service}.",
+                is_read=False
             )
 
-            # Optional email
+            # ✅ Send confirmation to the customer
             send_mail(
                 subject="Your Window Quote Request Has Been Received",
                 message=f"""Dear {quote.name},
-            Thank you for requesting a quote from Window Genius AI. We’ve received your information and will contact you soon with your personalized window replacement options.
 
-            Best regards,  
-            Window Genius AI – Window Replacement Experts    
-            """,
+Thank you for requesting a quote from Window Genius AI. We’ve received your information and will contact you soon with your personalized window replacement options.
+
+Best regards,  
+Window Genius AI – Window Replacement Experts    
+""",
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[quote.email],
                 fail_silently=True,
             )
 
-            # Redirect back to landing or a success page
+            # ✅ Send admin alert with full lead info
+            send_mail(
+                subject=f"📥 New Lead from {quote.name}",
+                message=f"""
+New quote request received via the Window Genius AI landing page:
+
+📌 Name: {quote.name}
+📧 Email: {quote.email}
+📱 Phone: {quote.phone}
+🏠 Address: {quote.property_address}
+🌎 Location: {quote.city}, {quote.state} {quote.zipcode}
+🪟 Window Type: {quote.windowType}
+💵 Financing: {"Yes" if quote.financing else "No"}
+📝 Details: {quote.details}
+
+Check your dashboard or follow up directly.
+""",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=["admin@windowgeniusai.com"],  # 💬 You can add more emails here
+                fail_silently=True,
+            )
+
+            # ✅ Redirect to thank-you page
             return redirect("quote_success")
+
         else:
             messages.error(request, "There was an error submitting your request.")
     else:
@@ -243,7 +267,7 @@ def request_quote(request):
 
     return render(request, "pages/request_quote.html", {"form": form})
 
-
+# Quote Success Page
 def quote_success(request):
     return render(request, "pages/quote_success.html")
 

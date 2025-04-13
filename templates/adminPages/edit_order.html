@@ -18,19 +18,46 @@
             <div class="card-body">
                 <form method="post">
                     {% csrf_token %}
-                    <div class="form-group">
+                    
+                    <!-- Customer -->
+                    <div class="form-group mb-3">
                         {{ form.customer.label_tag }} {{ form.customer }}
                     </div>
-                    <div class="form-group">
+                
+                    <!-- Amount -->
+                    <div class="form-group mb-3">
                         {{ form.amount.label_tag }} {{ form.amount }}
                     </div>
-                    <div class="form-group">
+                
+                    <!-- Number of Windows -->
+                    <div class="form-group mb-3">
+                        {{ form.number_of_windows.label_tag }} {{ form.number_of_windows }}
+                    </div>
+                
+                    <!-- Window Type -->
+                    <div class="form-group mb-3">
+                        {{ form.window_type.label_tag }} {{ form.window_type }}
+                    </div>
+                
+                    <!-- Window Size -->
+                    <div class="form-group mb-3">
+                        {{ form.size.label_tag }} {{ form.size }}
+                    </div>
+                
+                    <!-- Notes -->
+                    <div class="form-group mb-3">
+                        {{ form.notes.label_tag }} {{ form.notes }}
+                    </div>
+                
+                    <!-- Status -->
+                    <div class="form-group mb-3">
                         {{ form.status.label_tag }} {{ form.status }}
                     </div>
-
-                    <!-- ✅ Read-only Order Date -->
+                
+                    <!-- Read-only Order Date -->
                     <p><strong>Date Created:</strong> {{ form.instance.date|date:"M d, Y" }}</p>
-
+                
+                    <!-- Buttons -->
                     <button type="submit" class="btn btn-success">
                         <i class="fas fa-save"></i> Save Changes
                     </button>

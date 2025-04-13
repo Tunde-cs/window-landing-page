@@ -39,6 +39,8 @@ from django.conf import settings
 from app.forms import OrderForm
 from app.forms import ProfilePictureForm
 from app.models import UserProfile
+from django.utils import timezone
+
 
 
 # Base Views
@@ -125,6 +127,7 @@ def admin_dashboard(request):
     try:
         # ✅ Fetch main admin-related metrics
         new_leads_count = Lead.objects.filter(status="new").count()
+        active_quotes_count = Quote.objects.filter(status="active").count()
         quote_leads_count = Quote.objects.count() 
         pending_orders_count = Order.objects.filter(status="pending").count()
         completed_projects_count = Order.objects.filter(status="completed").count()
@@ -177,6 +180,7 @@ def admin_dashboard(request):
         context.update({
             "metrics": {
                 "new_leads_count": new_leads_count + quote_leads_count,
+                "active_quotes_count": active_quotes_count,
                 "pending_orders_count": pending_orders_count,
                 "completed_projects_count": completed_projects_count,
                 "monthly_revenue": monthly_revenue,
@@ -235,6 +239,7 @@ def employee_dashboard(request):
     try:
         # ✅ Metrics
         new_leads_count = Lead.objects.filter(status="new").count()
+        active_quotes_count = Quote.objects.filter(status="active").count()
         quote_leads_count = Quote.objects.count() 
         pending_orders_count = Order.objects.filter(status="pending").count()
         completed_projects_count = Order.objects.filter(status="completed").count()
@@ -284,6 +289,7 @@ def employee_dashboard(request):
         context.update({
             "metrics": {
                 "new_leads_count": new_leads_count + quote_leads_count,
+                "active_quotes_count": active_quotes_count,
                 "pending_orders_count": pending_orders_count,
                 "completed_projects_count": completed_projects_count,
                 "monthly_revenue": monthly_revenue,
@@ -675,7 +681,6 @@ def admin_submit_lead(request):
 @csrf_protect
 def admin_quotes_view(request, quote_id=None):
     if request.method == "POST":
-        # Handle form submission
         form = QuoteForm(request.POST)
         if form.is_valid():
             form.save()
@@ -683,17 +688,79 @@ def admin_quotes_view(request, quote_id=None):
         else:
             messages.error(request, "Error adding quote. Please check the form.")
 
+    quote = None
     if quote_id:
-        # Show details for a specific quote
         quote = get_object_or_404(Quote, id=quote_id)
-        return render(request, "adminPages/adminquotes.html", {"quote": quote})
 
-    # List all quotes
-    quotes = Quote.objects.all()
+    status_filter = request.GET.get("status")
+    if status_filter in ["new", "pending", "active", "completed"]:
+        quotes = Quote.objects.filter(status=status_filter)
+    else:
+        quotes = Quote.objects.all()
+
+    # ✅ Count for filter buttons
+    new_count = Quote.objects.filter(status="new").count()
+    pending_count = Quote.objects.filter(status="pending").count()
+    active_count = Quote.objects.filter(status="active").count()
+    completed_count = Quote.objects.filter(status="completed").count()
+
     return render(
-        request, "adminPages/adminquotes.html", {"quotes": quotes, "form": QuoteForm()}
+        request,
+        "adminPages/adminquotes.html",
+        {
+            "quotes": quotes,
+            "form": QuoteForm(),
+            "quote": quote,
+            "new_count": new_count,
+            "pending_count": pending_count,
+            "active_count": active_count,
+            "completed_count": completed_count,
+            "total_count": Quote.objects.count(),
+        },
     )
 
+
+@csrf_protect
+@login_required
+def mark_quote_pending(request, quote_id):
+    quote = get_object_or_404(Quote, id=quote_id)
+    quote.status = "pending"
+    quote.save()
+    messages.info(request, f"Quote from {quote.name} marked as pending.")
+    return redirect("adminquotes")   # Or your leads list view
+
+
+@csrf_protect
+@login_required
+def mark_quote_active(request, quote_id):
+    quote = get_object_or_404(Quote, id=quote_id)
+
+    # Update the quote status
+    quote.status = "active"
+    quote.save()
+
+    # 🆕 Automatically create an order if it doesn't exist
+    existing_order = Order.objects.filter(customer=quote).first()
+    if not existing_order:
+        Order.objects.create(
+            customer=quote,
+            status="pending",
+            date=timezone.now(),
+            amount=0  # You can update this later
+        )
+
+    messages.success(request, f"Quote from {quote.name} marked as active and order created.")
+    return redirect("adminquotes")
+
+
+@csrf_protect
+@login_required
+def mark_quote_completed(request, quote_id):
+    quote = get_object_or_404(Quote, id=quote_id)
+    quote.status = "completed"
+    quote.save()
+    messages.success(request, f"Quote from {quote.name} marked as completed.")
+    return redirect("adminquotes")
 
 
 @staff_member_required

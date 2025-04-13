@@ -107,7 +107,15 @@ class ReplyMessageForm(forms.Form):
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ['customer', 'amount', 'status']  # ✅ Do NOT include 'date'
+        fields = ['customer', 'amount', 'number_of_windows', 'window_type', 'size', 'notes', 'status']
+        widgets = {
+            'notes': forms.Textarea(attrs={'rows': 3}),
+        }
+        labels = {
+            'number_of_windows': 'Qty',
+            'window_type': 'Type of Window',
+            'size': 'Window Size',
+        }
 
 
 class ProfilePictureForm(forms.ModelForm):

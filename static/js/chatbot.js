@@ -19,9 +19,9 @@ document.addEventListener("DOMContentLoaded", function () {
     setTimeout(function () {
         if (chatWindow.style.display !== "block") {
             openChatbot();
-            displayMessage("Chatbot", "👋 Welcome! How can I assist you with your window needs today?", "chatbot");
+            displayMessage("Chatbot", "👋 Hi there! I’m Window Genius AI. I can help you get a quote, schedule a consultation, or answer questions!", "chatbot");
         }
-    }, 3000);  // ✅ Delayed chatbot opening (3 seconds)
+    }, 5000);  // ✅ Delayed chatbot opening (5 seconds)
 
     // ✅ Show chat window when button is clicked
     chatbotButton.addEventListener("click", function () {

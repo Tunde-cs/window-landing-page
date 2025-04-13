@@ -97,6 +97,10 @@ urlpatterns = [
     path("adminquotes/", admin_quotes_view, name="adminquotes"),  # Main admin quotes view
     path("adminquotes/<int:quote_id>/", admin_quotes_view, name="adminquote_detail"),  # Specific quote
     path("adminquotes/delete/<int:quote_id>/", delete_quote, name="delete_quote"),  # Delete a quote
+    path("quote/<int:quote_id>/pending/", views.mark_quote_pending, name="mark_quote_pending"),
+    path("quote/<int:quote_id>/active/", views.mark_quote_active, name="mark_quote_active"),
+    path("quote/<int:quote_id>/completed/", views.mark_quote_completed, name="mark_quote_completed"),
+
 
     # ✅ Orders Management
     path("orders/", orders_view, name="orders"),

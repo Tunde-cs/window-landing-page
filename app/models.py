@@ -17,21 +17,19 @@ class Order(models.Model):
         ("completed", "Completed"),
     )
 
-    # Foreign key to the Quote model
     customer = models.ForeignKey('Quote', on_delete=models.CASCADE, related_name='orders')
+    date = models.DateField(auto_now_add=True)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default="pending")
 
-    # Date and amount fields
-    date = models.DateField(auto_now_add=True)  # Automatically sets current date when order is created
-    amount = models.DecimalField(max_digits=10, decimal_places=2, blank=False)  # Make it required
-    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default="pending")  # Default to pending
+    number_of_windows = models.PositiveIntegerField(default=1)
+    window_type = models.CharField(max_length=100, blank=True, null=True)
+    size = models.CharField(max_length=100, blank=True, null=True)  # ✅ Add this
+    notes = models.TextField(blank=True, null=True)
 
-    class Meta:
-        verbose_name = "Order"
-        verbose_name_plural = "Orders"
-    
     def __str__(self):
-        # Use customer name from the related Quote object
         return f"Order {self.id} - {self.customer.name} - {self.status} - ${self.amount}"
+
 
 # Project Model
 class Project(models.Model):
@@ -67,6 +65,13 @@ class Quote(models.Model):
         ("custom", "Custom"),
     )
 
+    STATUS_CHOICES = (
+        ("new", "New"),
+        ("pending", "Pending"),
+        ("active", "Active"),
+        ("completed", "Completed"),
+    )
+
     name = models.CharField(max_length=100)
     email = models.EmailField()
     phone = models.CharField(max_length=30)
@@ -82,6 +87,13 @@ class Quote(models.Model):
 
     # 💰 Financing Option (Yes/No)
     financing = models.BooleanField(null=True, blank=True)
+
+    # 📦 Quote Status
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default="new",
+    )
 
     # 📅 Timestamp
     submitted_at = models.DateTimeField(auto_now_add=True)
