@@ -31,3 +31,17 @@ document.addEventListener('DOMContentLoaded', function () {
     console.warn("❌ AdminLTE PushMenu not initialized.");
   }
 });
+
+
+document.addEventListener("DOMContentLoaded", function () {
+  const deleteButtons = document.querySelectorAll(".delete-quote-btn");
+
+  deleteButtons.forEach(button => {
+    button.addEventListener("click", function (e) {
+      const confirmed = confirm("Are you sure you want to delete this quote?");
+      if (!confirmed) {
+        e.preventDefault();
+      }
+    });
+  });
+});

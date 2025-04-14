@@ -1,0 +1,45 @@
+{% extends "base/adminbase.html" %}
+
+{% block page_content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Email {{ lead.name|default:"Lead" }}</h2>
+
+    <form method="post">
+        {% csrf_token %}
+    
+        <div class="form-group">
+            <label for="email">Lead Email</label>
+            <input type="email" name="email" id="email" class="form-control" placeholder="Paste lead email here" required>
+        </div>
+    
+        <div class="form-group">
+            <label for="subject">Subject</label>
+            <input type="text" name="subject" id="subject" class="form-control" value="Let's get your free quote started" required>
+        </div>
+    
+        <div class="form-group">
+            <label for="message">Message</label>
+            <textarea name="message" id="message" class="form-control" rows="6">Hi there,
+    
+    Thanks for showing interest in Window Genius AI. We'd love to help you get a free quote for your window replacement.
+    
+    Can you please provide:
+    - Your name
+    - Property address
+    - Phone number
+    - Type of windows
+    - Any specific needs?
+    
+    Start here 👉 https://www.windowgeniusai.com/request-quote/
+    
+    Best regards,  
+    Window Genius AI</textarea>
+        </div>
+    
+        <div class="mt-3">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Send Email</button>
+            <a href="{% url 'adminleads' %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

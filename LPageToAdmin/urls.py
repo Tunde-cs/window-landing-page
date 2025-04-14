@@ -84,20 +84,18 @@ urlpatterns = [
     path("view_message/<int:message_id>/", views.view_message, name="view_message"),
     path("mark_message_read/<int:message_id>/", views.mark_message_read, name="mark_message_read"),
     path("reply_message/<int:message_id>/", reply_message, name="reply_message"),
-    path("adminleads/", views.admin_submit_lead, name="adminleads"),  # Admin leads view
     path("adminleads/delete/<int:lead_id>/", delete_lead, name="delete_lead"),
     path("adminmessages/delete/<int:message_id>/", delete_message, name="delete_message"),
     path("admininbox/", admin_inbox, name="admininbox"),
     path("adminleads/", admin_leads_view, name="adminleads"),
     path("adminprojects/", projects_view, name="adminprojects"),
-    path("adminmessages/", admin_inbox, name="admin_inbox"),
+    path("leads/<int:lead_id>/email/", views.send_email_to_lead, name="send_email_to_lead"),
 
 
     # ✅ Admin Quotes Management
     path("adminquotes/", admin_quotes_view, name="adminquotes"),  # Main admin quotes view
     path("adminquotes/<int:quote_id>/", admin_quotes_view, name="adminquote_detail"),  # Specific quote
     path("adminquotes/delete/<int:quote_id>/", delete_quote, name="delete_quote"),  # Delete a quote
-    path("quote/<int:quote_id>/pending/", views.mark_quote_pending, name="mark_quote_pending"),
     path("quote/<int:quote_id>/active/", views.mark_quote_active, name="mark_quote_active"),
     path("quote/<int:quote_id>/completed/", views.mark_quote_completed, name="mark_quote_completed"),
 

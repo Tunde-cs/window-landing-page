@@ -555,18 +555,16 @@ def projects_view(request):
 # Admin Inbox View
 @staff_member_required
 def admin_inbox(request):
-    messages = Message.objects.order_by("-created_at")  # Ordered messages
-    leads = Lead.objects.order_by("-created_at")  # Ordered leads
-
+    inbox_messages = Message.objects.order_by("-created_at")  # ✅ Rename this
+    leads = Lead.objects.order_by("-created_at")
 
     context = {
-        "messages": messages,
+        "inbox_messages": inbox_messages,  # ✅ Renamed
         "leads": leads,
-        "message_count": messages.count(),  # Total messages
-        "lead_count": leads.count(),  # Total leads
+        "message_count": inbox_messages.count(),
+        "lead_count": leads.count(),
     }
     return render(request, "adminPages/admininbox.html", context)
-
 
 
 
@@ -632,48 +630,43 @@ def reply_message(request, message_id):
     return redirect("view_message", message_id=message.id)
 
 
-
 # Ensure only admin users can access this view
 @csrf_protect
 @staff_member_required
 def admin_submit_lead(request):
-    """
-    Handles lead submissions for admin users.
-    """
     if request.method == "POST":
         email = request.POST.get("email")
-        name = request.POST.get("name", "Anonymous")  # Default to 'Anonymous'
+        name = request.POST.get("name", "Anonymous")
         phone = request.POST.get("phone", "")
+        service = request.POST.get("service", "window_replacement")  # ✅ Add this
 
-        # Validate email
+        # Validate
         if not email:
             messages.error(request, "Email is required.")
             return redirect("adminleads")
 
-        # Validate phone number
         if phone and not re.match(r"^\+?\d{9,15}$", phone):
             messages.error(request, "Invalid phone number format.")
             return redirect("adminleads")
 
-        # Check for duplicate email
         if Lead.objects.filter(email=email).exists():
             messages.error(request, "This email has already been submitted.")
         else:
             try:
-                # Save the lead to the database
-                Lead.objects.create(name=name, email=email, phone=phone)
+                Lead.objects.create(
+                    name=name,
+                    email=email,
+                    phone=phone,
+                    service=service,  # ✅ Now included
+                    status="new"
+                )
                 messages.success(request, "Lead submitted successfully!")
             except Exception as e:
                 print(f"Error saving lead: {str(e)}")
-                messages.error(
-                    request,
-                    "An error occurred while saving the lead. Please try again.",
-                )
+                messages.error(request, "An error occurred while saving the lead. Please try again.")
 
-        # Redirect back to the admin leads page
         return redirect("adminleads")
 
-    # Render the admin leads page with all leads
     leads = Lead.objects.all().order_by("-created_at")
     return render(request, "adminPages/adminleads.html", {"leads": leads})
 
@@ -722,16 +715,6 @@ def admin_quotes_view(request, quote_id=None):
 
 @csrf_protect
 @login_required
-def mark_quote_pending(request, quote_id):
-    quote = get_object_or_404(Quote, id=quote_id)
-    quote.status = "pending"
-    quote.save()
-    messages.info(request, f"Quote from {quote.name} marked as pending.")
-    return redirect("adminquotes")   # Or your leads list view
-
-
-@csrf_protect
-@login_required
 def mark_quote_active(request, quote_id):
     quote = get_object_or_404(Quote, id=quote_id)
 
@@ -757,9 +740,16 @@ def mark_quote_active(request, quote_id):
 @login_required
 def mark_quote_completed(request, quote_id):
     quote = get_object_or_404(Quote, id=quote_id)
-    quote.status = "completed"
-    quote.save()
-    messages.success(request, f"Quote from {quote.name} marked as completed.")
+
+    try:
+        # Get the associated Order
+        order = Order.objects.get(customer=quote)
+        order.status = "completed"
+        order.save()
+        messages.success(request, f"Order for {quote.name} marked as completed.")
+    except Order.DoesNotExist:
+        messages.error(request, f"No order found for quote from {quote.name}.")
+
     return redirect("adminquotes")
 
 
@@ -771,7 +761,7 @@ def delete_message(request, message_id):
     if request.method == "POST":
         message.delete()
         messages.success(request, "✅ Message deleted successfully ✅")
-        return redirect("admin_inbox")  # ✅ This name must match the one in your urls.py
+        return redirect("admininbox")  # ✅ This name must match the one in your urls.py
 
 
 @staff_member_required
@@ -792,7 +782,8 @@ def delete_lead(request, lead_id):
     return redirect("adminleads")
 
 
-@staff_member_required
+@login_required
+@csrf_protect
 def delete_quote(request, quote_id):
     """
     Deletes a specific quote by ID.
@@ -873,3 +864,23 @@ def logout_view(request):
     response["Pragma"] = "no-cache"
     response["Expires"] = "0"
     return response
+
+
+@csrf_protect
+@login_required
+def send_email_to_lead(request, lead_id):
+    lead = get_object_or_404(Lead, id=lead_id)
+
+    if request.method == "POST":
+        subject = request.POST.get("subject")
+        message = request.POST.get("message")
+        from_email = settings.DEFAULT_FROM_EMAIL
+
+        if subject and message:
+            send_mail(subject, message, from_email, [lead.email])
+            messages.success(request, f"Email sent to {lead.email}.")
+            return redirect("adminleads")
+        else:
+            messages.error(request, "Subject and message are required.")
+
+    return render(request, "adminPages/send_email_form.html", {"lead": lead})

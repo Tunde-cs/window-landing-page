@@ -61,7 +61,7 @@ class Quote(models.Model):
         ("double_hung", "Double Hung"),
         ("casement", "Casement"),
         ("sliding", "Sliding"),
-        ("bay_bow", "Picture"),
+        ("picture", "Picture"),
         ("custom", "Custom"),
     )
 
