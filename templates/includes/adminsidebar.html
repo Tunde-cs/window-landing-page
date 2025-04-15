@@ -55,11 +55,15 @@
                 <!-- Quotes -->
                 <li class="nav-item">
                     <a href="{% url 'adminquotes' %}" class="nav-link">
-                        <i class="nav-icon fas fa-file-alt"></i>
-                        <p>Quotes</p>
+                      <i class="nav-icon fas fa-file-alt"></i>
+                      <p>
+                        Quotes
+                        {% if new_quote_count > 0 %}
+                          <span class="badge bg-warning text-dark ms-2">{{ new_quote_count }}</span>
+                        {% endif %}
+                      </p>
                     </a>
-                </li>
-
+                  </li>
                 <!-- Projects -->
                 <li class="nav-item">
                     <a href="{% url 'adminprojects' %}" class="nav-link">

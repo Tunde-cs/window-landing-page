@@ -128,6 +128,7 @@ def admin_dashboard(request):
         # ✅ Fetch main admin-related metrics
         new_leads_count = Lead.objects.filter(status="new").count()
         active_quotes_count = Quote.objects.filter(status="active").count()
+        new_quote_count = Quote.objects.filter(status="new").count()
         quote_leads_count = Quote.objects.count() 
         pending_orders_count = Order.objects.filter(status="pending").count()
         completed_projects_count = Order.objects.filter(status="completed").count()
@@ -214,6 +215,8 @@ def admin_dashboard(request):
             "quote_chart_data": json.dumps([0] * 12),
         })
 
+    # ✅ Always add new_quote_count to the final context, no matter what    
+    context["new_quote_count"] = new_quote_count
     return TemplateResponse(request, "adminPages/adminhome.html", context)
 
 

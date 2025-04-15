@@ -76,9 +76,24 @@ class QuoteForm(forms.ModelForm):
             "financing",
         ]
         widgets = {
-            "name": forms.TextInput(attrs={"class": "form-control", "placeholder": "Customer Name"}),
-            "email": forms.EmailInput(attrs={"class": "form-control", "placeholder": "Customer Email"}),
-            "phone": forms.TextInput(attrs={"class": "form-control", "placeholder": "Phone Number"}),
+            "name": forms.TextInput(attrs={
+    "class": "form-control",
+    "placeholder": "Customer Name",
+    "autocomplete": "name"
+}),
+
+            "email": forms.EmailInput(attrs={
+    "class": "form-control",
+    "placeholder": "Customer Email",
+    "autocomplete": "email"
+}),
+
+            "phone": forms.TextInput(attrs={
+    "class": "form-control",
+    "placeholder": "Phone Number",
+    "autocomplete": "tel"
+}),
+
             "service": forms.Select(choices=SERVICE_CHOICES, attrs={"class": "form-select"}),  # Dropdown for services
             "windowType": forms.Select(attrs={"class": "form-select"}),
             "details": forms.Textarea(attrs={"class": "form-control", "placeholder": "Additional Details (Optional)"}),
