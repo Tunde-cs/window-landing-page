@@ -240,7 +240,44 @@
     <a href="{% url 'request_quote' %}" class="btn btn-light btn-lg mt-3">Request a Quote</a>
   </div>
 </section>
-        
+
+<!-- 🔒 Trust Badges Section -->
+<section class="py-5 bg-light border-top">
+    <div class="container text-center">
+      <h5 class="text-uppercase text-muted mb-4">Trusted by Homeowners Nationwide</h5>
+      <div class="row justify-content-center g-4">
+        <div class="col-6 col-md-3">
+          <div class="p-3 bg-white border rounded shadow-sm">
+            <i class="fas fa-shield-alt fa-2x text-primary mb-2"></i>
+            <h6 class="fw-bold mb-1">BBB Accredited</h6>
+            <p class="small text-muted mb-0">A+ Rated Business</p>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="p-3 bg-white border rounded shadow-sm">
+            <i class="fas fa-user-check fa-2x text-success mb-2"></i>
+            <h6 class="fw-bold mb-1">Verified Pros</h6>
+            <p class="small text-muted mb-0">Screened Installers</p>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="p-3 bg-white border rounded shadow-sm">
+            <i class="fas fa-certificate fa-2x text-warning mb-2"></i>
+            <h6 class="fw-bold mb-1">Licensed & Insured</h6>
+            <p class="small text-muted mb-0">Fully Compliant</p>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="p-3 bg-white border rounded shadow-sm">
+            <i class="fas fa-star fa-2x text-warning mb-2"></i>
+            <h6 class="fw-bold mb-1">4.9★ Rating</h6>
+            <p class="small text-muted mb-0">Based on 200+ reviews</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
         <!-- ✅ Success and Error Messages -->
         <div class="mt-3">
             {% if messages %}
@@ -253,37 +290,49 @@
             {% endif %}
         </div>
 
-<section class="financing text-center bg-light py-5">
-    <section id="we-finance" class="bg-light text-center">
-    <div class="container">
-        <h2 class="mb-4">Flexible Financing Options Available</h2>
-        <p class="lead mb-5">
-            We offer flexible financing plans to help you upgrade your windows without straining your budget.
-            Enjoy zero interest for the first 12 months!
-        </p>
-        <div class="row">
-            <div class="col-md-4">
-                <div class="financing-card p-3 border">
-                    <h4>No Interest</h4>
-                    <p>Pay over 12 months with 0% APR.</p>
+        <section id="financing-options" class="py-5 bg-white text-center">
+            <div class="container">
+              <h2 class="mb-4 fw-bold text-primary">Flexible Financing Plans</h2>
+              <p class="lead mb-5 text-muted">Upgrade your windows now, pay later with peace of mind.</p>
+          
+              <div class="row g-4 justify-content-center">
+                <!-- Card 1 -->
+                <div class="col-md-4">
+                  <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body">
+                      <i class="bi-cash-stack display-4 text-success mb-3"></i>
+                      <h5 class="card-title fw-bold">No Interest</h5>
+                      <p class="card-text text-muted">Pay over 12 months with 0% APR. Get started with zero stress.</p>
+                    </div>
+                  </div>
                 </div>
-            </div>
-            <div class="col-md-4">
-                <div class="financing-card p-3 border">
-                    <h4>Low Monthly Payments</h4>
-                    <p>Start as low as $50/month with approved credit.</p>
+                <!-- Card 2 -->
+                <div class="col-md-4">
+                  <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body">
+                      <i class="bi-piggy-bank display-4 text-info mb-3"></i>
+                      <h5 class="card-title fw-bold">Low Monthly Payments</h5>
+                      <p class="card-text text-muted">Start from $50/month with approved credit. Budget-friendly options.</p>
+                    </div>
+                  </div>
                 </div>
-            </div>
-            <div class="col-md-4">
-                <div class="financing-card p-3 border">
-                    <h4>Custom Plans</h4>
-                    <p>Choose a financing plan that suits your needs.</p>
+                <!-- Card 3 -->
+                <div class="col-md-4">
+                  <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body">
+                      <i class="bi-sliders display-4 text-warning mb-3"></i>
+                      <h5 class="card-title fw-bold">Custom Plans</h5>
+                      <p class="card-text text-muted">We tailor financing that works for your timeline and income.</p>
+                    </div>
+                  </div>
                 </div>
+              </div>
+          
+              <a href="#leadForm" class="btn btn-primary btn-lg mt-4">
+                Get Pre-Qualified Now
+              </a>
             </div>
-        </div>
-        <a href="#leadForm" class="btn btn-primary btn-lg mt-4">Learn More About Financing</a>
-    </div>
-</section>
+          </section>
 <!-- Testimonials Section -->
 <section class="testimonials text-center bg-light" id="testimonials">
     <div class="container">

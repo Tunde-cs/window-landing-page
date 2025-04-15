@@ -1,6 +1,46 @@
 {% extends "base/base.html" %}
+{% load static %}
 
+{# ✅ Inject SEO + OG tags into <head> of base.html #}
+{% block head %}
+  <!-- 🔹 Open Graph Tags for Social Sharing -->
+  <meta property="og:title" content="20% Off Window Installation in Atlanta | WindowGeniusAI">
+  <meta property="og:description" content="Claim your 20% discount on expert window installation services in Atlanta. Fast quotes, expert guidance, and beautiful results.">
+  <meta property="og:image" content="https://www.windowgeniusai.com/static/assets/img/window-2.jpg">
+  <meta property="og:url" content="https://www.windowgeniusai.com/request-quote/">
+  <meta property="og:type" content="website">
+{% endblock %}
+
+{# ✅ Set browser tab title for SEO #}
+{% block title %}Get 20% Off - Free Window Quote | WindowGeniusAI{% endblock %}
+
+{# ✅ Page Content – Your Quote Form #}
 {% block content %}
+
+
+<!-- Trust Badges -->
+<section class="text-center py-4">
+    <h5 class="mb-4 fw-bold text-secondary">Trusted by Thousands Nationwide</h5>
+    <div class="row justify-content-center">
+      <div class="col-6 col-md-3 mb-3">
+        <i class="bi-shield-check display-5 text-primary"></i>
+        <p class="fw-bold mb-0 mt-2">BBB Accredited</p>
+      </div>
+      <div class="col-6 col-md-3 mb-3">
+        <i class="bi-person-check-fill display-5 text-success"></i>
+        <p class="fw-bold mb-0 mt-2">Verified Installers</p>
+      </div>
+      <div class="col-6 col-md-3 mb-3">
+        <i class="bi-award display-5 text-warning"></i>
+        <p class="fw-bold mb-0 mt-2">Licensed & Insured</p>
+      </div>
+      <div class="col-6 col-md-3 mb-3">
+        <i class="bi-star-fill display-5 text-warning"></i>
+        <p class="fw-bold mb-0 mt-2">4.9/5 Rating</p>
+      </div>
+    </div>
+  </section>
+
 <!-- 🧾 Detailed Quote Request Form -->
 <section id="quote-form" class="py-5 bg-light">
     <div class="container">
@@ -97,6 +137,79 @@
         </div> <!-- end row -->
     </div> <!-- end container -->
 </section>
+
+<section id="financing-options" class="py-5 bg-white text-center">
+    <div class="container">
+      <h2 class="mb-4 fw-bold text-primary">Flexible Financing Plans</h2>
+      <p class="lead mb-5 text-muted">Upgrade your windows now, pay later with peace of mind.</p>
+  
+      <div class="row g-4 justify-content-center">
+        <!-- Card 1 -->
+        <div class="col-md-4">
+          <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+              <i class="bi-cash-stack display-4 text-success mb-3"></i>
+              <h5 class="card-title fw-bold">No Interest</h5>
+              <p class="card-text text-muted">Pay over 12 months with 0% APR. Get started with zero stress.</p>
+            </div>
+          </div>
+        </div>
+        <!-- Card 2 -->
+        <div class="col-md-4">
+          <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+              <i class="bi-piggy-bank display-4 text-info mb-3"></i>
+              <h5 class="card-title fw-bold">Low Monthly Payments</h5>
+              <p class="card-text text-muted">Start from $50/month with approved credit. Budget-friendly options.</p>
+            </div>
+          </div>
+        </div>
+        <!-- Card 3 -->
+        <div class="col-md-4">
+          <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+              <i class="bi-sliders display-4 text-warning mb-3"></i>
+              <h5 class="card-title fw-bold">Custom Plans</h5>
+              <p class="card-text text-muted">We tailor financing that works for your timeline and income.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <a href="#leadForm" class="btn btn-primary btn-lg mt-4">
+        Get Pre-Qualified Now
+      </a>
+    </div>
+  </section>
+
+  <section class="testimonials text-center bg-light py-5">
+    <div class="container">
+      <h2 class="mb-5">Trusted by Homeowners Just Like You</h2>
+      <div class="row">
+        <div class="col-md-4">
+          <div class="testimonial-item p-4 border rounded bg-white shadow-sm">
+            <h5>Peter M., Illinois</h5>
+            <p>"The team did a clean, professional job. I'm extremely satisfied."</p>
+            <p class="text-warning">★★★★★</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="testimonial-item p-4 border rounded bg-white shadow-sm">
+            <h5>Kiana R., North Carolina</h5>
+            <p>"Super friendly crew and the quote was lower than others!"</p>
+            <p class="text-warning">★★★★★</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="testimonial-item p-4 border rounded bg-white shadow-sm">
+            <h5>Angela K., Georgia</h5>
+            <p>"Submitted the quote form and got a call same day. Amazing speed!"</p>
+            <p class="text-warning">★★★★★</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 {% endblock %}
 
 
