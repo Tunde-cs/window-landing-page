@@ -253,7 +253,7 @@ New quote request received via the Window Genius AI landing page:
 Check your dashboard or follow up directly.
 """,
                 from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=["admin@windowgeniusai.com"],  # 💬 You can add more emails here
+                recipient_list=["sales@windowgeniusai.com", "admin@windowgeniusai.com"],  # 💬 Sends to both inboxes
                 fail_silently=True,
             )
 
