@@ -182,6 +182,23 @@
     </div>
   </section>
 
+  <section class="bg-light text-center py-4">
+    <h4 class="mb-3">Need help completing the form?</h4>
+    <form action="{% url 'submit_lead' %}" method="post">
+      {% csrf_token %}
+      <div class="row justify-content-center">
+        <div class="col-md-4">
+          <input type="email" name="email" class="form-control form-control-lg" placeholder="Enter your email" required>
+        </div>
+        <div class="col-md-2">
+          <button type="submit" class="btn btn-primary btn-lg w-100">Help Me</button>
+        </div>
+      </div>
+    </form>
+    <small class="text-muted">We’ll follow up with a simple call or quick email assistance.</small>
+  </section>
+  
+
   <section class="testimonials text-center bg-light py-5">
     <div class="container">
       <h2 class="mb-5">Trusted by Homeowners Just Like You</h2>

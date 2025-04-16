@@ -100,19 +100,37 @@ def submit_lead(request):
         try:
             new_lead = Lead.objects.create(name=name, email=email, phone=phone)
 
+            # ✅ Confirmation email to the user
             subject = "Thanks for Reaching Out to Window Genius AI"
             message = f"""Dear {name},
 
-            Thank you for submitting your details to Window Genius AI. Our team will review your inquiry and reach out to discuss your window replacement needs shortly.
+Thank you for submitting your details to Window Genius AI. Our team will review your inquiry and reach out to discuss your window replacement needs shortly.
 
-            Best regards,  
-            Window Genius AI – Window Replacement Experts
-            """
+Best regards,  
+Window Genius AI – Window Replacement Experts
+"""
             from_email = settings.DEFAULT_FROM_EMAIL
-
             send_mail(subject, message, from_email, [email], fail_silently=False)
 
-            # ✅ Redirect to shared success page with 'lead' source
+            # ✅ Alert email to your team (admin + sales)
+            alert_subject = "📥 New Email Lead Submitted"
+            alert_message = f"""
+A new lead has submitted their info on the landing page:
+
+📧 Email: {email}
+👤 Name: {name}
+📱 Phone: {phone or 'Not provided'}
+
+Check the dashboard for more info.
+"""
+            send_mail(
+                alert_subject,
+                alert_message,
+                from_email,
+                ["admin@windowgeniusai.com", "sales@windowgeniusai.com"],
+                fail_silently=False,
+            )
+
             return render(request, "pages/quote_success.html", {"source": "lead"})
 
         except Exception as e:

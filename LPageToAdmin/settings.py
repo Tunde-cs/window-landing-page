@@ -248,10 +248,13 @@ CSRF_TRUSTED_ORIGINS = [
     "https://windowgeniusai.com",  # Main domain
 ]
 
-CSRF_COOKIE_NAME = "csrftoken"  # ✅ Set CSRF cookie name
-CSRF_COOKIE_SECURE = False  # ✅ Set to True in production (only if using HTTPS)
-CSRF_COOKIE_HTTPONLY = False  # ✅ Allows JavaScript to read CSRF cookie
-CSRF_USE_SESSIONS = False  # ✅ Make sure CSRF is stored in cookies (not sessions)
+CSRF_COOKIE_NAME = "csrftoken"
+CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_HTTPONLY = False  # Only keep this True if you're using JavaScript to read CSRF
+CSRF_USE_SESSIONS = False
+
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = True
 
 
 # ✅ Content Security Policy (CSP) - DEV CONFIG
@@ -306,6 +309,13 @@ import django_heroku
 
 # Apply Heroku settings
 django_heroku.settings(locals())
+
+# ✅ Force HTTPS redirect on Heroku
+SECURE_SSL_REDIRECT = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# ✅ Force all domains to use www. (example: windowgeniusai.com → www.windowgeniusai.com)
+PREPEND_WWW = True
 
 
 # Session engine to store session data in the database
