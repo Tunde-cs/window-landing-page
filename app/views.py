@@ -300,3 +300,27 @@ def admin_logout(request):
 
 def saas_landing(request):
     return render(request, 'saas/landing.html')
+
+
+from django.http import JsonResponse, HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+def facebook_webhook(request):
+    if request.method == 'GET':
+        verify_token = 'windowgenius123'  # Your verify token (must match Facebook form)
+        mode = request.GET.get('hub.mode')
+        token = request.GET.get('hub.verify_token')
+        challenge = request.GET.get('hub.challenge')
+        if mode and token:
+            if mode == 'subscribe' and token == verify_token:
+                return HttpResponse(challenge)
+            else:
+                return HttpResponse('Verification token mismatch', status=403)
+    elif request.method == 'POST':
+        # Later you will handle saving Facebook lead data here
+        return JsonResponse({'status': 'received'})
+    else:
+        return HttpResponse('Invalid request', status=400)
+    
+    

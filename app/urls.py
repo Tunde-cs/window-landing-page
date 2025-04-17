@@ -18,8 +18,10 @@ urlpatterns = [
     path("contact/", views.contact_page, name="contact"),
     path("terms-of-use/", views.terms_of_use_page, name="terms_of_use"),
     path("privacy-policy/", views.privacy_policy, name="privacy_policy"),
+    
 
     path('saas/', views.saas_landing, name='saas_landing'),
+    path('facebook/webhook/', views.facebook_webhook, name='facebook_webhook'),
 
 
             
