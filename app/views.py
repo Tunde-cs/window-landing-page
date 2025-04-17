@@ -20,7 +20,7 @@ from django.middleware.csrf import get_token
 from django.utils.decorators import method_decorator
 import json
 import os
-
+import requests
 
 # ✅ Import Forms (Keep only if used in views)
 from app.forms import (
@@ -308,7 +308,7 @@ from django.views.decorators.csrf import csrf_exempt
 @csrf_exempt
 def facebook_webhook(request):
     if request.method == 'GET':
-        verify_token = 'windowgenius123'  # Your verify token (must match Facebook form)
+        verify_token = 'windowgenius123'  # Must match what you entered in Facebook
         mode = request.GET.get('hub.mode')
         token = request.GET.get('hub.verify_token')
         challenge = request.GET.get('hub.challenge')
@@ -318,9 +318,25 @@ def facebook_webhook(request):
             else:
                 return HttpResponse('Verification token mismatch', status=403)
     elif request.method == 'POST':
-        # Later you will handle saving Facebook lead data here
+        payload = json.loads(request.body.decode('utf-8'))
+
+        for entry in payload.get('entry', []):
+            for change in entry.get('changes', []):
+                if change.get('field') == 'leadgen':
+                    leadgen_id = change['value']['leadgen_id']
+                    page_id = change['value']['page_id']
+
+                    # 🛠 Fetch Lead Details from Facebook
+                    access_token = 'EAAJas8i3ZCq8BO7AloVntcvnkspKCXjCPK6JOjm12CNI0XkbmkVKnwVzwgcmuDLVvScqWiuKIvHLlFZAXDzK1HSiYhMEp8e1g1ZBCZAvRYf7XAWZBbH3d2QsulVfW9cJShfA7tofY7Sk7r7TNZAbWj0NL9XYCyA09fIM6bDcu5mihQrEtoTjE5Kq7JjRLSPl07FYbuiVZAaCNSZAo8tbq6pLHZA0a'  # <-- paste your real token
+                    lead_url = f"https://graph.facebook.com/v18.0/{leadgen_id}?access_token={access_token}"
+                    response = requests.get(lead_url)
+
+                    if response.status_code == 200:
+                        lead_data = response.json()
+                        
+                        # You can now process or save lead_data into your database!
+                        print("Lead Data:", lead_data)
+
         return JsonResponse({'status': 'received'})
     else:
         return HttpResponse('Invalid request', status=400)
-    
-    
