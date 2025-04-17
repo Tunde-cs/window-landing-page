@@ -21,6 +21,8 @@ from django.utils.decorators import method_decorator
 import json
 import os
 import requests
+from django.http import JsonResponse, HttpResponse
+
 
 # ✅ Import Forms (Keep only if used in views)
 from app.forms import (
@@ -301,9 +303,6 @@ def admin_logout(request):
 def saas_landing(request):
     return render(request, 'saas/landing.html')
 
-
-from django.http import JsonResponse, HttpResponse
-from django.views.decorators.csrf import csrf_exempt
 
 @csrf_exempt
 def facebook_webhook(request):
