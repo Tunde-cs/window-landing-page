@@ -59,6 +59,12 @@
     {% endif %}
 
     <title>{% block title %}{% if request.user.is_staff %}Admin Panel{% else %}Window Replacement{% endif %}{% endblock %}</title>
+
+    <style>
+        html {
+          scroll-behavior: smooth;
+        }
+        </style>
 </head>
 
 <body class="{% block body_class %}landing-page{% endblock %}">
