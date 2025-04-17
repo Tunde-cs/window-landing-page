@@ -19,6 +19,7 @@ from .forms import LeadForm  # ✅ Import the correct form
 from django.middleware.csrf import get_token
 from django.utils.decorators import method_decorator
 import json
+import os
 
 
 # ✅ Import Forms (Keep only if used in views)
@@ -271,7 +272,7 @@ New quote request received via the Window Genius AI landing page:
 Check your dashboard or follow up directly.
 """,
                 from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=["sales@windowgeniusai.com", "admin@windowgeniusai.com"],  # 💬 Sends to both inboxes
+                recipient_list=[os.environ.get("SALES_EMAIL")],
                 fail_silently=True,
             )
 

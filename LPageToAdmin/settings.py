@@ -248,13 +248,20 @@ CSRF_TRUSTED_ORIGINS = [
     "https://windowgeniusai.com",  # Main domain
 ]
 
+# ✅ CSRF and Session Cookie Security Settings
 CSRF_COOKIE_NAME = "csrftoken"
-CSRF_COOKIE_SECURE = True
-CSRF_COOKIE_HTTPONLY = False  # Only keep this True if you're using JavaScript to read CSRF
-CSRF_USE_SESSIONS = False
+CSRF_COOKIE_HTTPONLY = False  # Keep this False if you're using JS to read the cookie
+CSRF_USE_SESSIONS = False  # Use cookie-based CSRF, not session
 
-SESSION_COOKIE_SECURE = True
-SESSION_COOKIE_HTTPONLY = True
+if not DEBUG:
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+else:
+    CSRF_COOKIE_SECURE = False
+    SESSION_COOKIE_SECURE = False
+
+SESSION_COOKIE_HTTPONLY = True  # Always True for security
+
 
 
 # ✅ Content Security Policy (CSP) - DEV CONFIG
@@ -310,13 +317,14 @@ import django_heroku
 # Apply Heroku settings
 django_heroku.settings(locals())
 
-# ✅ Force HTTPS redirect on Heroku
-SECURE_SSL_REDIRECT = True
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
-# ✅ Force all domains to use www. (example: windowgeniusai.com → www.windowgeniusai.com)
-PREPEND_WWW = True
-
+# ✅ Force HTTPS and use www only in production
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    PREPEND_WWW = True
+else:
+    SECURE_SSL_REDIRECT = False
+    PREPEND_WWW = False  # Prevent redirect issues during local dev
 
 # Session engine to store session data in the database
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Stores sessions in the database
