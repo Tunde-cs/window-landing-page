@@ -328,7 +328,7 @@ def facebook_webhook(request):
                     page_id = change['value']['page_id']
 
                     # 🛠 Fetch Lead Details from Facebook
-                    access_token = 'EAAJas8i3ZCq8BO7AloVntcvnkspKCXjCPK6JOjm12CNI0XkbmkVKnwVzwgcmuDLVvScqWiuKIvHLlFZAXDzK1HSiYhMEp8e1g1ZBCZAvRYf7XAWZBbH3d2QsulVfW9cJShfA7tofY7Sk7r7TNZAbWj0NL9XYCyA09fIM6bDcu5mihQrEtoTjE5Kq7JjRLSPl07FYbuiVZAaCNSZAo8tbq6pLHZA0a'  # <-- paste your real token
+                    access_token = 'EAAJas8i3ZCq8BOzsXpfV73ullUKxtiySMf65ESUKUw5DLQbQZCiNFzgC437D2UwyURn79p9LGyifQTwUpKPp8wgbWzWDpg8DctCCjtZCi5FBpmRshLR9JvZAb8S550uLHCbtIOgE72W8gjpwp9BDjLWo1SausHAZBAnygoEUbTzXsSS8kJoMMQDWAtB1g5P3vYucTSrYgok72M9LnV0xp0x8U'  # <-- paste your real token
                     lead_url = f"https://graph.facebook.com/v18.0/{leadgen_id}?access_token={access_token}"
                     response = requests.get(lead_url)
 
