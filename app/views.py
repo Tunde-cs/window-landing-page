@@ -22,6 +22,8 @@ import json
 import os
 import requests
 from django.http import JsonResponse, HttpResponse
+from .models import FacebookLead  # 📌 Add this at the top if not already
+
 
 
 # ✅ Import Forms (Keep only if used in views)
@@ -332,9 +334,15 @@ def facebook_webhook(request):
 
                     if response.status_code == 200:
                         lead_data = response.json()
-                        
-                        # You can now process or save lead_data into your database!
-                        print("Lead Data:", lead_data)
+
+                        # 🛠 Save lead details into Django database
+                        FacebookLead.objects.create(
+                            leadgen_id=lead_data.get('id', ''),
+                            page_id=lead_data.get('form_id', ''),
+                        )
+                        print("✅ Lead Saved:", lead_data)
+                    else:
+                        print("❌ Failed to fetch lead details:", response.text)
 
         return JsonResponse({'status': 'received'})
     else:

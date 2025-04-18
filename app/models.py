@@ -201,3 +201,12 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return self.user.username
+    
+    
+class FacebookLead(models.Model):
+    leadgen_id = models.CharField(max_length=255)
+    page_id = models.CharField(max_length=255)
+    created_time = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.leadgen_id
