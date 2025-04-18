@@ -47,10 +47,6 @@
 
     <!-- ✅ Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
-    
-    <!-- ✅ Font Awesome for Facebook and Instagram icons -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
-
 
     <!-- ✅ Custom Styles -->
     <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
@@ -65,7 +61,7 @@
         <link rel="stylesheet" href="{% static 'admin/plugins/overlayScrollbars/css/OverlayScrollbars.min.css' %}">
     {% endif %}
 
-    <title>{% block title %}{% if request.user.is_staff %}Admin Panel{% else %}Window Replacement{% endif %}{% endblock %}</title>
+    <title>{% block title %}Window Genius AI{% endblock %}</title>
 
     <style>
         html {
