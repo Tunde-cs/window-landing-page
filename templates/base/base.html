@@ -2,18 +2,8 @@
 <html lang="en">
 <head>
     {% load static %}
-    <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-8PB2K8NTLM"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-  
-      gtag('config', 'G-8PB2K8NTLM', {
-        'allow_ad_personalization_signals': true
-     });
-    </script>
-
+    <script src="{% static 'js/gtag.js' %}" defer></script>
     
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -62,12 +52,6 @@
     {% endif %}
 
     <title>{% block title %}Window Genius AI{% endblock %}</title>
-
-    <style>
-        html {
-          scroll-behavior: smooth;
-        }
-        </style>
 </head>
 
 <body class="{% block body_class %}landing-page{% endblock %}">

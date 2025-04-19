@@ -228,4 +228,7 @@ canvas#salesChart {
     }
   }
   
-
+  html {
+    scroll-behavior: smooth;
+  }
+  
