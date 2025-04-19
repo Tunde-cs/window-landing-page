@@ -1,47 +1,40 @@
-// ✅ Simple email validation for native form submission (no fetch, no JSON)
 document.addEventListener("DOMContentLoaded", function () {
-  const leadForm = document.getElementById("leadForm");
-  const emailInput = document.getElementById("email");
-  const emailError = document.getElementById("email-error");
+    const leadForm = document.getElementById("leadForm");
+    const emailInput = document.getElementById("email");
+    const emailError = document.getElementById("email-error");
 
-  if (!leadForm) {
-      console.warn("⚠️ leadForm not found in DOM.");
-      return;
-  }
+    if (!leadForm) {
+        console.warn("⚠️ leadForm not found in DOM.");
+        return;
+    }
 
-  // ✅ Basic client-side email check
-  leadForm.addEventListener("submit", function (event) {
-      if (emailInput && !emailInput.value.includes("@")) {
-          event.preventDefault();
-          if (emailError) {
-              emailError.textContent = "Invalid email address.";
-              emailError.style.display = "block";
-          } else {
-              alert("Please enter a valid email address.");
-          }
-      }
-  });
+    // ✅ Basic client-side email check
+    leadForm.addEventListener("submit", function (event) {
+        if (emailInput && !emailInput.value.includes("@")) {
+            event.preventDefault();
+            if (emailError) {
+                emailError.textContent = "Invalid email address.";
+                emailError.style.display = "block";
+            } else {
+                alert("Please enter a valid email address.");
+            }
+        }
 
-  // ✅ Auto-close mobile nav menu after clicking a link
-  document.querySelectorAll(".nav-link").forEach(item => {
-      item.addEventListener("click", () => {
-          const nav = document.querySelector(".navbar-collapse");
-          if (nav && nav.classList.contains("show")) {
-              nav.classList.remove("show");
-          }
-      });
-  });
-});
+        // ✅ Bootstrap form validation
+        if (!leadForm.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        leadForm.classList.add('was-validated');
+    });
 
-document.addEventListener('DOMContentLoaded', function () {
-  const form = document.getElementById('leadForm');
-  if (!form) return;
-
-  form.addEventListener('submit', function (event) {
-      if (!form.checkValidity()) {
-          event.preventDefault();
-          event.stopPropagation();
-      }
-      form.classList.add('was-validated');
-  });
+    // ✅ Auto-close mobile nav menu after clicking a link
+    document.querySelectorAll(".nav-link").forEach(item => {
+        item.addEventListener("click", () => {
+            const nav = document.querySelector(".navbar-collapse");
+            if (nav && nav.classList.contains("show")) {
+                nav.classList.remove("show");
+            }
+        });
+    });
 });
