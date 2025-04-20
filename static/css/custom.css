@@ -232,3 +232,7 @@ canvas#salesChart {
     scroll-behavior: smooth;
   }
   
+  .lead-form-anchor {
+    position: relative;
+    top: -100px;
+}
