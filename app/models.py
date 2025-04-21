@@ -206,7 +206,10 @@ class UserProfile(models.Model):
 class FacebookLead(models.Model):
     leadgen_id = models.CharField(max_length=255)
     page_id = models.CharField(max_length=255)
+    full_name = models.CharField(max_length=255, blank=True, null=True)
+    email = models.EmailField(blank=True, null=True)
+    phone_number = models.CharField(max_length=50, blank=True, null=True)
     created_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.leadgen_id
+        return self.full_name if self.full_name else self.leadgen_id
