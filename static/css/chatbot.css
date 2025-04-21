@@ -70,6 +70,7 @@
     min-height: 40px;
     max-height: 120px;
     resize: vertical;
+    caret-color: black; 
 }
 
 #chat-send-button {
@@ -110,6 +111,9 @@
     margin: 8px 0;
     border-radius: 12px 0 12px 12px;
     font-weight: 500;
+    word-wrap: break-word; /* ✅ Allow long words to break to next line */
+    overflow-wrap: break-word; /* ✅ For better browser compatibility */
+    max-width: 100%; /* ✅ Prevent overflowing the chat window */
 }
 
 
