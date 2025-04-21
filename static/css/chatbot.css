@@ -176,4 +176,21 @@ body {
     }
   }
   
+/* ✅ Limit chatbot max height for large devices */
+#chat-window {
+    max-height: 90vh; /* 90% of the visible screen height */
+    display: flex;
+    flex-direction: column;
+}
+
+/* ✅ Make chat messages scrollable if overflow */
+#chat-messages {
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+/* ✅ Always pin the input container to bottom */
+#chat-input-container {
+    flex-shrink: 0;
+}
 
