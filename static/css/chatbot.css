@@ -147,4 +147,33 @@ body {
     margin-bottom: 0 !important;
 }
 
+/* ✅ Responsive adjustments for small screens (e.g., iPhone 2025) */
+@media (max-width: 576px) {
+    #chat-window {
+      width: 90%;
+      height: 70%;
+      bottom: 10px;
+      right: 10px;
+      border-radius: 12px;
+      font-size: 14px;
+    }
+  
+    #chatbot-button {
+      width: 55px;
+      height: 55px;
+      font-size: 18px;
+      bottom: 10px;
+      right: 10px;
+    }
+  
+    #chat-input {
+      font-size: 14px;
+      padding: 8px;
+    }
+  
+    #chat-messages {
+      height: 200px;
+    }
+  }
+  
 

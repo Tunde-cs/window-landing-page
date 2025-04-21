@@ -101,21 +101,6 @@
     margin: 2px 0 !important; /* 🔹 Reduce spacing between text lines */
 }
 
-/* ✅ Ensure Admin Footer Stays Below Content */
-.main-footer {
-    width: 100%;
-    margin-left: 0;
-    position: relative;
-    bottom: 0;
-    background: #f8f9fa;
-    padding: 15px 20px;
-    text-align: center;
-}
-.content-wrapper {
-    flex-grow: 1;
-}
-
-
 /* ✅ Ensure Charts & Cards Use Full Width */
 .card {
     width: 100%;
@@ -128,37 +113,6 @@
     min-height: 400px;
 }
 
-/* ✅ Ensure sidebar and content display side by side */
-@media (min-width: 768px) {
-    .main-sidebar {
-        width: 250px; /* Set sidebar width */
-        position: fixed;
-        height: 100vh;
-        z-index: 1030;
-    }
-
-    @media (max-width: 768px) {
-        .content-wrapper {
-          margin-left: 0 !important;
-        }
-      }
-}
-
-
-@media (max-width: 768px) {
-    .main-sidebar {
-      transform: translateX(-250px);
-      transition: transform 0.3s ease-in-out;
-    }
-  
-    body.sidebar-open .main-sidebar {
-      transform: translateX(0);
-    }
-
-    .content-wrapper {
-        margin-left: 250px !important; /* Ensure content is next to sidebar */
-    }
-}
 /* ✅ Improve Hero Section */
 .hero {
     background: url('/static/assets/img/hero-bg.jpg') center/cover no-repeat;
@@ -236,3 +190,16 @@ canvas#salesChart {
     position: relative;
     top: -100px;
 }
+
+.sidebar-menu a {
+    display: block;
+    text-align: center; /* Optional for mobile polish */
+}
+
+/* ✅ Fix Footer Icons Overlapping Text on Small Screens */
+@media (max-width: 576px) {
+    .footer p {
+      padding-left: 50px; /* 🔥 Give space for Facebook + Instagram icons */
+    }
+  }
+  
