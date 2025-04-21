@@ -147,25 +147,14 @@ body {
     margin-bottom: 0 !important;
 }
 
-/* ✅ Responsive adjustments for small screens (e.g., iPhone 2025) */
+/* ✅ Make chatbot button round only on small screens */
 @media (max-width: 576px) {
-    
     #chatbot-button {
-      width: 55px;
-      height: 55px;
-      font-size: 18px;
-      bottom: 10px;
-      right: 10px;
+        width: 55px;
+        height: 55px;
+        border-radius: 50px;
+        font-size: 18px;
+        bottom: 10px;
+        right: 10px;
     }
-  
-    #chat-input {
-      font-size: 14px;
-      padding: 8px;
-    }
-  
-    #chat-messages {
-      height: 200px;
-    }
-  }
-  
-
+}
