@@ -306,10 +306,13 @@ def saas_landing(request):
     return render(request, 'saas/landing.html')
 
 
+# Your fresh token here
+PAGE_ACCESS_TOKEN = 'EAAJas8i3ZCq8BOzRA6Q7BSo0VAZCBn1GgrPspZBgtZAqP71VvAFPEzTJHITnb0gEuJBZCitKG4cR8ZBlCAhfcngfVvnVcpcYCz0JYLPOOkZB5dh52ZBbIq4Eju8Lx5BgBkcZCN9KZAhysI3QulMgLLKTDuF6I3ieBJGCdowjTGi5wbNICB7udZBSXl2xiVvUGcwlJOuarvJUnjYeoqVYhfIZBPoZD'
+
 @csrf_exempt
 def facebook_webhook(request):
     if request.method == 'GET':
-        verify_token = 'windowgenius123'  # Must match what you entered in Facebook
+        verify_token = 'windowgenius123'
         mode = request.GET.get('hub.mode')
         token = request.GET.get('hub.verify_token')
         challenge = request.GET.get('hub.challenge')
@@ -318,6 +321,7 @@ def facebook_webhook(request):
                 return HttpResponse(challenge)
             else:
                 return HttpResponse('Verification token mismatch', status=403)
+
     elif request.method == 'POST':
         payload = json.loads(request.body.decode('utf-8'))
 
@@ -327,23 +331,39 @@ def facebook_webhook(request):
                     leadgen_id = change['value']['leadgen_id']
                     page_id = change['value']['page_id']
 
-                    # 🛠 Fetch Lead Details from Facebook
-                    access_token = 'EAAJas8i3ZCq8BOzsXpfV73ullUKxtiySMf65ESUKUw5DLQbQZCiNFzgC437D2UwyURn79p9LGyifQTwUpKPp8wgbWzWDpg8DctCCjtZCi5FBpmRshLR9JvZAb8S550uLHCbtIOgE72W8gjpwp9BDjLWo1SausHAZBAnygoEUbTzXsSS8kJoMMQDWAtB1g5P3vYucTSrYgok72M9LnV0xp0x8U'  # <-- paste your real token
-                    lead_url = f"https://graph.facebook.com/v18.0/{leadgen_id}?access_token={access_token}"
+                    # Fetch Lead Details
+                    lead_url = f"https://graph.facebook.com/v18.0/{leadgen_id}?access_token={PAGE_ACCESS_TOKEN}"
                     response = requests.get(lead_url)
 
                     if response.status_code == 200:
                         lead_data = response.json()
+                        field_data = lead_data.get('field_data', [])
 
-                        # 🛠 Save lead details into Django database
+                        # Extract lead details
+                        lead_info = {}
+                        for field in field_data:
+                            if field['name'] == 'full_name':
+                                lead_info['full_name'] = field['values'][0]
+                            elif field['name'] == 'email':
+                                lead_info['email'] = field['values'][0]
+                            elif field['name'] == 'phone_number':
+                                lead_info['phone_number'] = field['values'][0]
+
+                        # Save into database
                         FacebookLead.objects.create(
                             leadgen_id=lead_data.get('id', ''),
                             page_id=lead_data.get('form_id', ''),
+                            full_name=lead_info.get('full_name', ''),
+                            email=lead_info.get('email', ''),
+                            phone_number=lead_info.get('phone_number', ''),
                         )
-                        print("✅ Lead Saved:", lead_data)
+
+                        print("✅ Lead Saved:", lead_info)
+
                     else:
                         print("❌ Failed to fetch lead details:", response.text)
 
         return JsonResponse({'status': 'received'})
+
     else:
         return HttpResponse('Invalid request', status=400)
