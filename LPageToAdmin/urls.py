@@ -18,10 +18,12 @@ from LPageToAdmin.views import mark_order_pending
 from LPageToAdmin.views import update_profile_picture
 from django.views.generic import TemplateView
 from django.contrib.sitemaps.views import sitemap
+from django.contrib.sitemaps import Sitemap
 from app.sitemaps import StaticViewSitemap
 from blog.views import employee_blog_posts
 from app.views import custom_logout
 from blog.views import create_blog_post, edit_blog_post
+from blog.models import BlogPost
 
 
 from . import views
@@ -51,10 +53,22 @@ from .views import (
     view_message,
 )
 
-# ✅ Sitemap dictionary
+# ✅ Sitemap classes and dictionary
+class BlogPostSitemap(Sitemap):
+    changefreq = "weekly"
+    priority = 0.9
+
+    def items(self):
+        return BlogPost.objects.filter(is_published=True)
+
+    def location(self, obj):
+        return f"/blog/{obj.slug}/"
+
 sitemaps = {
     "static": StaticViewSitemap,
+    "blog": BlogPostSitemap,
 }
+
 
 urlpatterns = [
     # ✅ Django Admin Panel

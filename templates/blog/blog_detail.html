@@ -1,5 +1,24 @@
 {% extends "base/base.html" %}
 
+{% block head %}
+  <title>{{ post.title }} | Ediomi Iyanam</title>
+  <meta name="description" content="{{ post.title }} — insights by Ediomi Iyanam, U.S. marketing strategist.">
+  <meta name="author" content="Ediomi Iyanam">
+  <meta name="keywords" content="AI marketing, digital strategy, small business growth, U.S. marketing, Ediomi Iyanam, lead generation, Window Genius AI">
+
+  <!-- ✅ Open Graph (Social Media) -->
+  <meta property="og:title" content="{{ post.title }} | Ediomi Iyanam">
+  <meta property="og:description" content="{{ post.title }} — published by Ediomi Iyanam. Learn how smart marketing helps U.S. businesses grow.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://www.windowgeniusai.com/blog/{{ post.slug }}">
+  <meta property="og:image" content="https://www.windowgeniusai.com/static/assets/img/window-2.jpg">
+
+  <!-- Optional: Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ post.title }}">
+  <meta name="twitter:description" content="Insights from Ediomi Iyanam on marketing strategy and AI for U.S. businesses.">
+{% endblock %}
+
 {% block content %}
 <div class="container py-5">
   <h1 class="mb-3">{{ post.title }}</h1>
