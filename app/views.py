@@ -23,6 +23,7 @@ import os
 import requests
 from django.http import JsonResponse, HttpResponse
 from .models import FacebookLead  # 📌 Add this at the top if not already
+from app.decorators.no_cache import no_cache
 
 
 
@@ -301,6 +302,13 @@ def admin_logout(request):
     logout(request)  # Use Django's auth logout
     return redirect("admin_login")  # Redirect to admin login page
 
+def custom_logout(request):
+    logout(request)
+    response = redirect("/")
+    response["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response["Pragma"] = "no-cache"
+    response["Expires"] = "0"
+    return response
 
 def saas_landing(request):
     return render(request, 'saas/landing.html')
@@ -367,3 +375,4 @@ def facebook_webhook(request):
 
     else:
         return HttpResponse('Invalid request', status=400)
+

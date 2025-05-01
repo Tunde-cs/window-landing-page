@@ -82,6 +82,8 @@ INSTALLED_APPS = [
     "cloudinary",
     "cloudinary_storage",
     "django.contrib.sitemaps",
+    'blog',
+    
 ]
 
 
@@ -192,7 +194,6 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 LOGIN_REDIRECT_URL = "/useradmin/"  # Redirect to the Admin Dashboard
-LOGOUT_REDIRECT_URL = "/useradmin/"  # Redirect users to login page after logout
 
 LOGGING = {
     "version": 1,

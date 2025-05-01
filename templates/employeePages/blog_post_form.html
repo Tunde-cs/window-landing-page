@@ -1,0 +1,14 @@
+{% extends "base/adminbase.html" %}
+
+{% block page_content %}
+<div class="container py-4">
+  <h2>{{ edit|yesno:"Edit Blog Post,Add New Blog Post" }}</h2>
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary mt-2">Save Post</button>
+    <a href="{% url 'employee_blog_posts' %}" class="btn btn-secondary mt-2">Cancel</a>
+  </form>
+</div>
+{% endblock %}

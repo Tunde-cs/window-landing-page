@@ -1,0 +1,18 @@
+{% extends "base/base.html" %}
+
+{% block content %}
+  <div class="container py-5">
+    <h1 class="mb-4">Latest Blog Posts</h1>
+    <ul class="list-group">
+      {% for post in posts %}
+        <li class="list-group-item">
+          <a href="{% url 'blog_detail' post.slug %}">{{ post.title }}</a>
+          <br>
+          <small class="text-muted">{{ post.published_at|date:"F d, Y" }}</small>
+        </li>
+      {% empty %}
+        <li class="list-group-item">No blog posts yet.</li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endblock %}

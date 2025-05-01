@@ -5,7 +5,6 @@ from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
 from LPageToAdmin.views import mark_message_read
 from LPageToAdmin.views import reply_message  # Ensure function is imported
-from .views import logout_view
 from LPageToAdmin.views import signup  # ✅ Import the correct signup view
 from LPageToAdmin.views import USERADMIN  # ✅ Make sure USERADMIN is properly imported
 from .views import admin_dashboard, employee_dashboard,projects_view
@@ -20,6 +19,9 @@ from LPageToAdmin.views import update_profile_picture
 from django.views.generic import TemplateView
 from django.contrib.sitemaps.views import sitemap
 from app.sitemaps import StaticViewSitemap
+from blog.views import employee_blog_posts
+from app.views import custom_logout
+from blog.views import create_blog_post, edit_blog_post
 
 
 from . import views
@@ -57,6 +59,10 @@ sitemaps = {
 urlpatterns = [
     # ✅ Django Admin Panel
     path("admin/", admin.site.urls),
+    path('blog/', include('blog.urls')),
+    path("useradmin/blog-posts/", employee_blog_posts, name="employee_blog_posts"),
+    path("useradmin/blog-posts/new/", create_blog_post, name="new_blog_post"),
+    path("useradmin/blog-posts/edit/<int:post_id>/", edit_blog_post, name="edit_blog_post"),
             
     # ✅ Base Pages
     path("base/", views.BASE, name="base"),  # Base page
@@ -67,8 +73,7 @@ urlpatterns = [
         
     # ✅ Authentication
     path("signup/", views.signup, name="signup"),  # Signup page
-    path("logout/", logout_view, name="logout"),  # ✅ Correct Logout Route
-    path("accounts/", include("django.contrib.auth.urls")),  # Default Django authentication
+    path("logout/", custom_logout, name="logout"),  # ✅ This is your fixed logout route
     path(
         "accounts/login/",
         auth_views.LoginView.as_view(template_name="registration/login.html"),

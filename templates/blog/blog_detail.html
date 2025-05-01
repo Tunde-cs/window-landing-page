@@ -1,0 +1,27 @@
+{% extends "base/base.html" %}
+
+{% block content %}
+<div class="container py-5">
+  <h1 class="mb-3">{{ post.title }}</h1>
+
+  <!-- ✅ Author Info -->
+  <div class="d-flex align-items-center mb-2">
+    <div>
+      <p class="mb-0 fw-semibold">
+        ✅ By Ediomi Iyanam
+      </p>
+      <small class="text-muted">
+        Digital Marketing Strategist | Growth Marketing Expert | U.S. Business Development Contributor
+      </small><br>
+      <small class="text-muted">{{ post.published_at|date:"F d, Y" }}</small>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- ✅ Blog Content -->
+  <div class="blog-content">
+    {{ post.content|safe }}
+  </div>
+</div>
+{% endblock %}

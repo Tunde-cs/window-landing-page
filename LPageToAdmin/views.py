@@ -40,6 +40,8 @@ from app.forms import OrderForm
 from app.forms import ProfilePictureForm
 from app.models import UserProfile
 from django.utils import timezone
+from app.decorators.no_cache import no_cache
+
 
 
 
@@ -103,6 +105,7 @@ def send_quote_email(to_email, subject, message):
 
 @csrf_protect
 @login_required
+@no_cache
 def USERADMIN(request):
     if request.user.is_superuser:
         return redirect("/admin/")  # Superuser sees Django admin
@@ -333,6 +336,8 @@ def employee_dashboard(request):
 
 # Sidebar Views
 @staff_member_required
+@login_required
+@no_cache
 def admin_leads_view(request):
     if request.method == "POST":
         # Handle the form submission
@@ -557,6 +562,8 @@ def projects_view(request):
 
 # Admin Inbox View
 @staff_member_required
+@login_required
+@no_cache
 def admin_inbox(request):
     inbox_messages = Message.objects.order_by("-created_at")  # ✅ Rename this
     leads = Lead.objects.order_by("-created_at")
@@ -675,6 +682,7 @@ def admin_submit_lead(request):
 
 
 @csrf_protect
+@no_cache
 def admin_quotes_view(request, quote_id=None):
     if request.method == "POST":
         form = QuoteForm(request.POST)
@@ -857,17 +865,7 @@ def user_login_redirect(request):
         return redirect('/useradmin/')  # Redirect Admin to custom Admin page
     else:
         return redirect('/employee_dashboard/')  # Redirect ediomi12 to employee dashboard
-    
-    # Logout View
-def logout_view(request):
-    """Logs the user out and prevents back navigation."""
-    logout(request)
-    response = redirect("home")  # Redirect to home page
-    response["Cache-Control"] = "no-cache, no-store, must-revalidate"
-    response["Pragma"] = "no-cache"
-    response["Expires"] = "0"
-    return response
-
+ 
 
 @csrf_protect
 @login_required
