@@ -1,12 +1,14 @@
+{% load static %}
+
 <div class="card mt-5 shadow-sm border-0 p-3">
   <div class="d-flex align-items-start">
     
     <!-- ✅ Small Profile Picture -->
-    <img src="/media/profile_pics/ediomi12_thumb.jpg"
-         alt="Ediomi Iyanam"
-         class="rounded-circle me-3"
-         style="width: 48px; height: 48px; object-fit: cover; flex-shrink: 0;">
+    <img src="{% static 'assets/img/ediomi12_thumb.jpg' %}"
+     alt="Ediomi Iyanam"
+     class="rounded-circle me-3 profile-pic-author">
 
+     
     <!-- ✅ Author Info Text -->
     <div>
       <p class="fw-bold mb-1">👤 About the Author</p>
