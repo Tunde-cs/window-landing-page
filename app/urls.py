@@ -31,3 +31,14 @@ urlpatterns = [
     # Optional: Generic landing page route
     path("", TemplateView.as_view(template_name="pages/index.html"), name="landing_page"),
 ]
+
+from django.views.static import serve
+from django.conf import settings
+from django.urls import re_path
+
+urlpatterns += [
+    re_path(r'^favicon\.ico$', serve, {
+        'path': 'assets/favicon.ico',
+        'document_root': settings.STATIC_ROOT,
+    }),
+]
