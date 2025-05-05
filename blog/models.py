@@ -9,6 +9,7 @@ class BlogPost(models.Model):
     title = models.CharField(max_length=200)
     slug = models.SlugField(unique=True, blank=True)
     content = models.TextField()
+    meta_description = models.CharField(max_length=160, blank=True, help_text="Optional: Used for SEO and Google previews.")
     author = models.ForeignKey(User, on_delete=models.CASCADE, default=get_default_author)
     published_at = models.DateTimeField(auto_now_add=True)
     is_published = models.BooleanField(default=True)
