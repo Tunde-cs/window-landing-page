@@ -13,6 +13,9 @@
   <meta property="og:image" content="{% static 'assets/img/ediomi.jpg' %}" />
   <meta property="og:url" content="https://www.windowgeniusai.com/ediomi-iyanam/" />
   <meta property="og:type" content="profile" />
+  <meta name="author" content="Ediomi Iyanam">
+  <meta name="robots" content="index, follow">
+  
 
   <script type="application/ld+json">
     {
@@ -142,21 +145,15 @@
 
       <h4>Publications & Collaborations</h4>
       <ul>
-        <li><a href="/blog/ai-powered-surveys-us-growth" target="_blank">From Insight to Action: How AI-Powered Surveys and Feedback Loops Drive U.S. Business Growth</a> – May 5, 2025</li>
-        <li><a href="/blog/predictive-analytics-us-marketing" target="_blank">The Rise of Predictive Analytics in Marketing</a> – May 5, 2025</li>
-        <li><a href="/blog/ai-inclusive-marketing" target="_blank">AI and Inclusive Marketing: Reaching Diverse U.S. Audiences</a> – May 5, 2025</li>
-        <li><a href="/blog/ai-media-narratives-wakanda" target="_blank">Beyond Fiction: How AI and Media Narratives Are Driving Cultural Strategy</a> – May 3, 2025</li>
-        <li><a href="/blog/behind-the-growth-us-brands" target="_blank">Behind the Growth: U.S. Brands I’ve Helped</a> – May 2, 2025</li>
-        <li><a href="/blog/helping-us-service-brands-grow" target="_blank">What I’ve Learned Helping U.S. Service Brands Grow Online</a> – May 2, 2025</li>
-        <li><a href="/blog/top-digital-tools-us-small-business" target="_blank">Top Digital Tools I Recommend for U.S. Small Businesses</a> – May 2, 2025</li>
-        <li><a href="/blog/case-study-windowgenius-leads" target="_blank">Case Study: Increasing Lead Conversion by 40% with WindowGeniusAI</a> – May 2, 2025</li>
-        <li><a href="/blog/smart-ads-home-renovation" target="_blank">The Future of Smart Advertising for Home Renovation Brands</a> – May 2, 2025</li>
-        <li><a href="/blog/chatbots-local-sales-service" target="_blank">How Chatbots Improve Customer Service and Sales</a> – May 2, 2025</li>
-        <li><a href="/blog/local-seo-home-services" target="_blank">Why Local SEO Matters for U.S. Home Service Businesses</a> – April 20, 2024</li>
-        <li><a href="/blog/marketing-funnel-blueprint" target="_blank">Building a U.S.-Ready Marketing Funnel: My Strategy Blueprint</a> – March 15, 2024</li>
-        <li><a href="/blog/lessons-google-ads-windows" target="_blank">Lessons from Running Google Ads for an American Window Company</a> – February 9, 2024</li>
-        <li><a href="/blog/lead-gen-tactics-home-brands" target="_blank">5 Lead Generation Tactics That Work for Home Improvement Brands</a> – January 5, 2024</li>
-        <li><a href="/blog/ai-small-business-us" target="_blank">How AI Is Reshaping Small Business Marketing in the U.S.</a> – December 10, 2023</li>
+        {% for post in blog_posts %}
+          <li>
+            <a href="{% url 'blog_detail' slug=post.slug %}" target="_blank">
+              {{ post.title }}
+            </a> – {{ post.published_at|date:"F d, Y" }}
+          </li>
+        {% empty %}
+          <li>No blog posts published yet.</li>
+        {% endfor %}
       </ul>
 
       <p class="mt-3">
@@ -177,6 +174,9 @@
          class="btn btn-outline-primary fw-semibold">
          View Ediomi Iyanam on LinkedIn
       </a>
+      <p class="fst-italic text-muted">
+        Helping U.S. service brands grow through AI-powered funnels, Google Ads, and data-driven strategy.
+      </p>
     </div>
   </div>
 </section>

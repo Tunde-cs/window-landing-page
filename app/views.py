@@ -24,7 +24,7 @@ import requests
 from django.http import JsonResponse, HttpResponse
 from .models import FacebookLead  # 📌 Add this at the top if not already
 from app.decorators.no_cache import no_cache
-
+from blog.models import BlogPost
 
 
 # ✅ Import Forms (Keep only if used in views)
@@ -378,4 +378,7 @@ def facebook_webhook(request):
 
 
 def ediomi_profile(request):
-    return render(request, "pages/ediomi-iyanam.html")
+    blog_posts = BlogPost.objects.filter(is_published=True, published_at__lte=now()).order_by('-published_at')
+    return render(request, "pages/ediomi-iyanam.html", {
+        "blog_posts": blog_posts
+    })
