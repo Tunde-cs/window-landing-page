@@ -11805,4 +11805,11 @@ button:hover {
   padding-right: 1rem;
 }
 
+.profile-img {
+  max-width: 220px;
+}
+
+.google-ads-img {
+  max-width: 100%;
+}
 

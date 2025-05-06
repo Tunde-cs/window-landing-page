@@ -4,6 +4,7 @@ from . import views
 from .views import home, submit_lead, request_quote
 from .views import about_page, services_page, contact_page, terms_of_use_page, privacy_policy
 from app.views import facebook_webhook
+from .views import ediomi_profile
 
 
 urlpatterns = [
@@ -24,6 +25,7 @@ urlpatterns = [
     path('saas/', views.saas_landing, name='saas_landing'),
     path('facebook/webhook/', views.facebook_webhook, name='facebook_webhook'),
 
+    path("ediomi-iyanam/", ediomi_profile, name="ediomi_profile"),
 
             
     path("api/", include("chatbot.urls")),  # ✅ Now chatbot API is accessible via /api/chat/

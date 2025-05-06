@@ -376,3 +376,6 @@ def facebook_webhook(request):
     else:
         return HttpResponse('Invalid request', status=400)
 
+
+def ediomi_profile(request):
+    return render(request, "pages/ediomi-iyanam.html")
