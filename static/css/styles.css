@@ -11813,3 +11813,8 @@ button:hover {
   max-width: 100%;
 }
 
+.img-badge {
+  object-fit: contain;
+  max-height: 40px;
+}
+
