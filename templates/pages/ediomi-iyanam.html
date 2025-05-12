@@ -197,6 +197,7 @@
         <li><strong>Google Ads Certified (Search & Display)</strong> – Google Skillshop, 2024</li>
         <li><strong>Member, American Marketing Association (AMA)</strong> – 2024–2026</li>
         <li><strong>Member, Association for the Advancement of Artificial Intelligence (AAAI)</strong> – 2024–2026</li>
+        <li><strong>Advanced Business Writing and Communication Skills</strong> – TF Academy, <em>Issued Mar 2024</em></li>
         <li><strong>2025 Global Recognition Award Winner</strong> – Honored for excellence in digital marketing and AI innovation</li>
       </ul>
         
@@ -204,9 +205,9 @@
       <ul>
         {% for post in blog_posts %}
           <li>
-            <a href="{% url 'blog_detail' slug=post.slug %}" target="_blank">
+            <a href="{{ post.external_url|default:post.get_absolute_url }}" target="_blank">
               {{ post.title }}
-            </a> – {{ post.published_at|date:"F d, Y" }}
+            </a> – {% if post.external_url %}Medium{% else %}Website{% endif %}, {{ post.published_at|date:"F d, Y" }}
           </li>
         {% empty %}
           <li>No blog posts published yet.</li>

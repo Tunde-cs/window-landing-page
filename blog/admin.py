@@ -7,4 +7,14 @@ class BlogPostAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("title",)}
     list_filter = ("is_published", "author")
     search_fields = ("title", "content")
-    fields = ("title", "slug", "meta_description", "content", "author", "is_published")
+
+    # ✅ Add 'external_url' so it's editable in the admin
+    fields = (
+        "title",
+        "slug",
+        "meta_description",
+        "external_url",  # ← Add this line
+        "content",
+        "author",
+        "is_published",
+    )

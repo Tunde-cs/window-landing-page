@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils.text import slugify
 from django.contrib.auth.models import User
+from django.urls import reverse
+
 
 def get_default_author():
     return User.objects.get(username="ediomi12").id
@@ -14,6 +16,8 @@ class BlogPost(models.Model):
         blank=True,
         help_text="Optional: Used for SEO and Google previews."
     )
+    external_url = models.URLField(blank=True, null=True)  # ✅ ADD THIS LINE
+
     author = models.ForeignKey(User, on_delete=models.CASCADE, default=get_default_author)
     published_at = models.DateTimeField(auto_now_add=True)
     is_published = models.BooleanField(default=True)
@@ -31,3 +35,6 @@ class BlogPost(models.Model):
 
     def __str__(self):
         return self.title
+    
+    def get_absolute_url(self):
+        return reverse('blog_detail', kwargs={'slug': self.slug})
