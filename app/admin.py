@@ -3,6 +3,7 @@ from .models import Lead, Order, Project, Quote  # No need to add 'app'
 from django.core.mail import send_mail
 from django.conf import settings
 from .models import UserProfile  # ✅ Import the model
+from .models import FacebookLead
 
 
 # Register your models here.
@@ -72,3 +73,10 @@ class UserProfileAdmin(admin.ModelAdmin):
     list_display = ("user", "role", "profile_picture")
     list_filter = ("role",)
     search_fields = ("user__username", "role")
+
+@admin.register(FacebookLead)
+class FacebookLeadAdmin(admin.ModelAdmin):
+    list_display = ("leadgen_id", "full_name", "email", "phone_number", "created_time")
+    search_fields = ("full_name", "email", "phone_number", "leadgen_id")
+    list_filter = ("created_time",)
+
