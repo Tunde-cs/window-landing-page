@@ -22,9 +22,13 @@ import json
 import os
 import requests
 from django.http import JsonResponse, HttpResponse
-from .models import FacebookLead  # 📌 Add this at the top if not already
+from .models import FacebookLead, Message  # 📌 Add this at the top if not already
 from app.decorators.no_cache import no_cache
 from blog.models import BlogPost
+from django.utils import timezone
+from .utils import fetch_facebook_lead, access_token, PAGE_ID
+
+
 
 
 # ✅ Import Forms (Keep only if used in views)
@@ -314,67 +318,40 @@ def saas_landing(request):
     return render(request, 'saas/landing.html')
 
 
-# Your fresh token here
-PAGE_ACCESS_TOKEN = 'EAAJas8i3ZCq8BOzRA6Q7BSo0VAZCBn1GgrPspZBgtZAqP71VvAFPEzTJHITnb0gEuJBZCitKG4cR8ZBlCAhfcngfVvnVcpcYCz0JYLPOOkZB5dh52ZBbIq4Eju8Lx5BgBkcZCN9KZAhysI3QulMgLLKTDuF6I3ieBJGCdowjTGi5wbNICB7udZBSXl2xiVvUGcwlJOuarvJUnjYeoqVYhfIZBPoZD'
-
 @csrf_exempt
 def facebook_webhook(request):
-    if request.method == 'GET':
-        verify_token = 'windowgenius123'
-        mode = request.GET.get('hub.mode')
-        token = request.GET.get('hub.verify_token')
-        challenge = request.GET.get('hub.challenge')
-        if mode and token:
-            if mode == 'subscribe' and token == verify_token:
-                return HttpResponse(challenge)
-            else:
-                return HttpResponse('Verification token mismatch', status=403)
-
-    elif request.method == 'POST':
-        payload = json.loads(request.body.decode('utf-8'))
-
-        for entry in payload.get('entry', []):
+    if request.method == 'POST':
+        data = json.loads(request.body.decode('utf-8'))
+        for entry in data.get('entry', []):
             for change in entry.get('changes', []):
                 if change.get('field') == 'leadgen':
                     leadgen_id = change['value']['leadgen_id']
-                    page_id = change['value']['page_id']
+                    lead_data = fetch_facebook_lead(leadgen_id)
 
-                    # Fetch Lead Details
-                    lead_url = f"https://graph.facebook.com/v18.0/{leadgen_id}?access_token={PAGE_ACCESS_TOKEN}"
-                    response = requests.get(lead_url)
-
-                    if response.status_code == 200:
-                        lead_data = response.json()
+                    if lead_data:
                         field_data = lead_data.get('field_data', [])
-
-                        # Extract lead details
                         lead_info = {}
+
                         for field in field_data:
-                            if field['name'] == 'full_name':
+                            name = field['name'].lower()
+                            if name == 'full_name':
                                 lead_info['full_name'] = field['values'][0]
-                            elif field['name'] == 'email':
+                            elif name == 'email':
                                 lead_info['email'] = field['values'][0]
-                            elif field['name'] == 'phone_number':
+                            elif name in ['phone', 'phone_number']:
                                 lead_info['phone_number'] = field['values'][0]
 
-                        # Save into database
                         FacebookLead.objects.create(
-                            leadgen_id=lead_data.get('id', ''),
-                            page_id=lead_data.get('form_id', ''),
-                            full_name=lead_info.get('full_name', ''),
-                            email=lead_info.get('email', ''),
-                            phone_number=lead_info.get('phone_number', ''),
+                            leadgen_id=lead_data.get('id'),
+                            page_id=PAGE_ID,
+                            full_name=lead_info.get('full_name'),
+                            email=lead_info.get('email'),
+                            phone_number=lead_info.get('phone_number'),
                         )
-
-                        print("✅ Lead Saved:", lead_info)
-
-                    else:
-                        print("❌ Failed to fetch lead details:", response.text)
+                        print("✅ Lead saved:", lead_info)
 
         return JsonResponse({'status': 'received'})
 
-    else:
-        return HttpResponse('Invalid request', status=400)
 
 
 def ediomi_profile(request):
