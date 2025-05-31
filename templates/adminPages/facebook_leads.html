@@ -1,0 +1,45 @@
+{% extends "base/adminbase.html" %}
+{% load static %}
+
+{% block page_title %} Facebook Leads {% endblock %}
+
+{% block page_content %}
+<div class="card">
+  <div class="card-header bg-primary text-white">
+    <h4><i class="fab fa-facebook"></i> All Facebook Leads</h4>
+  </div>
+  <div class="card-body table-responsive">
+    <table class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Received</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for lead in page_obj %}
+          <tr>
+            <td>{{ lead.full_name }}</td>
+            <td>{{ lead.email }}</td>
+            <td>{{ lead.phone_number }}</td>
+            <td>{{ lead.created_time|date:"M d, Y H:i A" }}</td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="4">No leads found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div class="pagination justify-content-center mt-3">
+      {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-outline-secondary">&laquo; Prev</a>
+      {% endif %}
+      <span class="mx-3">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+      {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline-secondary">Next &raquo;</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

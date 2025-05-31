@@ -27,7 +27,7 @@ from app.decorators.no_cache import no_cache
 from blog.models import BlogPost
 from django.utils import timezone
 from .utils import fetch_facebook_lead, access_token, PAGE_ID
-
+from app.utils import fetch_facebook_lead, send_facebook_lead_email
 
 
 
@@ -349,9 +349,16 @@ def facebook_webhook(request):
                             phone_number=lead_info.get('phone_number'),
                         )
                         print("✅ Lead saved:", lead_info)
+                        
+                        # ✅ Send email notification
+                        send_facebook_lead_email(
+                            lead_info.get('full_name', ''),
+                            lead_info.get('email', ''),
+                            lead_info.get('phone_number', '')
+                        )
 
         return JsonResponse({'status': 'received'})
-
+    return JsonResponse({'status': 'invalid method'}, status=400)
 
 
 def ediomi_profile(request):

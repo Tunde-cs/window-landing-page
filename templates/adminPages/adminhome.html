@@ -39,9 +39,8 @@
 <!-- ✅ Main Content -->
 <section class="content">
     <div class="container-fluid">
-        
-        
-        <!-- ✅ Key Metrics -->
+
+        <!-- ✅ Key Metrics Row 1 -->
         <div class="row">
             <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
                 <a href="{% url 'adminleads' %}">
@@ -66,6 +65,17 @@
             </div>
 
             <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                <a href="{% url 'facebook_leads_page' %}">
+                    <div class="card bg-dark text-white shadow">
+                        <div class="card-body text-center">
+                            <h4><i class="fab fa-facebook"></i> Facebook Leads</h4>
+                            <h3>{{ metrics.facebook_lead_count }}</h3>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
                 <a href="{% url 'pending_orders' %}">
                     <div class="card bg-warning text-white shadow">
                         <div class="card-body text-center">
@@ -75,7 +85,10 @@
                     </div>
                 </a>
             </div>
+        </div>
 
+        <!-- ✅ Key Metrics Row 2 -->
+        <div class="row">
             <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
                 <a href="{% url 'adminprojects' %}">
                     <div class="card bg-success text-white shadow">
@@ -86,7 +99,19 @@
                     </div>
                 </a>
             </div>
+
+            <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                <a href="#">
+                    <div class="card bg-secondary text-white shadow">
+                        <div class="card-body text-center">
+                            <h4><i class="fas fa-chart-line"></i> Total Quotes</h4>
+                            <h3>{{ metrics.total_quotes }}</h3>
+                        </div>
+                    </div>
+                </a>
+            </div>
         </div>
+
         <!-- ✅ Monthly Revenue & Conversion Rate -->
         <div class="row">
             <div class="col-lg-6 col-md-6 mb-4">
@@ -107,6 +132,10 @@
                 </div>
             </div>
         </div>
+
+    </div>
+</section>
+
 
         <!-- ✅ Send Email Form (Admin Dashboard) -->
 <div class="card">
@@ -146,6 +175,7 @@
         {% endfor %}
     </div>
 {% endif %}
+
 
         
     <!-- ✅ Sales Overview Chart -->

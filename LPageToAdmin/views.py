@@ -41,7 +41,7 @@ from app.forms import ProfilePictureForm
 from app.models import UserProfile
 from django.utils import timezone
 from app.decorators.no_cache import no_cache
-
+from app.models import FacebookLead
 
 
 
@@ -129,6 +129,8 @@ def admin_dashboard(request):
     
     try:
         # ✅ Fetch main admin-related metrics
+        facebook_lead_count = FacebookLead.objects.count()
+        recent_facebook_leads = FacebookLead.objects.order_by('-created_time')[:5]
         new_leads_count = Lead.objects.filter(status="new").count()
         active_quotes_count = Quote.objects.filter(status="active").count()
         new_quote_count = Quote.objects.filter(status="new").count()
@@ -183,7 +185,7 @@ def admin_dashboard(request):
         # ✅ Convert Data to JSON for Frontend
         context.update({
             "metrics": {
-                "new_leads_count": new_leads_count + quote_leads_count,
+                "new_leads_count": new_leads_count + quote_leads_count + facebook_lead_count,
                 "active_quotes_count": active_quotes_count,
                 "pending_orders_count": pending_orders_count,
                 "completed_projects_count": completed_projects_count,
@@ -193,7 +195,10 @@ def admin_dashboard(request):
                 "sales_completed": sales_completed,
                 "conversion_rate": conversion_rate,
                 "message_count": message_count,
+                "facebook_lead_count": facebook_lead_count,
+                
             },
+            "recent_facebook_leads": recent_facebook_leads,
             "sales_chart_labels": json.dumps(sales_chart_labels),
             "sales_chart_data": json.dumps(sales_chart_data),
             "quote_chart_data": json.dumps(quote_chart_data),
@@ -885,3 +890,14 @@ def send_email_to_lead(request, lead_id):
             messages.error(request, "Subject and message are required.")
 
     return render(request, "adminPages/send_email_form.html", {"lead": lead})
+
+
+@login_required
+def facebook_leads_page(request):
+    leads = FacebookLead.objects.order_by("-created_time")
+    paginator = Paginator(leads, 10)  # Show 10 leads per page
+
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, "adminPages/facebook_leads.html", {"page_obj": page_obj})

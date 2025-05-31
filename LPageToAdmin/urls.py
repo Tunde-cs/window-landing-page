@@ -24,6 +24,7 @@ from blog.views import employee_blog_posts
 from app.views import custom_logout
 from blog.views import create_blog_post, edit_blog_post
 from app.sitemaps import sitemaps
+from .views import facebook_leads_page
 
 
 from . import views
@@ -100,6 +101,7 @@ urlpatterns = [
     path("adminquotes/delete/<int:quote_id>/", delete_quote, name="delete_quote"),  # Delete a quote
     path("quote/<int:quote_id>/active/", views.mark_quote_active, name="mark_quote_active"),
     path("quote/<int:quote_id>/completed/", views.mark_quote_completed, name="mark_quote_completed"),
+    path("facebookleads/", facebook_leads_page, name="facebook_leads_page"),
 
 
     # ✅ Orders Management
