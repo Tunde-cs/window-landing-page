@@ -44,6 +44,12 @@ EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")  # ✅ Load from .env
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")  # ✅ Load from .env
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
+# ✅ Facebook API Settings
+FB_PAGE_ID = os.environ.get("FB_PAGE_ID", "")
+FB_PAGE_ACCESS_TOKEN = os.environ.get("FB_PAGE_ACCESS_TOKEN", "")
+SALES_EMAIL = os.environ.get("SALES_EMAIL", EMAIL_HOST_USER)  # fallback to sender
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
