@@ -25,7 +25,7 @@ def send_facebook_lead_email(full_name, email, phone):
             subject=f"📩 New Facebook Lead: {full_name}",
             message=f"Name: {full_name}\nEmail: {email}\nPhone: {phone}",
             from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[settings.ADMIN_EMAIL],
+            recipient_list=[settings.SALES_EMAIL],
             fail_silently=False,
         )
         print("✅ Facebook lead email sent.")
