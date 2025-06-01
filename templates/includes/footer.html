@@ -2,19 +2,29 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
 
 <!-- ✅ Footer -->
-<footer class="footer mt-auto">
-  <div class="container d-flex justify-content-center align-items-center position-relative">
-    
-    <!-- ✅ Facebook and Instagram Icons on the Left -->
+<footer class="footer mt-auto bg-dark text-white pt-4 pb-5">
+  <div class="container text-center position-relative">
+
+    <!-- ✅ Social Icons on Left -->
     <div class="position-absolute start-0 ps-3 d-flex align-items-center gap-3">
-      <a href="https://www.facebook.com/profile.php?id=61575619792352" target="_blank" rel="noopener noreferrer" class="text-decoration-none">
+      <a href="https://www.facebook.com/profile.php?id=61575619792352" target="_blank" rel="noopener noreferrer" class="text-primary text-decoration-none">
         <i class="fab fa-facebook fa-lg"></i>
       </a>
-      <i class="fab fa-instagram fa-lg"></i> <!-- Instagram icon no link yet -->
+      <i class="fab fa-instagram fa-lg text-white"></i>
     </div>
 
-    <!-- ✅ Centered Copyright -->
-    <p class="mb-0 text-center">&copy; 2025 Window Genius AI. All Rights Reserved.<br>Powered by Hoten Group LLC.</p>
+    <!-- ✅ One-line Copyright -->
+    <p class="mb-2 small">
+      &copy; 2025 Window Genius AI. All Rights Reserved. Powered by Hoten Group LLC.
+    </p>
+
+    <!-- ✅ Footer Navigation Links (Centered) -->
+    <div class="d-flex justify-content-center gap-4 flex-wrap">
+      <a href="{% url 'about' %}" class="text-white text-decoration-underline small">About Us</a>
+      <a href="{% url 'contact' %}" class="text-white text-decoration-underline small">Contact Us</a>
+      <a href="{% url 'privacy_policy' %}" class="text-white text-decoration-underline small">Privacy Policy</a>
+      <a href="{% url 'terms_of_use' %}" class="text-white text-decoration-underline small">Terms of Use</a>
+    </div>
 
   </div>
 </footer>

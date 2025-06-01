@@ -1,9 +1,45 @@
 {% extends "base/base.html" %}
 
 {% block content %}
-<div class="container mt-5">
-    <h1>About Us</h1>
-    <p>Learn more about our company, our values, and our mission to provide top-notch window replacement services.</p>
+<div class="container mt-5 mb-5">
+    <h1 class="mb-4">About Window Genius AI</h1>
+
+    <p><strong>Window Genius AI</strong> is a U.S.-based, AI-driven platform that simplifies the window replacement process through intelligent automation, real-time quoting, and nationwide contractor matching. Powered by <strong>Hoten Group LLC</strong>, we blend modern design, cutting-edge software, and trusted service into one seamless solution.</p>
+
+    <hr class="my-4">
+
+    <h5>🚀 Our SaaS Platform</h5>
+    <p>We offer a fully-managed <strong>lead generation SaaS solution</strong> for window companies across the U.S. Through our platform, local businesses can:</p>
+    <ul>
+        <li>💼 Capture and manage leads from their own custom landing pages</li>
+        <li>📊 Access real-time admin dashboards for tracking quotes, orders, and appointments</li>
+        <li>🤖 Deploy our intelligent chatbot to convert traffic into customers 24/7</li>
+        <li>📅 Integrate booking tools like Calendly and payment systems like Stripe</li>
+        <li>🛠️ Customize workflows for quoting, follow-ups, and service delivery</li>
+    </ul>
+
+    <hr class="my-4">
+
+    <h5>🏡 For Homeowners</h5>
+    <p>Our free quote tool uses AI to estimate your window needs in seconds. Whether you're replacing one window or upgrading your entire home, we connect you with licensed, vetted professionals in your area — fast.</p>
+
+    <h5>💡 Why Window Genius AI?</h5>
+    <ul>
+        <li>⚡ Instant AI-powered quote system</li>
+        <li>📍 Local contractor matching across 50 states</li>
+        <li>🔐 Secure data handling and privacy-first approach</li>
+        <li>📞 Direct communication and scheduling with contractors</li>
+        <li>💬 Automated follow-ups and chatbot support</li>
+    </ul>
+
+    <hr class="my-4">
+
+    <h5>🏢 Powered by Hoten Group LLC</h5>
+    <p><strong>Hoten Group LLC</strong> is a U.S.-based real estate investment, construction, remodeling, and home inspection service company. As the parent company of Window Genius AI, Hoten Group is committed to delivering high-quality property solutions while leveraging modern technology to streamline home improvement and inspection services nationwide.</p>
+
+    <div class="text-center mt-5">
+        <a href="{% url 'request_quote' %}" class="btn btn-primary btn-lg me-2">Get a Free Quote</a>
+        <a href="/saas/" class="btn btn-outline-dark btn-lg">Explore SaaS Plans</a>
+    </div>
 </div>
 {% endblock %}
-
