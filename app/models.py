@@ -213,3 +213,13 @@ class FacebookLead(models.Model):
 
     def __str__(self):
         return self.full_name if self.full_name else self.leadgen_id
+
+
+class ContactMessage(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Message from {self.name}"

@@ -28,6 +28,7 @@ from blog.models import BlogPost
 from django.utils import timezone
 from .utils import fetch_facebook_lead, access_token, PAGE_ID
 from app.utils import fetch_facebook_lead, send_facebook_lead_email
+from .models import ContactMessage
 
 
 
@@ -180,6 +181,29 @@ def services_page(request):
 
 
 def contact_page(request):
+    if request.method == "POST":
+        name = request.POST.get("name")
+        email = request.POST.get("email")
+        message = request.POST.get("message")
+
+        if name and email and message:
+            # Save to DB
+            ContactMessage.objects.create(name=name, email=email, message=message)
+
+            # Send notification to sales
+            send_mail(
+                subject="New Contact Message",
+                message=f"Name: {name}\nEmail: {email}\n\n{message}",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[settings.SALES_EMAIL],
+                fail_silently=True
+            )
+
+            messages.success(request, "Your message has been sent!")
+            return redirect("contact")
+        else:
+            messages.error(request, "All fields are required.")
+
     return render(request, "pages/contact.html")
 
 
