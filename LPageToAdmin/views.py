@@ -901,3 +901,7 @@ def facebook_leads_page(request):
     page_obj = paginator.get_page(page_number)
 
     return render(request, "adminPages/facebook_leads.html", {"page_obj": page_obj})
+
+
+def data_deletion_page(request):
+    return render(request, "pages/data_deletion.html")

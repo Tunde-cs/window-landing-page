@@ -61,6 +61,9 @@ urlpatterns = [
     path("useradmin/blog-posts/", employee_blog_posts, name="employee_blog_posts"),
     path("useradmin/blog-posts/new/", create_blog_post, name="new_blog_post"),
     path("useradmin/blog-posts/edit/<int:post_id>/", edit_blog_post, name="edit_blog_post"),
+
+    path("data-deletion/", views.data_deletion_page, name="data_deletion"),
+
             
     # ✅ Base Pages
     path("base/", views.BASE, name="base"),  # Base page
