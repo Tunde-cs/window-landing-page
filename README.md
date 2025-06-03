@@ -49,3 +49,16 @@ source env/bin/activate
 pip install -r requirements.txt
 python manage.py migrate
 python manage.py runserver
+
+## License
+
+This project is under development and currently private.  
+Contact [admin@windowgeniusai.com](mailto:admin@windowgeniusai.com) for demo access or collaboration.
+
+---
+
+✅ Let me know if you want me to:
+- Customize this even further with your name or company info.
+- Add CI/CD status badge.
+- Help you upload screenshots.
+
