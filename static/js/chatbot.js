@@ -15,13 +15,13 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
-    // ✅ Open chatbot automatically after 3 seconds
+    // ✅ Open chatbot automatically after 5 seconds
     setTimeout(function () {
         if (chatWindow.style.display !== "block") {
             openChatbot();
             displayMessage("Chatbot", "👋 Hi there! I’m Window Genius AI. I can help you get a quote, schedule a consultation, or answer questions!", "chatbot");
         }
-    }, 5000);  // ✅ Delayed chatbot opening (5 seconds)
+    }, 5000);
 
     // ✅ Show chat window when button is clicked
     chatbotButton.addEventListener("click", function () {
@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", function () {
         sendMessage();
     });
 
-    // ✅ Function to get CSRF token from cookies
+    // ✅ CSRF Token Helper
     function getCSRFToken() {
         const cookieValue = document.cookie
             .split("; ")
@@ -62,14 +62,19 @@ document.addEventListener("DOMContentLoaded", function () {
         return cookieValue ? cookieValue.split("=")[1] : "";
     }
 
-    // ✅ Function to send messages
+    // ✅ Lead capture variables
+    let capturedName = "";
+    let capturedEmail = "";
+    let capturedPhone = "";
+    let leadSent = false;
+
+    // ✅ Send message to OpenAI API and handle reply
     function sendMessage() {
         const userMessage = chatInput.value.trim();
         if (!userMessage) return;
 
         displayMessage("You", userMessage, "user");
 
-        // ✅ Choose correct API URL for local and production dynamically
         const apiUrl = `${window.location.origin}/api/chat/`;
 
         fetch(apiUrl, {
@@ -81,7 +86,7 @@ document.addEventListener("DOMContentLoaded", function () {
             body: JSON.stringify({ message: userMessage }),
             mode: "cors",
             cache: "no-cache",
-            credentials: "include"  // ✅ Ensure authentication and cookies work
+            credentials: "include"
         })
         .then(response => {
             if (!response.ok) {
@@ -92,6 +97,7 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(data => {
             if (data && data.reply) {
                 displayMessage("Chatbot", data.reply, "chatbot");
+                extractLeadInfo(userMessage); // ✅ Check lead info on every message
             } else {
                 displayMessage("Chatbot", "Sorry, I didn't understand that.", "chatbot");
             }
@@ -104,7 +110,7 @@ document.addEventListener("DOMContentLoaded", function () {
         chatInput.value = "";
     }
 
-    // ✅ Function to display messages in chat
+    // ✅ Display message in chat
     function displayMessage(sender, message, type) {
         const msgDiv = document.createElement("div");
         msgDiv.classList.add(type === "user" ? "user-message" : "chatbot-message");
@@ -113,13 +119,56 @@ document.addEventListener("DOMContentLoaded", function () {
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
-    // ✅ Function to open chatbot
+    // ✅ Extract and detect lead info
+    function extractLeadInfo(message) {
+        if (!capturedName && /\b(name is|I'm|I am)\s+([A-Z][a-z]+(?:\s[A-Z][a-z]+)?)/i.test(message)) {
+            capturedName = message.match(/\b(name is|I'm|I am)\s+([A-Z][a-z]+(?:\s[A-Z][a-z]+)?)/i)[2];
+        }
+
+        if (!capturedEmail && /\b[\w\.-]+@[\w\.-]+\.\w{2,4}\b/.test(message)) {
+            capturedEmail = message.match(/\b[\w\.-]+@[\w\.-]+\.\w{2,4}\b/)[0];
+        }
+
+        if (!capturedPhone && /(?:\+?\d{1,2}[\s.-]?)?(?:\(?\d{3}\)?[\s.-]?)?\d{3}[\s.-]?\d{4}/.test(message)) {
+            capturedPhone = message.match(/(?:\+?\d{1,2}[\s.-]?)?(?:\(?\d{3}\)?[\s.-]?)?\d{3}[\s.-]?\d{4}/)[0];
+        }
+
+        if (capturedName && capturedEmail && capturedPhone && !leadSent) {
+            sendLeadToBackend(capturedName, capturedEmail, capturedPhone);
+        }
+    }
+
+    // ✅ POST lead data to backend
+    function sendLeadToBackend(name, email, phone) {
+        fetch(`${window.location.origin}/api/save-lead/`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCSRFToken()
+            },
+            body: JSON.stringify({ name, email, phone }),
+            credentials: "include"
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log("✅ Lead info sent successfully");
+                leadSent = true;
+            } else {
+                console.error("❌ Failed to send lead info");
+            }
+        })
+        .catch(error => {
+            console.error("❌ Error sending lead info:", error);
+        });
+    }
+
+    // ✅ Show chatbot
     function openChatbot() {
         chatWindow.style.display = "block";
         chatbotButton.style.display = "none";
     }
 
-    // ✅ Hide chatbot when clicking outside
+    // ✅ Hide chatbot on outside click
     document.addEventListener("click", function (event) {
         if (!chatWindow.contains(event.target) && event.target !== chatbotButton) {
             chatWindow.style.display = "none";
@@ -128,4 +177,4 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-console.log("Chatbot script initialized (moved from base.html)");
+console.log("✅ chatbot.js script is fully initialized");
