@@ -1,9 +1,51 @@
-# Django landing page to adminLTE quick start
-This is very simple Django work. you can use it as a quick template.  there has some functionality.  
->> registration.
->> login.  
-> login redirect. 
-> logout.
-it was a client's startup work.
- <img src="https://github.com/hamidpy/django-landing-page-to-adminLTE-quick-start/blob/master/landingToAdmin.webp"/>
- 
+# Window Genius AI – Smart Window Lead Generation with Django & AdminLTE
+
+![Landing Screenshot](https://github.com/Tunde-cs/window-landing-page/blob/main/static/assets/img/window-2.jpg)
+
+**Window Genius AI** is a modern Django-based CRM and lead generation system built for window installation businesses in the U.S. It combines a high-converting landing page with an AI-powered chatbot, admin dashboard, and full quote management flow.
+
+---
+
+## 🚀 Features
+
+- ✨ Landing page with Bootstrap 5 design
+- 💬 Integrated chatbot to capture leads (OpenAI-powered)
+- 📩 Smart quote request form with email alerts
+- 📊 Custom admin dashboard (AdminLTE) with:
+  - Lead tracking
+  - Quote status workflow (New → Pending → Active → Completed)
+  - Order & revenue metrics
+- 📦 Backend built with Django
+- 🔐 Secure user authentication & role-based routing
+- ☁️ CI/CD with GitHub Actions + Heroku deployment
+
+---
+
+## 🧠 Tech Stack
+
+- **Frontend:** HTML, CSS, JS, Bootstrap 5
+- **Backend:** Django, SQLite (dev), PostgreSQL (prod)
+- **Automation:** GitHub Actions for CI/CD
+- **Deployment:** Heroku
+- **AI Chatbot:** OpenAI (GPT-3.5)
+- **Email:** SMTP via Django settings
+- **Extras:** CSP, SEO, GA4 tracking, mobile optimization
+
+---
+
+## 📸 Screenshots
+
+> Add screenshots here later (optional).
+
+---
+
+## ⚙️ How to Run Locally
+
+```bash
+git clone https://github.com/Tunde-cs/window-landing-page.git
+cd window-landing-page
+python3 -m venv env
+source env/bin/activate
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py runserver
