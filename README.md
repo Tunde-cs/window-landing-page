@@ -15,12 +15,18 @@
   - Lead tracking
   - Quote status workflow (New → Pending → Active → Completed)
   - Order & revenue metrics
-- 🔗 Facebook Lead Ads integration via Webhooks (Approved: leads_retrieval, pages_read_engagement)
+- 🔗 Facebook Lead Ads integration via Webhooks  
+  (Approved: `leads_retrieval`, `pages_read_engagement`, `pages_show_list`)
+- 🧠 SaaS onboarding and pricing plans (Starter, Pro, Agency)
+  - Stripe payment links
+  - Calendly scheduling
+  - Google Forms integration for intake
 - 📦 Backend built with Django
 - 🔐 Secure user authentication & role-based routing
 - ☁️ CI/CD with GitHub Actions + Heroku deployment
 
 ---
+
 
 ## 🧠 Tech Stack
 
