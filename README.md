@@ -1,71 +1,54 @@
-# Window Genius AI – Smart Window Lead Generation with Django & AdminLTE
+# Window Genius AI – Smart Window Lead Generation Platform
 
 ![Landing Screenshot](https://github.com/Tunde-cs/window-landing-page/blob/main/static/assets/img/window-2.jpg)
 
-**Window Genius AI** is a modern Django-based CRM and lead generation system built for window installation businesses in the U.S. It combines a high-converting landing page with an AI-powered chatbot, admin dashboard, and full quote management flow.
+**Window Genius AI** is a full-stack Django CRM and lead generation system designed for window installation businesses in the U.S. Built and deployed by a **Software Engineer** and **Cloud DevOps Engineer**, it combines modern web development with production-ready AWS infrastructure.
 
 ---
 
 ## 🚀 Features
 
-- ✨ Landing page with Bootstrap 5 design
-- 💬 Integrated chatbot to capture leads (OpenAI-powered)
-- 📩 Smart quote request form with email alerts
-- 📊 Custom admin dashboard (AdminLTE) with:
-  - Lead tracking
-  - Quote status workflow (New → Pending → Active → Completed)
-  - Order & revenue metrics
+- ✨ High-converting landing page (Bootstrap 5)
+- 💬 AI chatbot (OpenAI) that captures leads interactively
+- 📩 Smart quote request form with real-time email notifications
+- 📊 Custom AdminLTE dashboard:
+  - Lead tracking and message inbox
+  - Quote lifecycle management (New → Pending → Active → Completed)
+  - Order tracking and revenue metrics
 - 🔗 Facebook Lead Ads integration via Webhooks  
-  (Approved: `leads_retrieval`, `pages_read_engagement`, `pages_show_list`)
-- 🧠 SaaS onboarding and pricing plans (Starter, Pro, Agency)
-  - Stripe payment links
-  - Calendly scheduling
-  - Google Forms integration for intake
-- 📦 Backend built with Django
-- 🔐 Secure user authentication & role-based routing
-- ☁️ CI/CD with GitHub Actions + Heroku deployment
+  (Permissions: `leads_retrieval`, `pages_read_engagement`, `pages_show_list`)
+- 🧠 SaaS onboarding with pricing plans (Starter, Pro, Agency)
+  - Stripe integration, Calendly scheduling, Google Forms intake
+- 🔐 User authentication with role-based access
+- ☁️ Deployed via **AWS ECS Fargate** (Dockerized)
+- 🔄 CI/CD with GitHub Actions
+- 🧠 Real-world Cloud DevOps best practices (ECR, IAM, Secrets Manager, ECS, S3)
 
 ---
 
-
 ## 🧠 Tech Stack
 
-- **Frontend:** HTML, CSS, JS, Bootstrap 5
+- **Frontend:** HTML, CSS, JavaScript, Bootstrap 5
 - **Backend:** Django, SQLite (dev), PostgreSQL (prod)
-- **Automation:** GitHub Actions for CI/CD
-- **Deployment:** Heroku
-- **AI Chatbot:** OpenAI (GPT-3.5)
-- **Email:** SMTP via Django settings
-- **Extras:** CSP, SEO, GA4 tracking, mobile optimization
+- **Chatbot:** OpenAI GPT-3.5
+- **CI/CD:** GitHub Actions
+- **Cloud:** AWS (ECS Fargate, ECR, S3, Secrets Manager, CloudWatch)
+- **Containerization:** Docker
+- **Email:** SMTP via Django
+- **Security:** CSP, HTTPS, SEO, GA4, role-based access
 
 ---
 
 ## 📸 Screenshots
 
-> Add screenshots here later (optional).
+> Screenshots coming soon.
 
 ---
 
-## ⚙️ How to Run Locally
+## ⚙️ Run Locally with Docker
 
 ```bash
 git clone https://github.com/Tunde-cs/window-landing-page.git
 cd window-landing-page
-python3 -m venv env
-source env/bin/activate
-pip install -r requirements.txt
-python manage.py migrate
-python manage.py runserver
-
-## License
-
-This project is under development and currently private.  
-Contact [admin@windowgeniusai.com](mailto:admin@windowgeniusai.com) for demo access or collaboration.
-
----
-
-✅ Let me know if you want me to:
-- Customize this even further with your name or company info.
-- Add CI/CD status badge.
-- Help you upload screenshots.
-
+docker build -t windowgeniusai .
+docker run -p 8000:8000 windowgeniusai
