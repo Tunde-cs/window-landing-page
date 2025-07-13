@@ -2,7 +2,7 @@
 
 ![AWS](https://img.shields.io/badge/AWS-ECS%20Fargate-orange?logo=amazon-aws&logoColor=white)
 ![CI/CD](https://img.shields.io/badge/GitHub-Actions-blue?logo=github-actions&logoColor=white)
-![Status](https://img.shields.io/website?url=http%3A%2F%2Fwindowgeniusai-alb-2062530771.us-east-1.elb.amazonaws.com%2Fhealth%2F)
+![Status](https://img.shields.io/website-up-down-green-red/http/windowgeniusai-alb-2062530771.us-east-1.elb.amazonaws.com/health)
 ![Deployed to AWS](https://img.shields.io/badge/Deployed-AWS--ECS--Fargate-green?logo=amazonaws)
 
 
