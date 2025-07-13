@@ -8,7 +8,6 @@ from django.core.mail import send_mail
 from django.db import IntegrityError
 from django.db.models import Count, Sum
 from django.db.models.functions import ExtractMonth
-from django.http import JsonResponse, HttpResponseRedirect
 from django.utils.timezone import now
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.core.validators import validate_email
@@ -21,7 +20,6 @@ from django.utils.decorators import method_decorator
 import json
 import os
 import requests
-from django.http import JsonResponse, HttpResponse
 from .models import FacebookLead, Message  # 📌 Add this at the top if not already
 from app.decorators.no_cache import no_cache
 from blog.models import BlogPost
@@ -29,6 +27,8 @@ from django.utils import timezone
 from .utils import fetch_facebook_lead, access_token, PAGE_ID
 from app.utils import fetch_facebook_lead, send_facebook_lead_email
 from .models import ContactMessage
+from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
+
 
 
 
@@ -390,3 +390,7 @@ def ediomi_profile(request):
     return render(request, "pages/ediomi-iyanam.html", {
         "blog_posts": blog_posts
     })
+
+
+def health_check(request):
+    return HttpResponse("OK", status=200)

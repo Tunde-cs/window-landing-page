@@ -25,7 +25,7 @@ from app.views import custom_logout
 from blog.views import create_blog_post, edit_blog_post
 from app.sitemaps import sitemaps
 from .views import facebook_leads_page
-
+from app.views import health_check  # ✅ import from app
 
 from . import views
 from app import views as app_views  # Import app-level views
@@ -61,6 +61,7 @@ urlpatterns = [
     path("useradmin/blog-posts/", employee_blog_posts, name="employee_blog_posts"),
     path("useradmin/blog-posts/new/", create_blog_post, name="new_blog_post"),
     path("useradmin/blog-posts/edit/<int:post_id>/", edit_blog_post, name="edit_blog_post"),
+    path('health/', health_check),  # ✅ ALB health check endpoint
 
     path("data-deletion/", views.data_deletion_page, name="data_deletion"),
 

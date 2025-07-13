@@ -1,31 +1,56 @@
-# Use an official Python runtime as a base image
+# ----------------------------------------------------------
+# 📦 Base Image
+# ----------------------------------------------------------
 FROM python:3.10-slim
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+# ----------------------------------------------------------
+# 🛠️ Environment Variables
+# ----------------------------------------------------------
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
-# Set the working directory in the container
+# ----------------------------------------------------------
+# 📁 Set Working Directory
+# ----------------------------------------------------------
 WORKDIR /app
 
-# Install system dependencies
+# ----------------------------------------------------------
+# 🧰 Install System Dependencies
+# ----------------------------------------------------------
 RUN apt-get update && apt-get install -y \
-    netcat-openbsd gcc postgresql libpq-dev && \
+    netcat-openbsd gcc postgresql libpq-dev curl && \
     rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies
+# ----------------------------------------------------------
+# 📄 Install Python Dependencies
+# ----------------------------------------------------------
 COPY requirements.txt .
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
-# Copy project files into the container
+# ----------------------------------------------------------
+# 📦 Copy Project Files
+# ----------------------------------------------------------
 COPY . .
 
-# Collect static files
+# ----------------------------------------------------------
+# 🧹 Collect Static Files
+# ----------------------------------------------------------
 RUN python manage.py collectstatic --noinput
 
-# Expose port
+# ----------------------------------------------------------
+# 🚦 Healthcheck for ECS / ALB
+# ----------------------------------------------------------
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+  CMD curl -f http://localhost:8000/ || exit 1
+
+# ----------------------------------------------------------
+# 🚪 Expose Port
+# ----------------------------------------------------------
 EXPOSE 8000
 
-# Run the Django app with gunicorn
-CMD ["gunicorn", "LPageToAdmin.wsgi:application", "--bind", "0.0.0.0:8000"]
+# ----------------------------------------------------------
+# 🚀 Start Django Dev Server (for ECS testing)
+# ----------------------------------------------------------
+CMD ["gunicorn", "LPageToAdmin.wsgi:application", "--bind", "0.0.0.0:8000", "--workers=3"]
+
 

@@ -18,17 +18,17 @@ import logging
 import cloudinary
 
 
+# ✅ Enable debug logging (optional during dev)
 logging.basicConfig(level=logging.DEBUG)
 
-
-# ✅ Define BASE_DIR FIRST
+# ✅ Define BASE_DIR first
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ✅ Initialize environment variables
 env = environ.Env()
-env_file = os.path.join(BASE_DIR, ".env")
 
-# ✅ Load .env file if it exists
+# ✅ Load .env file only if it exists (for local dev)
+env_file = os.path.join(BASE_DIR, ".env")
 if os.path.exists(env_file):
     env.read_env(env_file)
 
