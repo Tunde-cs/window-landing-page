@@ -9,6 +9,8 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
+# © 2025 Babatunde Oshodi | tunde@hotengroup.com
+# For demo purposes only. Not for reuse or redistribution.
 
 import os
 import dj_database_url

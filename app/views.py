@@ -1,3 +1,6 @@
+# © 2025 Babatunde Oshodi | tunde@hotengroup.com
+# For demo purposes only. Not for reuse or redistribution.
+
 import logging
 
 from django.shortcuts import render, redirect, get_object_or_404

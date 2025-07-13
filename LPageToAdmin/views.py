@@ -1,3 +1,6 @@
+# © 2025 Babatunde Oshodi | tunde@hotengroup.com
+# For demo purposes only. Not for reuse or redistribution.
+
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required

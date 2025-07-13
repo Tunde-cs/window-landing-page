@@ -1,0 +1,24 @@
+Copyright © 2025 Babatunde Oshodi  
+All rights reserved.
+
+This project is published solely for **portfolio and demonstration purposes**, showcasing the technical capabilities, architecture, and DevOps implementation by the author.
+
+Recruiters, hiring managers, and collaborators are permitted to:
+- Review the source code  
+- Evaluate the design, implementation, and project structure  
+- Assess technical proficiency
+
+### ❌ The following are **STRICTLY PROHIBITED without prior written permission**:
+
+🚫 **Reuse, reproduce, copy, modify, or distribute** any portion of this codebase  
+🚫 **Fork, clone, or republish** this repository under any other account  
+🚫 **Use the code** for commercial, academic, or production use of any kind
+
+**Additional Notes**:
+- All images, screenshots, and media assets are protected under the same terms.  
+- Any form of use beyond viewing or evaluation requires **explicit written consent**.
+
+For permissions or inquiries, contact:  
+**tunde@hotengroup.com**
+
+This license overrides default GitHub behavior. Forking and unauthorized use are not permitted.
