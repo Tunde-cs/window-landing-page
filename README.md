@@ -2,9 +2,8 @@
 
 ![AWS](https://img.shields.io/badge/AWS-ECS%20Fargate-orange?logo=amazon-aws&logoColor=white)
 ![CI/CD](https://img.shields.io/badge/GitHub-Actions-blue?logo=github-actions&logoColor=white)
-![Status: Live](https://img.shields.io/badge/Status-Live-brightgreen)
 ![Deployed to AWS](https://img.shields.io/badge/Deployed-AWS--ECS--Fargate-green?logo=amazonaws)
-
+![Status: Live](https://img.shields.io/badge/Status-Live-brightgreen)
 
 ![Landing Screenshot](static/assets/img/landing-screenshot.png)
 
