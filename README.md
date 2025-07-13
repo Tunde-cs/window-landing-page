@@ -1,5 +1,9 @@
 # Window Genius AI – Smart Window Lead Generation Platform
 
+![AWS](https://img.shields.io/badge/AWS-ECS%20Fargate-orange?logo=amazon-aws&logoColor=white)
+![CI/CD](https://img.shields.io/badge/GitHub-Actions-blue?logo=github-actions&logoColor=white)
+![Status](https://img.shields.io/website?url=http%3A%2F%2Fwindowgeniusai-alb-2062530771.us-east-1.elb.amazonaws.com%2Fhealth%2F)
+
 ![Landing Screenshot](https://github.com/Tunde-cs/window-landing-page/blob/main/static/assets/img/window-2.jpg)
 
 **Window Genius AI** is a full-stack Django CRM and lead generation system designed for window installation businesses in the U.S. Built and deployed by a **Software Engineer** and **Cloud DevOps Engineer**, it combines modern web development with production-ready AWS infrastructure.
@@ -20,9 +24,12 @@
 - 🧠 SaaS onboarding with pricing plans (Starter, Pro, Agency)
   - Stripe integration, Calendly scheduling, Google Forms intake
 - 🔐 User authentication with role-based access
-- ☁️ Deployed via **AWS ECS Fargate** (Dockerized)
-- 🔄 CI/CD with GitHub Actions
-- 🧠 Real-world Cloud DevOps best practices (ECR, IAM, Secrets Manager, ECS, S3)
+- ☁️ **Deployed to AWS using ECS Fargate with Docker containers**
+- 🧱 Container image stored and pulled from Amazon ECR
+- 🔐 Secrets managed securely via AWS Secrets Manager and S3 environment files
+- 📈 Logging and monitoring integrated with AWS CloudWatch
+- 🔄 CI/CD with GitHub Actions for automated deployment
+- 🧠 **Built using real-world Cloud DevOps best practices**
 
 ---
 
@@ -32,7 +39,7 @@
 - **Backend:** Django, SQLite (dev), PostgreSQL (prod)
 - **Chatbot:** OpenAI GPT-3.5
 - **CI/CD:** GitHub Actions
-- **Cloud:** AWS (ECS Fargate, ECR, S3, Secrets Manager, CloudWatch)
+- **Cloud:** AWS (ECS Fargate, ECR, S3, Secrets Manager, CloudWatch, ALB)
 - **Containerization:** Docker
 - **Email:** SMTP via Django
 - **Security:** CSP, HTTPS, SEO, GA4, role-based access
