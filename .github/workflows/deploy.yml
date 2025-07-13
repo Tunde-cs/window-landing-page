@@ -27,9 +27,9 @@ jobs:
         run: |
           python manage.py test || echo "No tests available"
 
-      - name: Deploy to Heroku
-        uses: akhileshns/heroku-deploy@v3.12.12
-        with:
-          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: "windowgeniusai"   # 🔁 Replace this with your actual Heroku app name
-          heroku_email: "tundeoshodi99@gmail.com"      # 🔁 Replace this with your Heroku login email
+#      - name: Deploy to Heroku
+#        uses: akhileshns/heroku-deploy@v3.12.12
+#        with:
+#          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+#          heroku_app_name: "windowgeniusai"   # 🔁 Replace this with your actual Heroku app name
+#          heroku_email: "tundeoshodi99@gmail.com"      # 🔁 Replace this with your Heroku login email
