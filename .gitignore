@@ -46,3 +46,4 @@ coverage.xml
 
 # Ignore local test results
 .pytest_cache/
+.env
