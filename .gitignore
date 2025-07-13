@@ -1,6 +1,48 @@
-.envmedia/
-.env
+# Python
 *.pyc
 __pycache__/
+*.pyo
+*.pyd
+*.swp
+*.bak
+*.log
+
+# Virtual environment
 env/
+venv/
+ENV/
+.env
+
+# Django static & media
 staticfiles/
+media/
+
+# VS Code settings
+.vscode/
+
+# macOS
+.DS_Store
+
+# Secret files
+*.sqlite3
+.env.*
+
+# Docker
+*.tar
+*.pid
+
+# AWS credentials (if you ever use CLI config)
+.aws/
+
+# Git & coverage
+.git/
+.coverage
+htmlcov/
+coverage.xml
+
+# Migrations (optional, depending on versioning preference)
+**/migrations/*.py
+**/migrations/*.pyc
+
+# Ignore local test results
+.pytest_cache/
