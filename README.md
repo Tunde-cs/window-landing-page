@@ -4,7 +4,8 @@
 ![CI/CD](https://img.shields.io/badge/GitHub-Actions-blue?logo=github-actions&logoColor=white)
 ![Status](https://img.shields.io/website?url=http%3A%2F%2Fwindowgeniusai-alb-2062530771.us-east-1.elb.amazonaws.com%2Fhealth%2F)
 
-![Landing Screenshot](https://github.com/Tunde-cs/window-landing-page/blob/main/static/assets/img/window-2.jpg)
+![Landing Screenshot](static/assets/img/landing-screenshot.png)
+
 
 **Window Genius AI** is a full-stack Django CRM and lead generation system designed for window installation businesses in the U.S. Built and deployed by a **Software Engineer** and **Cloud DevOps Engineer**, it combines modern web development with production-ready AWS infrastructure.
 
@@ -48,7 +49,26 @@
 
 ## 📸 Screenshots
 
-> Screenshots coming soon.
+### ECS Tasks (Fargate)
+
+> Deployment live on AWS ECS Fargate 🚀  
+> Includes real-time scaling, health checks, and task logging.  
+> Live tasks running on Amazon ECS with health checks and rolling deployments
+
+![ECS Tasks Screenshot](static/assets/img/ecs-tasks.png)
+
+### AWS Load Balancer (ALB)
+
+> Application Load Balancer routing traffic with high availability zones
+
+![ALB Screenshot](static/assets/img/alb-dashboard.png)
+
+### ECS CloudWatch Logs
+
+> Django boot logs captured in AWS CloudWatch for ECS container observability
+
+![CloudWatch Logs](static/assets/img/cloudwatch-logs.png)
+
 
 ---
 
