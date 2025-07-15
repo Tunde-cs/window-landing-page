@@ -1,155 +1,84 @@
 {
-    "taskDefinitionArn": "arn:aws:ecs:us-east-1:629965575535:task-definition/windowgeniusai-task-v3:1",
-    "containerDefinitions": [
+  "family": "windowgeniusai-task-v3",
+  "taskRoleArn": "arn:aws:iam::629965575535:role/ECSTaskExecutionRole-WindowGeniusAI",
+  "executionRoleArn": "arn:aws:iam::629965575535:role/ECSTaskExecutionRole-WindowGeniusAI",
+  "networkMode": "awsvpc",
+  "containerDefinitions": [
+    {
+      "name": "windowgeniusai",
+      "image": "629965575535.dkr.ecr.us-east-1.amazonaws.com/windowgeniusai:latest",
+      "cpu": 512,
+      "memory": 1024,
+      "memoryReservation": 512,
+      "essential": true,
+      "portMappings": [
         {
-            "name": "windowgeniusai",
-            "image": "629965575535.dkr.ecr.us-east-1.amazonaws.com/windowgeniusai:latest",
-            "cpu": 512,
-            "memory": 1024,
-            "memoryReservation": 512,
-            "portMappings": [
-                {
-                    "containerPort": 8000,
-                    "hostPort": 8000,
-                    "protocol": "tcp",
-                    "name": "windowgeniusai-8000-tcp",
-                    "appProtocol": "http"
-                }
-            ],
-            "essential": true,
-            "restartPolicy": {
-                "enabled": true
-            },
-            "environment": [],
-            "environmentFiles": [
-                {
-                    "value": "arn:aws:s3:::windowgeniusai-prod-bucket/windowgeniusai.env",
-                    "type": "s3"
-                }
-            ],
-            "mountPoints": [],
-            "volumesFrom": [],
-            "ulimits": [],
-            "logConfiguration": {
-                "logDriver": "awslogs",
-                "options": {
-                    "awslogs-group": "/ecs/windowgeniusai-task-v3",
-                    "awslogs-create-group": "true",
-                    "awslogs-region": "us-east-1",
-                    "awslogs-stream-prefix": "ecs"
-                },
-                "secretOptions": []
-            },
-            "healthCheck": {
-                "command": [
-                    "CMD-SHELL",
-                    "curl -f http://localhost:8000/ || exit 1"
-                ],
-                "interval": 30,
-                "timeout": 5,
-                "retries": 3,
-                "startPeriod": 15
-            },
-            "systemControls": []
-        },
-        {
-            "name": "aws-otel-collector",
-            "image": "public.ecr.aws/aws-observability/aws-otel-collector:v0.43.3",
-            "cpu": 0,
-            "portMappings": [],
-            "essential": true,
-            "command": [
-                "--config=/etc/ecs/ecs-xray.yaml"
-            ],
-            "environment": [],
-            "mountPoints": [],
-            "volumesFrom": [],
-            "logConfiguration": {
-                "logDriver": "awslogs",
-                "options": {
-                    "awslogs-group": "/ecs/ecs-aws-otel-sidecar-collector",
-                    "mode": "non-blocking",
-                    "awslogs-create-group": "true",
-                    "max-buffer-size": "25m",
-                    "awslogs-region": "us-east-1",
-                    "awslogs-stream-prefix": "ecs"
-                }
-            },
-            "systemControls": []
+          "containerPort": 8000,
+          "hostPort": 8000,
+          "protocol": "tcp",
+          "name": "windowgeniusai-8000-tcp",
+          "appProtocol": "http"
         }
-    ],
-    "family": "windowgeniusai-task-v3",
-    "taskRoleArn": "arn:aws:iam::629965575535:role/ECSTaskExecutionRole-WindowGeniusAI",
-    "executionRoleArn": "arn:aws:iam::629965575535:role/ECSTaskExecutionRole-WindowGeniusAI",
-    "networkMode": "awsvpc",
-    "revision": 1,
-    "volumes": [],
-    "status": "ACTIVE",
-    "requiresAttributes": [
+      ],
+      "restartPolicy": {
+        "enabled": true
+      },
+      "secrets": [
         {
-            "name": "ecs.capability.execution-role-awslogs"
-        },
-        {
-            "name": "com.amazonaws.ecs.capability.ecr-auth"
-        },
-        {
-            "name": "ecs.capability.container-restart-policy"
-        },
-        {
-            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.28"
-        },
-        {
-            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.21"
-        },
-        {
-            "name": "com.amazonaws.ecs.capability.task-iam-role"
-        },
-        {
-            "name": "ecs.capability.container-health-check"
-        },
-        {
-            "name": "ecs.capability.execution-role-ecr-pull"
-        },
-        {
-            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
-        },
-        {
-            "name": "ecs.capability.task-eni"
-        },
-        {
-            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.29"
-        },
-        {
-            "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
-        },
-        {
-            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
-        },
-        {
-            "name": "ecs.capability.env-files.s3"
-        },
-        {
-            "name": "ecs.capability.extensible-ephemeral-storage"
+          "name": "ENV",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:629965575535:secret:windowgeniusai-prod-zJRocM"
         }
-    ],
-    "placementConstraints": [],
-    "compatibilities": [
-        "EC2",
-        "FARGATE"
-    ],
-    "runtimePlatform": {
-        "cpuArchitecture": "ARM64",
-        "operatingSystemFamily": "LINUX"
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/windowgeniusai-task-v3",
+          "awslogs-create-group": "true",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "healthCheck": {
+        "command": [
+          "CMD-SHELL",
+          "curl -f http://localhost:8000/ || exit 1"
+        ],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 15
+      }
     },
-    "requiresCompatibilities": [
-        "FARGATE"
-    ],
-    "cpu": "512",
-    "memory": "1024",
-    "registeredAt": "2025-07-12T23:01:29.105000-04:00",
-    "registeredBy": "arn:aws:iam::629965575535:user/admin-user",
-    "ephemeralStorage": {
-        "sizeInGiB": 21
-    },
-    "enableFaultInjection": false
+    {
+      "name": "aws-otel-collector",
+      "image": "public.ecr.aws/aws-observability/aws-otel-collector:v0.43.3",
+      "essential": true,
+      "command": [
+        "--config=/etc/ecs/ecs-xray.yaml"
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/ecs-aws-otel-sidecar-collector",
+          "mode": "non-blocking",
+          "awslogs-create-group": "true",
+          "max-buffer-size": "25m",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ],
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "cpu": "512",
+  "memory": "1024",
+  "runtimePlatform": {
+    "cpuArchitecture": "ARM64",
+    "operatingSystemFamily": "LINUX"
+  },
+  "ephemeralStorage": {
+    "sizeInGiB": 21
+  }
 }

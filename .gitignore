@@ -47,3 +47,28 @@ coverage.xml
 # Ignore local test results
 .pytest_cache/
 .env
+
+# Ignore local environment files
+.windowgeniusai.env
+windowgeniusai.env	
+
+# Ignore local configuration files
+.cache/
+nosetests.xml
+test-results/
+
+# Ignore IDE specific files
+.idea/
+
+# Ignore Python egg files
+*.egg-info/
+dist/
+build/
+
+# Ignore database dumps
+*.dump
+*.sql
+*.backup
+
+# Ignore shell scripts
+*.sh
