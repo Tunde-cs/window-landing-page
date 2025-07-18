@@ -12,6 +12,8 @@ env/
 venv/
 ENV/
 .env
+.venv/
+
 
 # Django static & media
 staticfiles/
@@ -72,3 +74,4 @@ build/
 
 # Ignore shell scripts
 *.sh
+.venv/

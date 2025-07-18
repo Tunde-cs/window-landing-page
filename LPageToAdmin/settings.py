@@ -16,8 +16,11 @@ import os
 import dj_database_url
 from pathlib import Path
 import environ
-import logging
 import cloudinary
+
+import logging
+logger = logging.getLogger(__name__)
+
 
 
 # ✅ Enable debug logging (optional during dev)
@@ -141,16 +144,44 @@ WSGI_APPLICATION = "LPageToAdmin.wsgi.application"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 # Check if running on Heroku (Heroku sets the DATABASE_URL environment variable)
-if "DATABASE_URL" in os.environ:
+# ✅ Configure database
+
+
+# Debug print for verification
+
+print("🧪 DEBUG DB ENV:", {
+    "NAME": os.getenv("DATABASE_NAME"),
+    "USER": os.getenv("DATABASE_USER"),
+    "PASSWORD": os.getenv("DATABASE_PASSWORD"),
+    "HOST": os.getenv("DATABASE_HOST"),
+    "PORT": os.getenv("DATABASE_PORT"),
+})
+
+SSL_MODE = os.getenv("DB_SSL_MODE", "disable")
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if DATABASE_URL:
+    logger.info("🔐 Using DATABASE_URL from environment.")
     DATABASES = {
-        "default": dj_database_url.config(conn_max_age=600, ssl_require=True)
+        "default": dj_database_url.parse(
+            DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=(SSL_MODE == "require")
+        )
     }
 else:
-    print("⚠️ Using SQLite for local development")
+    logger.info("🔧 Using manual DB config.")
     DATABASES = {
         "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
+            "ENGINE": "django.db.backends.postgresql",  # ✅ MISSING before
+            "NAME": os.getenv("DATABASE_NAME", "postgres"),
+            "USER": os.getenv("DATABASE_USER", "postgres"),
+            "PASSWORD": os.getenv("DATABASE_PASSWORD", "postgres"),
+            "HOST": os.getenv("DATABASE_HOST", "localhost"),
+            "PORT": os.getenv("DATABASE_PORT", "5432"),
+            "OPTIONS": {
+                "sslmode": SSL_MODE,
+            },
         }
     }
 
@@ -321,10 +352,10 @@ CSP_CONNECT_SRC = (
 )
 
 # Import django-heroku at the bottom
-import django_heroku
+# import django_heroku
 
 # Apply Heroku settings
-django_heroku.settings(locals())
+# django_heroku.settings(locals())
 
 # ✅ Force HTTPS and use www only in production
 if not DEBUG:
@@ -351,18 +382,23 @@ SESSION_COOKIE_HTTPONLY = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # Set to True to expire sessions when the browser is closed
 
 
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': env("CLOUDINARY_CLOUD_NAME"),   # ✅ Updated
-    'API_KEY': env("CLOUDINARY_API_KEY"),
-    'API_SECRET': env("CLOUDINARY_API_SECRET"),
-}
+# Assign once and reuse (best practice)
+CLOUDINARY_CLOUD_NAME = env("CLOUDINARY_CLOUD_NAME")
+CLOUDINARY_API_KEY = env("CLOUDINARY_API_KEY")
+CLOUDINARY_API_SECRET = env("CLOUDINARY_API_SECRET")
 
 cloudinary.config(
-    cloud_name=env("CLOUDINARY_CLOUD_NAME"),      # ✅ Updated
-    api_key=env("CLOUDINARY_API_KEY"),
-    api_secret=env("CLOUDINARY_API_SECRET"),
+    cloud_name=CLOUDINARY_CLOUD_NAME,
+    api_key=CLOUDINARY_API_KEY,
+    api_secret=CLOUDINARY_API_SECRET,
     secure=True,
 )
 
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': CLOUDINARY_CLOUD_NAME,
+    'API_KEY': CLOUDINARY_API_KEY,
+    'API_SECRET': CLOUDINARY_API_SECRET,
+}
 
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+print("✅ CLOUDINARY_CLOUD_NAME:", env("CLOUDINARY_CLOUD_NAME", default="❌ Not Found"))

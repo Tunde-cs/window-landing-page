@@ -6,6 +6,7 @@ __pycache__/
 *.pyd
 env/
 venv/
+.venv/
 *.sqlite3
 staticfiles/
 media/
