@@ -4,8 +4,9 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 
 
+# NEW (safe fallback for now)
 def get_default_author():
-    return User.objects.get(username="ediomi12").id
+    return None
 
 class BlogPost(models.Model):
     title = models.CharField(max_length=200)

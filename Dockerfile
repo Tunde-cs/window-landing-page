@@ -1,64 +1,40 @@
-# ----------------------------------------------------------
-# 📦 Base Image
-# ----------------------------------------------------------
-FROM python:3.10-slim
+FROM python:3.12-slim
 
-# ----------------------------------------------------------
-# 🧾 Metadata
-# ----------------------------------------------------------
-LABEL maintainer="Tunde <tunde@hotengroup.com>"
-LABEL app="WindowGeniusAI"
-LABEL stage="production"
-
-# ----------------------------------------------------------
-# 🛠️ Environment Variables
-# ----------------------------------------------------------
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PORT=8000
+    PORT=8000 \
+    DJANGO_SETTINGS_MODULE=LPageToAdmin.settings
 
-# ----------------------------------------------------------
-# 📁 Set Working Directory
-# ----------------------------------------------------------
 WORKDIR /app
 
-# ----------------------------------------------------------
-# 🧰 Install System Dependencies
-# ----------------------------------------------------------
-RUN apt-get update && apt-get install -y \
-    netcat-openbsd gcc postgresql libpq-dev curl && \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libpq-dev \
+    postgresql-client \
+    netcat-openbsd \
+    curl \
+    ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
-# ----------------------------------------------------------
-# 📄 Install Python Dependencies
-# ----------------------------------------------------------
 COPY requirements.txt .
-RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
+RUN pip install --upgrade pip setuptools wheel && \
+    pip install --no-cache-dir -r requirements.txt
 
-# ----------------------------------------------------------
-# 📦 Copy Project Files
-# ----------------------------------------------------------
 COPY . .
 
-# ----------------------------------------------------------
-# ✅ Copy Entrypoint
-# ----------------------------------------------------------
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-# ----------------------------------------------------------
-# 🧪 Healthcheck for ECS / ALB
-# ----------------------------------------------------------
-HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
-  CMD curl -f http://localhost:${PORT}/ || exit 1
+# non-root
+RUN useradd -m appuser && chown -R appuser:appuser /app
+USER appuser
 
-# ----------------------------------------------------------
-# 🚪 Expose Port
-# ----------------------------------------------------------
-EXPOSE ${PORT}
+# single-line healthcheck (no fancy line breaks)
+HEALTHCHECK --interval=30s --timeout=10s --start-period=20s --retries=3 \
+  CMD ["sh","-c","curl -fsS http://127.0.0.1:8000/health/ || exit 1"]
 
-# ----------------------------------------------------------
-# 🚀 Start App
-# ----------------------------------------------------------
+EXPOSE 8000
+
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["gunicorn", "LPageToAdmin.wsgi:application", "--bind", "0.0.0.0:8000", "--workers=3"]
+CMD ["gunicorn", "LPageToAdmin.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3", "--threads", "2", "--access-logfile", "-", "--error-logfile", "-", "--timeout", "60", "--graceful-timeout", "30"]
+

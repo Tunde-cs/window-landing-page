@@ -14,24 +14,35 @@
 
 ## 🚀 Features
 
-- ✨ High-converting landing page (Bootstrap 5)
-- 💬 AI chatbot (OpenAI) that captures leads interactively
-- 📩 Smart quote request form with real-time email notifications
-- 📊 Custom AdminLTE dashboard:
-  - Lead tracking and message inbox
-  - Quote lifecycle management (New → Pending → Active → Completed)
-  - Order tracking and revenue metrics
+- ✨ High-converting landing page (Bootstrap 5) optimized for SEO & conversions  
+- 💬 AI-powered chatbot (OpenAI GPT-3.5) that captures and qualifies leads interactively  
+- 📩 Smart quote request form with **real-time email + dashboard notifications**  
+- 📊 Custom AdminLTE dashboard:  
+  - Lead tracking & centralized inbox  
+  - Quote lifecycle management (New → Pending → Active → Completed)  
+  - Order tracking, revenue metrics & reporting  
 - 🔗 Facebook Lead Ads integration via Webhooks  
-  (Permissions: `leads_retrieval`, `pages_read_engagement`, `pages_show_list`)
-- 🧠 SaaS onboarding with pricing plans (Starter, Pro, Agency)
-  - Stripe integration, Calendly scheduling, Google Forms intake
-- 🔐 User authentication with role-based access
-- ☁️ **Deployed to AWS using ECS Fargate with Docker containers**
-- 🧱 Container image stored and pulled from Amazon ECR
-- 🔐 Secrets managed securely via AWS Secrets Manager and S3 environment files
-- 📈 Logging and monitoring integrated with AWS CloudWatch
-- 🔄 CI/CD with GitHub Actions for automated deployment
-- 🧠 **Built using real-world Cloud DevOps best practices**
+  (Permissions: `leads_retrieval`, `pages_read_engagement`, `pages_show_list`)  
+- 🧠 SaaS-ready onboarding with pricing plans (Starter, Pro, Agency)  
+  - Stripe subscription payments, Calendly scheduling, Google Forms intake  
+- 🔐 Secure user authentication with role-based access & session management  
+- ☁️ **Cloud-native deployment**:  
+  - AWS ECS Fargate for container orchestration  
+  - ALB (Application Load Balancer) with HTTPS via ACM  
+  - Auto-rollback deployments with ECS deployment circuit breaker  
+- 🧱 Container image stored in **Amazon ECR** & deployed via GitHub Actions CI/CD  
+- 🔐 **Secrets management** with AWS Secrets Manager & encrypted S3 environment files  
+- 📈 **Monitoring & Observability**:  
+  - Centralized logging with CloudWatch Logs  
+  - Health checks via ALB → ECS tasks  
+  - Metrics and scaling policies ready for production  
+- 🛡️ **Security Best Practices**:  
+  - Enforced HTTPS with ACM certificates  
+  - CSP headers & Django security middleware  
+  - `.gitignore` / `.dockerignore` with **Gitleaks scanning** to prevent secret exposure  
+- 🔄 **End-to-end CI/CD pipeline**:  
+  - Code pushed → GitHub Actions → Docker build → ECR → ECS deploy → health check verified  
+- 🧠 **Built following Cloud Platform Engineering & DevOps best practices**
 
 ---
 
@@ -48,7 +59,25 @@
 
 ---
 
+## ☁️ Deployment Workflow (DevOps/Cloud Platform Engineer Role)
+
+1. **CI/CD Pipeline** (GitHub Actions)  
+   - Lints/tests code → builds Docker image → pushes to Amazon ECR → deploys ECS service.  
+
+2. **Infrastructure as Code** (AWS CDK)  
+   - ECS Fargate cluster + ALB + target groups.  
+   - RDS PostgreSQL (encrypted, private subnets).  
+   - S3 for config & static assets.  
+   - Secrets Manager for credentials & API keys.  
+
+3. **Observability & Scaling**  
+   - CloudWatch logs for container output & metrics.  
+   - ALB health checks for rolling deployments.  
+   - Auto-rollback with ECS deployment circuit breaker.  
 ## 📸 Screenshots
+
+---
+
 
 ### ECS Tasks (Fargate)
 

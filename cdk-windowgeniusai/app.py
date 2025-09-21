@@ -4,8 +4,15 @@ import aws_cdk as cdk
 from cdk_windowgeniusai.cdk_windowgeniusai_stack import CdkWindowgeniusaiStack
 
 app = cdk.App()
-CdkWindowgeniusaiStack(app, "CdkWindowgeniusaiStack",
-    env=cdk.Environment(account=os.getenv("CDK_DEFAULT_ACCOUNT"), region="us-east-1")
+
+CdkWindowgeniusaiStack(
+    app, 
+    "CdkWindowgeniusaiStack",
+    env=cdk.Environment(
+        account="629965575535",   # ✅ explicitly set account
+        region="us-east-1"        # ✅ your deployment region
+    )
 )
+
 app.synth()
 

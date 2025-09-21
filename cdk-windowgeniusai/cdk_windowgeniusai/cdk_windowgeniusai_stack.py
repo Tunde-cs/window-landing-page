@@ -1,5 +1,6 @@
 from aws_cdk import (
     Stack,
+    RemovalPolicy,
     aws_ec2 as ec2,
     aws_ecs as ecs,
     aws_ecs_patterns as ecs_patterns,
@@ -7,6 +8,8 @@ from aws_cdk import (
     aws_iam as iam,
     aws_rds as rds,
     aws_secretsmanager as secretsmanager,
+    aws_certificatemanager as acm,  # ✅ correct ACM import
+    aws_route53 as route53,          # ✅ NEW Route 53 import
     Duration,
     CfnOutput
 )
@@ -18,18 +21,15 @@ class CdkWindowgeniusaiStack(Stack):
         super().__init__(scope, construct_id, **kwargs)
 
         # 1️⃣ VPC
-        vpc = ec2.Vpc(self, "WindowGeniusVPC", max_azs=2)
+        vpc = ec2.Vpc.from_lookup(self, "ImportedVPC", vpc_id="vpc-0737754be6fe963b4")
 
         # 2️⃣ ECS Cluster
         cluster = ecs.Cluster(self, "WindowGeniusCluster", vpc=vpc)
 
-        # Create RDS credentials
-        db_credentials = rds.Credentials.from_generated_secret("dbmaster")  # ✅ NOT a reserved word
-
         # 3️⃣ Get Secret from Secrets Manager (contains multiple key-value pairs)
-        secret = secretsmanager.Secret.from_secret_complete_arn(
+        secret = secretsmanager.Secret.from_secret_name_v2(
             self, "WindowGeniusSecret",
-            secret_complete_arn="arn:aws:secretsmanager:us-east-1:629965575535:secret:windowgeniusai-prod-zJRocM"
+            "windowgeniusai-prod-json"
         )
 
         # 4️⃣ Task Role with permission to pull secrets and write logs
@@ -43,24 +43,41 @@ class CdkWindowgeniusaiStack(Stack):
         )
 
         # 5️⃣ CloudWatch Logs
-        log_group = logs.LogGroup(self, "WindowGeniusLogGroup")
-
-        # Create the RDS instance
-        rds_instance = rds.DatabaseInstance(
-            self, "WindowGeniusDB",
-            engine=rds.DatabaseInstanceEngine.postgres(version=rds.PostgresEngineVersion.VER_13),
-            instance_type=ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MICRO),
-            vpc=vpc,
-            vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PRIVATE_WITH_NAT),
-            multi_az=False,
-            allocated_storage=20,
-            max_allocated_storage=100,
-            database_name="windowgeniusdb",
-            credentials=db_credentials,
-            publicly_accessible=False,  # or False for tighter security
-            deletion_protection=False,
-            
+        log_group = logs.LogGroup(
+            self, "WindowGeniusLogGroup",
+            log_group_name="/ecs/windowgeniusai", # ✅ fixed log group name
+            removal_policy=RemovalPolicy.DESTROY,  # delete on stack destroy (optional)
+            retention=logs.RetentionDays.ONE_MONTH      # keep logs for 30 days
         )
+
+        # 6️⃣ Import your existing RDS instead of creating a new one
+        rds_instance = rds.DatabaseInstance.from_database_instance_attributes(
+            self, "ImportedDB",
+            instance_identifier="windowgeniusdb",  # DB identifier
+            instance_endpoint_address="windowgeniusdb.c8lcmie8e520.us-east-1.rds.amazonaws.com",
+            port=5432,
+            security_groups=[
+                ec2.SecurityGroup.from_security_group_id(
+                    self, "DBSecurityGroup", "sg-05a0d049d5c2b8bf0"  # ✅ your actual RDS SG
+                )
+            ],
+
+        )
+
+        # 6️⃣.5 Route53 Hosted Zone + ACM Certificate
+        hosted_zone = route53.HostedZone.from_lookup(
+            self, "WindowGeniusHostedZone",
+            domain_name="windowgeniusai.com"
+        )
+
+        certificate = acm.DnsValidatedCertificate(
+            self, "WindowGeniusDnsCert",
+            domain_name="windowgeniusai.com",
+            subject_alternative_names=["www.windowgeniusai.com"],
+            hosted_zone=hosted_zone,
+            region="us-east-1"  # must match your ALB region
+        )
+
 
         # 6️⃣ Fargate Service with Load Balancer
         service = ecs_patterns.ApplicationLoadBalancedFargateService(
@@ -80,15 +97,19 @@ class CdkWindowgeniusaiStack(Stack):
                 ),
                 container_port=8000,
                 environment={
-                    "PORT": "8000"
+                    "PORT": "8000",
+                    "DJANGO_SETTINGS_MODULE": "LPageToAdmin.settings",  # ✅ explicitly set Django settings module
+                    "USE_AWS_SECRETS": "true",
+                    # ✅ Add ALB DNS + custom domain
+                    "DJANGO_ALLOWED_HOSTS": "cdkwin-windo-ymgri9fugqm2-695473983.us-east-1.elb.amazonaws.com,www.windowgeniusai.com,windowgeniusai.com,127.0.0.1,localhost",
                 },
                 secrets={
-                    "DATABASE_URL": ecs.Secret.from_secrets_manager(secret, "DATABASE_URL"),
-                    "DATABASE_NAME": ecs.Secret.from_secrets_manager(secret, "dbname"),
-                    "DATABASE_USER": ecs.Secret.from_secrets_manager(secret, "username"),
-                    "DATABASE_PASSWORD": ecs.Secret.from_secrets_manager(secret, "password"),
-                    "DATABASE_HOST": ecs.Secret.from_secrets_manager(secret, "host"),
-                    "DATABASE_PORT": ecs.Secret.from_secrets_manager(secret, "port"),
+                    # "DATABASE_URL": ecs.Secret.from_secrets_manager(secret, "DATABASE_URL"),
+                    "DATABASE_NAME": ecs.Secret.from_secrets_manager(secret, "DATABASE_NAME"),
+                    "DATABASE_USER": ecs.Secret.from_secrets_manager(secret, "DATABASE_USER"),
+                    "DATABASE_PASSWORD": ecs.Secret.from_secrets_manager(secret, "DATABASE_PASSWORD"),
+                    "DATABASE_HOST": ecs.Secret.from_secrets_manager(secret, "DATABASE_HOST"),
+                    "DATABASE_PORT": ecs.Secret.from_secrets_manager(secret, "DATABASE_PORT"),
                     "SECRET_KEY": ecs.Secret.from_secrets_manager(secret, "SECRET_KEY"),
                     "DEBUG": ecs.Secret.from_secrets_manager(secret, "DEBUG"),
                     "OPENAI_API_KEY": ecs.Secret.from_secrets_manager(secret, "OPENAI_API_KEY"),
@@ -106,8 +127,32 @@ class CdkWindowgeniusaiStack(Stack):
                     log_group=log_group
                 ),
                 task_role=task_role
-            )
+            ),
+            # 👇 this goes OUTSIDE the `task_image_options`
+            circuit_breaker=ecs.DeploymentCircuitBreaker(rollback=True),  # auto rollback on failed deploys
+            certificate=certificate,  # 👈 use the Route53-validated cert you created above
+            redirect_http=True  # force all traffic to HTTPS
+
         )
+        # 🔐 Allow ECS tasks to connect to RDS on port 5432
+        rds_instance.connections.allow_default_port_from(
+        service.service, "Allow ECS tasks to access Postgres"
+        )
+
+        
+        # ✅ Allow ECS to inject the secrets from Secrets Manager
+        exec_role = service.task_definition.obtain_execution_role()
+        secret.grant_read(exec_role)
+
+        # ✅ Give ECS permission to pull from ECR
+        exec_role.add_managed_policy(
+            iam.ManagedPolicy.from_aws_managed_policy_name("AmazonEC2ContainerRegistryReadOnly")
+        )
+
+        # ✅ Also allow the Task Role to read secrets
+        secret.grant_read(task_role)
+
+
         # Configure Health Check on the ALB Target Group
         service.target_group.configure_health_check(
             path="/health/",
@@ -115,7 +160,11 @@ class CdkWindowgeniusaiStack(Stack):
             unhealthy_threshold_count=2,
             interval=Duration.seconds(30),
             timeout=Duration.seconds(5),
+            healthy_http_codes="200",
         )
+        # Extra ECS configs
+        service.service.enable_execute_command = True
+        service.service.health_check_grace_period = Duration.seconds(600)  # ⬅️ 10 minutes
 
 
         # 7️⃣ Output Load Balancer DNS
@@ -126,5 +175,4 @@ class CdkWindowgeniusaiStack(Stack):
             export_name="WindowGeniusALB"
         )
 
-        
         

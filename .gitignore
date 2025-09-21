@@ -1,4 +1,6 @@
+# =========================
 # Python
+# =========================
 *.pyc
 __pycache__/
 *.pyo
@@ -14,64 +16,124 @@ ENV/
 .env
 .venv/
 
-
-# Django static & media
+# =========================
+# Django
+# =========================
+# Static & media
 staticfiles/
 media/
 
-# VS Code settings
-.vscode/
+# SQLite DB (local only)
+*.sqlite3
 
-# macOS
+# Local environment files
+.env
+.env.*
+.windowgeniusai.env
+windowgeniusai.env
+
+# =========================
+# IDE & OS files
+# =========================
+.vscode/
+.idea/
 .DS_Store
 
-# Secret files
-*.sqlite3
-.env.*
+# =========================
+# macOS
+# =========================
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
 
+# =========================
 # Docker
+# =========================
 *.tar
 *.pid
 
-# AWS credentials (if you ever use CLI config)
+# =========================
+# AWS & Cloud
+# =========================
 .aws/
+.cdk.staging/
+cdk.out/
+*.pem
 
-# Git & coverage
+# =========================
+# Git & Coverage
+# =========================
 .git/
 .coverage
 htmlcov/
 coverage.xml
 
-# Migrations (optional, depending on versioning preference)
+# =========================
+# Migrations
+# (ignore if you don’t want them tracked in Git;
+# otherwise comment these two out for prod CI/CD)
 **/migrations/*.py
 **/migrations/*.pyc
 
-# Ignore local test results
+# =========================
+# Test results
+# =========================
 .pytest_cache/
-.env
-
-# Ignore local environment files
-.windowgeniusai.env
-windowgeniusai.env	
-
-# Ignore local configuration files
 .cache/
 nosetests.xml
 test-results/
 
-# Ignore IDE specific files
-.idea/
-
-# Ignore Python egg files
+# =========================
+# Build artifacts
+# =========================
 *.egg-info/
 dist/
 build/
 
-# Ignore database dumps
+# =========================
+# Database dumps
+# =========================
 *.dump
 *.sql
 *.backup
 
-# Ignore shell scripts
+# =========================
+# Shell scripts (local only)
+# =========================
 *.sh
-.venv/
+
+# =========================
+# Node / Frontend (if you add React/Next.js later)
+# =========================
+node_modules/
+.next/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =========================
+# Terraform (if used alongside CDK)
+# =========================
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+
+# Project artifacts
+report.json
+tree_output.txt
+fixtures/

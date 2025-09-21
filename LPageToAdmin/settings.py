@@ -13,13 +13,16 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 # For demo purposes only. Not for reuse or redistribution.
 
 import os
-import dj_database_url
 from pathlib import Path
 import environ
 import cloudinary
+import re
+import sys
+
 
 import logging
 logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.DEBUG)
 
 
 
@@ -65,16 +68,18 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "fallback-secret-key")
 DEBUG = os.environ.get("DEBUG", "False") == "True"  # Ensures DEBUG is a boolean
 
 
-ALLOWED_HOSTS = [
-    "127.0.0.1",
-    "localhost",
-    "windowgeniusai.herokuapp.com",
-    "windowgeniusai-d6c9fb157af2.herokuapp.com",
-    "www.windowgeniusai.com",
-    "windowgeniusai.com",
-    
-]
+# ✅ Use env var for flexibility, with local dev + custom domain + ALB fallback
+ALLOWED_HOSTS = os.getenv(
+    "DJANGO_ALLOWED_HOSTS",
+    "127.0.0.1,localhost,"
+    "windowgeniusai.com,www.windowgeniusai.com,"
+    "cdkwin-windo-ymgri9fugqm2-695473983.us-east-1.elb.amazonaws.com"
+).split(",")
 
+
+
+    
+    
 # Application definition
 
 INSTALLED_APPS = [
@@ -99,6 +104,7 @@ INSTALLED_APPS = [
 
 
 MIDDLEWARE = [
+    "app.middleware.health_bypass.HealthCheckBypassMiddleware",
     "app.middleware.remove_robots.RemoveXRobotsTagMiddleware",
     "corsheaders.middleware.CorsMiddleware",  # ✅ MUST BE FIRST
     "django.middleware.security.SecurityMiddleware",  # ✅ Security comes first
@@ -146,45 +152,32 @@ WSGI_APPLICATION = "LPageToAdmin.wsgi.application"
 # Check if running on Heroku (Heroku sets the DATABASE_URL environment variable)
 # ✅ Configure database
 
+# ✅ Add this above the DB config
+USE_AWS_SECRETS = env.bool("USE_AWS_SECRETS", default=False)
 
-# Debug print for verification
+# ✅ Optional SSL mode for AWS RDS
+DB_SSL_MODE = env("DB_SSL_MODE", default="require")
 
-print("🧪 DEBUG DB ENV:", {
-    "NAME": os.getenv("DATABASE_NAME"),
-    "USER": os.getenv("DATABASE_USER"),
-    "PASSWORD": os.getenv("DATABASE_PASSWORD"),
-    "HOST": os.getenv("DATABASE_HOST"),
-    "PORT": os.getenv("DATABASE_PORT"),
-})
+# ✅ Dynamically choose if Postgres should be used
+USE_POSTGRES = USE_AWS_SECRETS or bool(env("DATABASE_HOST", default=""))
 
-SSL_MODE = os.getenv("DB_SSL_MODE", "disable")
-DATABASE_URL = os.getenv("DATABASE_URL")
-
-if DATABASE_URL:
-    logger.info("🔐 Using DATABASE_URL from environment.")
-    DATABASES = {
-        "default": dj_database_url.parse(
-            DATABASE_URL,
-            conn_max_age=600,
-            ssl_require=(SSL_MODE == "require")
-        )
-    }
-else:
-    logger.info("🔧 Using manual DB config.")
+if USE_POSTGRES:
     DATABASES = {
         "default": {
-            "ENGINE": "django.db.backends.postgresql",  # ✅ MISSING before
-            "NAME": os.getenv("DATABASE_NAME", "postgres"),
-            "USER": os.getenv("DATABASE_USER", "postgres"),
-            "PASSWORD": os.getenv("DATABASE_PASSWORD", "postgres"),
-            "HOST": os.getenv("DATABASE_HOST", "localhost"),
-            "PORT": os.getenv("DATABASE_PORT", "5432"),
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": env("DATABASE_NAME", default="postgres"),
+            "USER": env("DATABASE_USER", default="postgres"),
+            "PASSWORD": env("DATABASE_PASSWORD", default=""),
+            "HOST": env("DATABASE_HOST"),
+            "PORT": env("DATABASE_PORT", default="5432"),
             "OPTIONS": {
-                "sslmode": SSL_MODE,
+                "sslmode": DB_SSL_MODE,
             },
+            "CONN_MAX_AGE": 600,
         }
     }
-
+else:
+    DATABASES = {}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -281,11 +274,10 @@ CORS_ALLOW_HEADERS = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "http://127.0.0.1:8000",  # Local
-    "https://windowgeniusai.herokuapp.com",  # Heroku
-    "https://windowgeniusai-d6c9fb157af2.herokuapp.com",  # Temporary domain
-    "https://www.windowgeniusai.com",  # Custom domain
-    "https://windowgeniusai.com",  # Main domain
+    "http://127.0.0.1:8000",   # Local dev
+    "https://www.windowgeniusai.com",  # Main custom domain (with www)
+    "https://windowgeniusai.com",      # Root custom domain
+    "https://cdkwin-windo-ymgri9fugqm2-695473983.us-east-1.elb.amazonaws.com",  # ALB DNS
 ]
 
 # ✅ CSRF and Session Cookie Security Settings
@@ -360,11 +352,19 @@ CSP_CONNECT_SRC = (
 # ✅ Force HTTPS and use www only in production
 if not DEBUG:
     SECURE_SSL_REDIRECT = True
+    SECURE_REDIRECT_EXEMPT = [re.compile(r"^health/$")]
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     PREPEND_WWW = True
 else:
     SECURE_SSL_REDIRECT = False
     PREPEND_WWW = False  # Prevent redirect issues during local dev
+
+# 🔎 Always log what Django thinks these are
+print(f"[SETTINGS LOADED] DEBUG={DEBUG}, PREPEND_WWW={PREPEND_WWW}", file=sys.stderr)
+
+# 🚫 Safety override for local health check (in case something above overrides it)
+if DEBUG:
+    PREPEND_WWW = False    
 
 # Session engine to store session data in the database
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Stores sessions in the database
@@ -401,4 +401,15 @@ CLOUDINARY_STORAGE = {
 }
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-print("✅ CLOUDINARY_CLOUD_NAME:", env("CLOUDINARY_CLOUD_NAME", default="❌ Not Found"))
+# print("✅ CLOUDINARY_CLOUD_NAME:", env("CLOUDINARY_CLOUD_NAME", default="❌ Not Found"))
+
+# ✅ Load OpenAI API key
+import openai
+
+openai.api_key = env("OPENAI_API_KEY", default="❌-not-set")
+
+# Optional: debug check (remove in production)
+if openai.api_key.startswith("sk-"):
+    print("✅ OpenAI API key loaded.")
+else:
+    print("❌ OpenAI API key is missing or invalid.")

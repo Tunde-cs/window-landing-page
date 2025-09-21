@@ -5,6 +5,8 @@ from .views import home, submit_lead, request_quote
 from .views import about_page, services_page, contact_page, terms_of_use_page, privacy_policy
 from app.views import facebook_webhook
 from .views import ediomi_profile
+from django.http import HttpResponse
+from .views import health_check
 
 
 urlpatterns = [
@@ -20,6 +22,7 @@ urlpatterns = [
     path("contact/", views.contact_page, name="contact"),
     path("terms-of-use/", views.terms_of_use_page, name="terms_of_use"),
     path("privacy-policy/", views.privacy_policy, name="privacy_policy"),
+    path('health/', health_check),  # ✅ ALB health check endpoin
     
 
     path('saas/', views.saas_landing, name='saas_landing'),
@@ -31,7 +34,7 @@ urlpatterns = [
     path("api/", include("chatbot.urls")),  # ✅ Now chatbot API is accessible via /api/chat/
 
     # Optional: Generic landing page route
-    path("", TemplateView.as_view(template_name="pages/index.html"), name="landing_page"),
+    # path("", TemplateView.as_view(template_name="pages/index.html"), name="landing_page"),
 ]
 
 from django.views.static import serve

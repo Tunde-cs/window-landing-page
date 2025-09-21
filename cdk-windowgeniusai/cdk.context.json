@@ -1,10 +1,56 @@
 {
-  "availability-zones:account=629965575535:region=us-east-1": [
-    "us-east-1a",
-    "us-east-1b",
-    "us-east-1c",
-    "us-east-1d",
-    "us-east-1e",
-    "us-east-1f"
-  ]
+  "vpc-provider:account=629965575535:filter.vpc-id=vpc-0737754be6fe963b4:region=us-east-1:returnAsymmetricSubnets=true": {
+    "vpcId": "vpc-0737754be6fe963b4",
+    "vpcCidrBlock": "172.31.0.0/16",
+    "ownerAccountId": "629965575535",
+    "availabilityZones": [],
+    "subnetGroups": [
+      {
+        "name": "Public",
+        "type": "Public",
+        "subnets": [
+          {
+            "subnetId": "subnet-004afa73436dd9042",
+            "cidr": "172.31.32.0/20",
+            "availabilityZone": "us-east-1a",
+            "routeTableId": "rtb-015b4b395bc3a3476"
+          },
+          {
+            "subnetId": "subnet-0d1982b88a4b490a5",
+            "cidr": "172.31.0.0/20",
+            "availabilityZone": "us-east-1b",
+            "routeTableId": "rtb-015b4b395bc3a3476"
+          },
+          {
+            "subnetId": "subnet-0fca0173acfe3b7fa",
+            "cidr": "172.31.80.0/20",
+            "availabilityZone": "us-east-1c",
+            "routeTableId": "rtb-015b4b395bc3a3476"
+          },
+          {
+            "subnetId": "subnet-09af748e7a7c0eb06",
+            "cidr": "172.31.16.0/20",
+            "availabilityZone": "us-east-1d",
+            "routeTableId": "rtb-015b4b395bc3a3476"
+          },
+          {
+            "subnetId": "subnet-00af8af4cdd09e750",
+            "cidr": "172.31.48.0/20",
+            "availabilityZone": "us-east-1e",
+            "routeTableId": "rtb-015b4b395bc3a3476"
+          },
+          {
+            "subnetId": "subnet-0d93496fdb6275057",
+            "cidr": "172.31.64.0/20",
+            "availabilityZone": "us-east-1f",
+            "routeTableId": "rtb-015b4b395bc3a3476"
+          }
+        ]
+      }
+    ]
+  },
+  "hosted-zone:account=629965575535:domainName=windowgeniusai.com:region=us-east-1": {
+    "Id": "/hostedzone/Z09740222O8MHDHH1DVNC",
+    "Name": "windowgeniusai.com."
+  }
 }

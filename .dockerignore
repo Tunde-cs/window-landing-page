@@ -1,13 +1,76 @@
+# =========================
+# Secrets & credentials
+# =========================
 .env
+.env.*
+windowgeniusai.env
+.windowgeniusai.env
+.aws/
+.aws-sam/
+*.pem
+*.key
+
+# =========================
+# Git
+# =========================
 .git
+.gitignore
+
+# =========================
+# Python
+# =========================
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+*.swp
+*.bak
+*.log
+
+# =========================
+# Virtual environments
+# =========================
 env/
 venv/
 .venv/
-*.sqlite3
+ENV/
+
+# =========================
+# Django static & media
+# =========================
 staticfiles/
 media/
 
+# =========================
+# Databases
+# =========================
+*.sqlite3
+*.dump
+*.sql
+*.backup
+
+# =========================
+# Build artifacts
+# =========================
+*.egg-info/
+dist/
+build/
+
+# =========================
+# Infrastructure (CDK / Terraform / CloudFormation)
+# =========================
+cdk.out/
+cdk.context.json
+cdk-windowgeniusai/
+*.tfstate
+*.tfstate.*
+.terraform/
+*.template.json
+*.stack.yaml
+
+# =========================
+# IDE & OS junk
+# =========================
+.vscode/
+.idea/
+.DS_Store

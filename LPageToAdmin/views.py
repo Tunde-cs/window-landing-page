@@ -908,3 +908,6 @@ def facebook_leads_page(request):
 
 def data_deletion_page(request):
     return render(request, "pages/data_deletion.html")
+
+def health_check(request):
+    return HttpResponse("OK", status=200)
