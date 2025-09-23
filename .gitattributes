@@ -1,0 +1,45 @@
+# =========================
+# Default text handling
+# =========================
+* text=auto
+
+# Force consistent line endings
+*.sh text eol=lf
+*.py text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.js text eol=lf
+*.ts text eol=lf
+
+# =========================
+# Binary files (no diff)
+# =========================
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.ttf binary
+*.woff binary
+*.woff2 binary
+*.eot binary
+
+# =========================
+# Merge rules (avoid conflicts in lockfiles)
+# =========================
+package-lock.json merge=ours
+yarn.lock merge=ours
+Pipfile.lock merge=ours
+poetry.lock merge=ours
+
+# =========================
+# Export rules
+# =========================
+# Exclude fixtures and reports from `git archive`
+fixtures/* export-ignore
+*.report.json export-ignore
