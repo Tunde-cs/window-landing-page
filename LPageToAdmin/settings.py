@@ -73,7 +73,7 @@ ALLOWED_HOSTS = os.getenv(
     "DJANGO_ALLOWED_HOSTS",
     "127.0.0.1,localhost,"
     "windowgeniusai.com,www.windowgeniusai.com,"
-    "cdkwin-windo-ymgri9fugqm2-695473983.us-east-1.elb.amazonaws.com"
+    "cdkwin-windo-ymgri9fugqm2-695473983.us-east-1.elb.amazonaws.com,*"
 ).split(",")
 
 

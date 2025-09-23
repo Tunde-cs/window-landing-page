@@ -1,35 +1,75 @@
-name: Deploy to Heroku
+name: Deploy to AWS
 
 on:
   push:
     branches:
-      - main
+      - main   # deploy only when pushing to main
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+
     steps:
+      # 1️⃣ Checkout code
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
+      # 2️⃣ Configure AWS credentials (using your GitHub secrets)
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
         with:
-          python-version: '3.9'
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
+      # 3️⃣ Log in to Amazon ECR
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # 4️⃣ Build and push Docker image to ECR
+      - name: Build, Tag, and Push image
+        run: |
+          IMAGE_TAG=latest
+          docker buildx build --platform linux/amd64 -t $ECR_REPOSITORY:$IMAGE_TAG .
+          docker tag $ECR_REPOSITORY:$IMAGE_TAG ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG
+
+      # 5️⃣ Install Node.js (needed for AWS CDK)
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      # 6️⃣ Install AWS CDK
+      - name: Install AWS CDK
+        run: npm install -g aws-cdk
+
+      # 7️⃣ Install Python (for Django/CDK Python code)
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      # 8️⃣ Install Python dependencies
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          pip install -r cdk-windowgeniusai/requirements.txt
 
-      - name: Run Django tests
-        run: |
-          python manage.py test || echo "No tests available"
+      # 9️⃣ CDK Synth
+      - name: CDK Synth
+        run: cdk synth --app "python3 cdk-windowgeniusai/app.py"
 
-#      - name: Deploy to Heroku
-#        uses: akhileshns/heroku-deploy@v3.12.12
-#        with:
-#          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-#          heroku_app_name: "windowgeniusai"   # 🔁 Replace this with your actual Heroku app name
-#          heroku_email: "tundeoshodi99@gmail.com"      # 🔁 Replace this with your Heroku login email
+      # 🔟 CDK Diff (optional: remove if you want cleaner logs)
+      - name: CDK Diff
+        run: cdk diff --app "python3 cdk-windowgeniusai/app.py"
+
+      # 1️⃣1️⃣ CDK Deploy
+      - name: CDK Deploy
+        run: cdk deploy --require-approval never --app "python3 cdk-windowgeniusai/app.py"
