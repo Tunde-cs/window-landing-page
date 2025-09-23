@@ -140,3 +140,7 @@ fixtures/
 
 # Local/session artifacts
 cookies.txt
+
+# Ignore local AWS IAM/Secrets JSONs
+WindowGeniusDeployerPolicy.json
+secrets-policy.json
