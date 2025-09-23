@@ -74,3 +74,6 @@ cdk-windowgeniusai/
 .vscode/
 .idea/
 .DS_Store
+
+# Local/session artifacts
+cookies.txt

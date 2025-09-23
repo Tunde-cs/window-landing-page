@@ -137,3 +137,6 @@ yarn-error.log*
 report.json
 tree_output.txt
 fixtures/
+
+# Local/session artifacts
+cookies.txt

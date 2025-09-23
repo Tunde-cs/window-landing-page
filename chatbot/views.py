@@ -1,102 +1,152 @@
-from django.shortcuts import render
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-import openai
-import os
-import json
-import logging
-from app.models import Message  
-import re
+import json, uuid, os
+from chatbot.models import Conversation
 from app.models import ChatbotLead
+import openai
 from django.core.mail import send_mail
 from django.conf import settings
-from dotenv import load_dotenv
 
-
-load_dotenv()
-
-# ✅ Load OpenAI API Key
+# ✅ Load OpenAI key
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-@csrf_exempt  # ✅ Disable CSRF for API
+
+@csrf_exempt
 def chat(request):
-    if request.method == "POST":
-        try:
-            data = json.loads(request.body)
-            user_message = data.get("message", "").strip()
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid request method ❌"}, status=405)
 
-            if not user_message:
-                return JsonResponse({"reply": "❗ Please enter a message. 😊"}, status=400)
+    try:
+        data = json.loads(request.body)
+        user_message = data.get("message", "").strip()
 
-            # ✅ 🔽 Save message to the Message model
-            Message.objects.create(
-                sender="Chatbot User",
-                subject="Chatbot Inquiry",
-                content=user_message,
-                is_read=False
+        if not user_message:
+            return JsonResponse({"reply": "❗ Please enter a message. 😊"}, status=400)
+
+        # ✅ Ensure the session exists so user_id stays consistent
+        if not request.session.session_key:
+            request.session.create()
+
+        user_id = request.session.session_key
+        convo, _ = Conversation.objects.get_or_create(user_id=user_id)
+
+        # 🔎 Debug print
+        print(f"✅ Chat step: {convo.step} | Message: {user_message}")
+
+        bot_reply = ""
+
+        # 🔹 Step 1: Intro
+        if convo.step == "intro":
+            convo.step = "name"
+            convo.save()
+            bot_reply = "👋 Hi there! I’m Window Genius AI. What’s your full name?"
+
+        # 🔹 Step 2: Name
+        elif convo.step == "name":
+            clean_name = user_message.strip()
+            if clean_name.lower() in ["hi", "hello", "hey"]:
+                return JsonResponse({"reply": "No worries 😊, could you tell me your full name?"})
+
+            for prefix in ["my name is", "i am", "i'm"]:
+                if clean_name.lower().startswith(prefix):
+                    clean_name = clean_name[len(prefix):].strip()
+
+            convo.name = clean_name
+            convo.step = "email"
+            convo.save()
+            bot_reply = f"Thanks {convo.name}! ✨ What’s your email?"
+
+        # 🔹 Step 3: Email
+        elif convo.step == "email":
+            clean_email = user_message.strip()
+            if "@" not in clean_email or "." not in clean_email:
+                return JsonResponse({"reply": "Hmm 🤔 that doesn’t look like an email. Could you type it again?"})
+
+            convo.email = clean_email
+            convo.step = "phone"
+            convo.save()
+            bot_reply = "Got it 📧. What’s your phone number?"
+
+        # 🔹 Step 4: Phone
+        elif convo.step == "phone":
+            clean_phone = user_message.strip()
+            if not clean_phone.replace("+", "").replace("-", "").isdigit() or len(clean_phone) < 7:
+                return JsonResponse({"reply": "That doesn’t look like a valid phone number ☎️. Please try again."})
+
+            convo.phone = clean_phone
+            convo.step = "zipcode"
+            convo.save()
+            bot_reply = "Perfect! 📱 What’s your ZIP code?"
+
+        # 🔹 Step 5: Zipcode
+        elif convo.step == "zipcode":
+            clean_zip = user_message.strip()
+            if not clean_zip.isdigit():
+                return JsonResponse({"reply": "Please enter a valid numeric ZIP code 📍."})
+
+            convo.zipcode = clean_zip
+            convo.step = "service"
+            convo.save()
+            bot_reply = "Almost done 🙌. What service are you interested in (quote, consultation, or question)?"
+
+        # 🔹 Step 6: Service
+        elif convo.step == "service":
+            convo.service = user_message.strip()
+            convo.step = "done"
+            convo.save()
+
+            # ✅ Save final lead
+            ChatbotLead.objects.create(
+                name=convo.name,
+                email=convo.email,
+                phone=convo.phone,
+                service=convo.service,
             )
 
-            # ✅ Generate AI response using GPT-3.5-Turbo
-            response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {
-                        "role": "system",
-                        "content": (
-                            "You are a friendly and engaging AI assistant for Window Genius AI, a window replacement company. "
-                            "Your job is to collect the customer's name, email, and phone number in a natural conversation. "
-                            "Ask for them one at a time: start with name, then email, then phone, then zip code. "
-                            "Then ask how you can assist (quote, consultation, or question). "
-                            "Be conversational and warm. Use emojis 🎉🏡🔧💡 to make responses friendly and engaging. "
-                            "Once you have all the info, confirm the details and let them know someone will reach out soon."
+            # ✅ Send notification email
+            try:
+                send_mail(
+                    subject="🚀 New Chatbot Lead Captured",
+                    message=(
+                        f"Name: {convo.name}\n"
+                        f"Email: {convo.email}\n"
+                        f"Phone: {convo.phone}\n"
+                        f"Zip: {convo.zipcode}\n"
+                        f"Service: {convo.service}"
+                    ),
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[settings.EMAIL_HOST_USER],
+                    fail_silently=True,
+                )
+            except Exception as e:
+                print(f"❌ Email send failed: {e}")
 
-                        )
-                    },
-                    {"role": "user", "content": user_message}
-                ],
-                max_tokens=150
+            bot_reply = (
+                f"✅ Thanks {convo.name}! We’ve saved your details 🎉. "
+                "Our team will reach out soon to help with your request 🏡."
             )
-            chatbot_reply = response["choices"][0]["message"]["content"].strip()
 
-            # ✅ Try to capture lead info from message (if any)
-            if "@" in user_message:
-                try:
-                    name_match = re.search(r"name[:\-]?\s*([a-zA-Z ]+)", user_message, re.IGNORECASE)
-                    email_match = re.search(r"[\w\.-]+@[\w\.-]+", user_message)
-                    phone_match = re.search(r"\b\d{10,}\b", user_message)
+        # 🔹 Step 7: Done
+        else:
+            bot_reply = "I’ve got all your details ✅. Someone from our team will be in touch soon!"
 
-                    name = name_match.group(1).strip() if name_match else "Anonymous"
-                    email = email_match.group(0) if email_match else None
-                    phone = phone_match.group(0) if phone_match else None
+        # 🔹 Optional GPT polish (only for final replies, not validation prompts)
+        if convo.step == "done":
+            try:
+                response = openai.ChatCompletion.create(
+                    model="gpt-3.5-turbo",
+                    messages=[
+                        {"role": "system", "content": "Polish this chatbot response to sound warm, friendly, and professional with emojis."},
+                        {"role": "user", "content": bot_reply},
+                    ],
+                    max_tokens=100,
+                )
+                bot_reply = response["choices"][0]["message"]["content"].strip()
+            except Exception as e:
+                print(f"⚠️ GPT polish failed: {e}")
 
-                    if email:
-                        ChatbotLead.objects.create(name=name, email=email, phone=phone)
-                        
+        return JsonResponse({"reply": bot_reply})
 
-                        # ✅ Send alert email to sales only (loaded from .env)
-                        from_email = os.environ.get("DEFAULT_FROM_EMAIL")
-                        sales_email = os.environ.get("EMAIL_HOST_USER")  # Same as DEFAULT_FROM_EMAIL in your case
-
-                        send_mail(
-                            subject="🚀 New Chatbot Lead Captured",
-                            message=f"Name: {name}\nEmail: {email}\nPhone: {phone or 'N/A'}",
-                            from_email=from_email,
-                            recipient_list=[sales_email],
-                            fail_silently=True
-                        )
-                except Exception as e:
-                    print(f"❌ Lead parsing failed: {e}")
-
-            # ✅ Add CORS headers
-            response_data = JsonResponse({"reply": chatbot_reply})
-            response_data["Access-Control-Allow-Origin"] = "*"
-            response_data["Access-Control-Allow-Methods"] = "POST, GET, OPTIONS"
-            response_data["Access-Control-Allow-Headers"] = "Content-Type"
-            return response_data
-
-        except Exception as e:
-            return JsonResponse({"reply": f"⚠️ Error: {str(e)}"}, status=500)
-
-    return JsonResponse({"error": "Invalid request method. ❌"}, status=405)
+    except Exception as e:
+        print(f"❌ Fatal error: {e}")
+        return JsonResponse({"reply": f"⚠️ Error: {str(e)}"}, status=500)
