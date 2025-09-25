@@ -71,7 +71,7 @@ DEBUG = os.environ.get("DEBUG", "False") == "True"  # Ensures DEBUG is a boolean
 # ✅ Use env var for flexibility, with local dev + custom domain + ALB fallback
 ALLOWED_HOSTS = os.getenv(
     "DJANGO_ALLOWED_HOSTS",
-    "127.0.0.1,localhost,"
+    "127.0.0.1,localhost,192.168.1.4,"
     "windowgeniusai.com,www.windowgeniusai.com,"
     "cdkwin-windo-ymgri9fugqm2-695473983.us-east-1.elb.amazonaws.com,*"
 ).split(",")

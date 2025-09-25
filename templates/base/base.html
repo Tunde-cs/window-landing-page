@@ -61,7 +61,7 @@
     <div class="d-flex flex-column min-vh-100">
 
         {% block header %}
-            {% if request.path == "/" or request.path == "/signup/" or request.path == "/accounts/login/" %}
+            {% if request.path == "/" or request.path == "/signup/" or request.path == "/accounts/login/" or request.path == "/request-quote/" %}
                 {% include 'includes/header.html' %}
             {% endif %}
         {% endblock %}

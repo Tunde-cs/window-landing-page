@@ -11818,3 +11818,62 @@ button:hover {
   max-height: 40px;
 }
 
+  /* Keep it black, aligned, and subtle */
+  .wgai-nav {
+    background: rgba(0,0,0,0.9) !important;   /* black with slight transparency */
+    backdrop-filter: blur(6px);                /* soft blur over content */
+    -webkit-backdrop-filter: blur(6px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .brand-title {
+    font-size: 1.2rem;
+    letter-spacing: .2px;
+    line-height: 1.1;
+  }
+  .brand-slogan {
+    font-size: .8rem;
+    opacity: .9;
+    margin-top: .15rem;
+  }
+
+  /* Nav link & icon tweaks */
+  .navbar-nav .nav-link {
+    transition: color .25s ease, transform .2s ease;
+    margin-left: 15px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .nav-icon {
+    margin-right: .45rem;
+    font-size: .95rem;
+    opacity: .95;
+    transition: color .25s ease;
+  }
+
+  /* Icon colors */
+  .icon-styles { color: #4FC3F7; }        /* light blue */
+  .icon-quote { color: #FFD54F; }         /* amber */
+  .icon-testimonials { color: #A5D6A7; }  /* soft green */
+  .icon-financing { color: #66BB6A; }     /* money green */
+
+  /* Hover states */
+  .navbar-nav .nav-link:hover,
+  .navbar-nav .nav-link:focus {
+    color: #ffc107;                 /* golden text highlight */
+    transform: translateY(-1px);
+  }
+  .navbar-nav .nav-link:hover .icon-styles,
+  .navbar-nav .nav-link:focus .icon-styles { color: #81D4FA; }
+  .navbar-nav .nav-link:hover .icon-quote,
+  .navbar-nav .nav-link:focus .icon-quote { color: #FFE082; }
+  .navbar-nav .nav-link:hover .icon-testimonials,
+  .navbar-nav .nav-link:focus .icon-testimonials { color: #C8E6C9; }
+  .navbar-nav .nav-link:hover .icon-financing,
+  .navbar-nav .nav-link:focus .icon-financing { color: #81C784; }
+
+  /* Tighten alignment on very small screens */
+  @media (max-width: 576px) {
+    .navbar-brand { gap: .25rem; }
+  }
+
