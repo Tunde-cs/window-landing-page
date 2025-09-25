@@ -21,7 +21,8 @@ RUN pip install --upgrade pip setuptools wheel && \
     pip install --no-cache-dir -r requirements.txt
 
 COPY . .
-
+# ✅ Create staticfiles dir and set permissions before switching user
+RUN mkdir -p /app/staticfiles && chown -R appuser:appuser /app/staticfiles
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
