@@ -21,6 +21,8 @@ RUN pip install --upgrade pip setuptools wheel && \
     pip install --no-cache-dir -r requirements.txt
 
 COPY . .
+# ✅ Collect static files at build time
+RUN python manage.py collectstatic --noinput
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
