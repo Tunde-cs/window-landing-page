@@ -25,10 +25,10 @@ if [ "${MIGRATE_ON_START:-false}" = "true" ]; then
   python manage.py migrate --noinput
 fi
 
-# Collect static (safe with Whitenoise)
+# Collect static (default true)
 if [ "${COLLECTSTATIC:-true}" = "true" ]; then
   echo "🧹 Collecting static files..."
-  python manage.py collectstatic --noinput --verbosity=0
+  python manage.py collectstatic --noinput --clear --verbosity=0
 fi
 
 echo "🚀 Starting: $*"
