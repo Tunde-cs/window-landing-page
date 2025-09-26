@@ -1,75 +1,69 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
 name: Deploy to AWS
 
 on:
   push:
-    branches:
-      - main   # deploy only when pushing to main
+    branches: [ main ]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     env:
-      AWS_REGION: ${{ secrets.AWS_REGION }}
-      ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+      AWS_REGION: "${{ secrets.AWS_REGION }}"
+      ECR_REPOSITORY: "${{ secrets.ECR_REPOSITORY }}"
 
     steps:
-      # 1️⃣ Checkout code
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v3
 
-      # 2️⃣ Configure AWS credentials (using your GitHub secrets)
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-access-key-id: "${{ secrets.AWS_ACCESS_KEY_ID }}"
+          aws-secret-access-key: "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+          aws-region: "${{ secrets.AWS_REGION }}"
 
-      # 3️⃣ Log in to Amazon ECR
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      # 4️⃣ Build and push Docker image to ECR
-      - name: Build, Tag, and Push image
-        run: |
-          IMAGE_TAG=latest
-          docker buildx build --platform linux/amd64 -t $ECR_REPOSITORY:$IMAGE_TAG .
-          docker tag $ECR_REPOSITORY:$IMAGE_TAG ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG
-          docker push ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      # 5️⃣ Install Node.js (needed for AWS CDK)
-      - name: Set up Node.js
+      - name: Set image tag (commit SHA)
+        run: echo "IMAGE_TAG=${GITHUB_SHA}" >> "$GITHUB_ENV"
+
+      - name: Build, tag, and push image
+        run: |
+          docker buildx build --platform linux/amd64 -t "$ECR_REPOSITORY:$IMAGE_TAG" .
+          docker tag "$ECR_REPOSITORY:$IMAGE_TAG" "${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG"
+          docker push "${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG"
+
+      - name: Set up Node (for CDK)
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
-      # 6️⃣ Install AWS CDK
       - name: Install AWS CDK
         run: npm install -g aws-cdk
 
-      # 7️⃣ Install Python (for Django/CDK Python code)
-      - name: Set up Python
+      - name: Set up Python (for CDK app)
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
 
-      # 8️⃣ Install Python dependencies
-      - name: Install dependencies
+      - name: Install Python deps
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install -r cdk-windowgeniusai/requirements.txt
 
-      # 9️⃣ CDK Synth
-      - name: CDK Synth
+      - name: CDK synth (optional)
         run: cdk synth --app "python3 cdk-windowgeniusai/app.py"
 
-      # 🔟 CDK Diff (optional: remove if you want cleaner logs)
-      - name: CDK Diff
-        run: cdk diff --app "python3 cdk-windowgeniusai/app.py"
-
-      # 1️⃣1️⃣ CDK Deploy
-      - name: CDK Deploy
-        run: cdk deploy --require-approval never --app "python3 cdk-windowgeniusai/app.py"
+      - name: CDK deploy
+        run: >
+          cdk deploy --require-approval never
+          --app "python3 cdk-windowgeniusai/app.py"
+          -c imageTag=$IMAGE_TAG
