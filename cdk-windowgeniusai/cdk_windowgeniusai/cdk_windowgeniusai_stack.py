@@ -10,6 +10,7 @@ from aws_cdk import (
     aws_secretsmanager as secretsmanager,
     aws_certificatemanager as acm,  # ✅ correct ACM import
     aws_route53 as route53,          # ✅ NEW Route 53 import
+    aws_ecr as ecr, 
     Duration,
     CfnOutput
 )
@@ -36,10 +37,6 @@ class CdkWindowgeniusaiStack(Stack):
         task_role = iam.Role(
             self, "WindowGeniusTaskRole",
             assumed_by=iam.ServicePrincipal("ecs-tasks.amazonaws.com"),
-            managed_policies=[
-                iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AmazonECSTaskExecutionRolePolicy"),
-                iam.ManagedPolicy.from_aws_managed_policy_name("SecretsManagerReadWrite")
-            ]
         )
 
         # 5️⃣ CloudWatch Logs
@@ -78,6 +75,10 @@ class CdkWindowgeniusaiStack(Stack):
             region="us-east-1"  # must match your ALB region
         )
 
+        # 🔹 NEW: reference your ECR repo + read image tag from CDK context
+        repo = ecr.Repository.from_repository_name(self, "WindowGeniusRepo", "windowgeniusai")
+        image_tag = self.node.try_get_context("imageTag") or "latest"
+
 
         # 6️⃣ Fargate Service with Load Balancer
         service = ecs_patterns.ApplicationLoadBalancedFargateService(
@@ -92,9 +93,8 @@ class CdkWindowgeniusaiStack(Stack):
             platform_version=ecs.FargatePlatformVersion.LATEST,
             task_image_options=ecs_patterns.ApplicationLoadBalancedTaskImageOptions(
                 container_name="windowgeniusai",
-                image=ecs.ContainerImage.from_registry(
-                    "629965575535.dkr.ecr.us-east-1.amazonaws.com/windowgeniusai:latest"
-                ),
+                # ⬇️ swap from_registry(:latest) → from_ecr_repository(repo, tag=image_tag)
+                image=ecs.ContainerImage.from_ecr_repository(repo, tag=image_tag),
                 container_port=8000,
                 environment={
                     "PORT": "8000",
