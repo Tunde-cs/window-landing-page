@@ -144,3 +144,4 @@ cookies.txt
 # Ignore local AWS IAM/Secrets JSONs
 WindowGeniusDeployerPolicy.json
 secrets-policy.json
+deployer-policy.json

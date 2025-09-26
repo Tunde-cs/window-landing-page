@@ -4,25 +4,29 @@ name: Deploy to AWS
 on:
   push:
     branches: [ main ]
+  workflow_dispatch: {}
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     env:
-      AWS_REGION: "${{ secrets.AWS_REGION }}"
-      ECR_REPOSITORY: "${{ secrets.ECR_REPOSITORY }}"
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: "${{ secrets.AWS_ACCESS_KEY_ID }}"
-          aws-secret-access-key: "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
-          aws-region: "${{ secrets.AWS_REGION }}"
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -31,17 +35,23 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Set image tag (commit SHA)
-        run: echo "IMAGE_TAG=${GITHUB_SHA}" >> "$GITHUB_ENV"
-
-      - name: Build, tag, and push image
+      - name: Set image tag and uri
         run: |
-          docker buildx build --platform linux/amd64 -t "$ECR_REPOSITORY:$IMAGE_TAG" .
-          docker tag "$ECR_REPOSITORY:$IMAGE_TAG" "${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG"
-          docker push "${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG"
+          set -euo pipefail
+          echo "IMAGE_TAG=${GITHUB_SHA}" >> "$GITHUB_ENV"
+          echo "IMAGE_URI=${{ steps.login-ecr.outputs.registry }}/${ECR_REPOSITORY}:${GITHUB_SHA}" >> "$GITHUB_ENV"
+
+      - name: Build & push image to ECR
+        run: |
+          set -euo pipefail
+          docker buildx build \
+            --platform linux/amd64 \
+            -t "$IMAGE_URI" \
+            --push \
+            .
 
       - name: Set up Node (for CDK)
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
 
@@ -49,12 +59,13 @@ jobs:
         run: npm install -g aws-cdk
 
       - name: Set up Python (for CDK app)
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
       - name: Install Python deps
         run: |
+          set -euo pipefail
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install -r cdk-windowgeniusai/requirements.txt
@@ -63,7 +74,9 @@ jobs:
         run: cdk synth --app "python3 cdk-windowgeniusai/app.py"
 
       - name: CDK deploy
-        run: >
-          cdk deploy --require-approval never
-          --app "python3 cdk-windowgeniusai/app.py"
-          -c imageTag=$IMAGE_TAG
+        run: |
+          set -euo pipefail
+          cdk deploy \
+            --require-approval never \
+            --app "python3 cdk-windowgeniusai/app.py" \
+            -c imageTag="$IMAGE_TAG"

@@ -101,7 +101,7 @@ class CdkWindowgeniusaiStack(Stack):
                     "DJANGO_SETTINGS_MODULE": "LPageToAdmin.settings",  # ✅ explicitly set Django settings module
                     "USE_AWS_SECRETS": "true",
                     # ✅ Add ALB DNS + custom domain
-                    "DJANGO_ALLOWED_HOSTS": "cdkwin-windo-ymgri9fugqm2-695473983.us-east-1.elb.amazonaws.com,www.windowgeniusai.com,windowgeniusai.com,127.0.0.1,localhost",
+                    "DJANGO_ALLOWED_HOSTS": "cdkwin-windo-ymgri9fugqm2-695473983.us-east-1.elb.amazonaws.com,www.windowgeniusai.com,windowgeniusai.com",
                 },
                 secrets={
                     # "DATABASE_URL": ecs.Secret.from_secrets_manager(secret, "DATABASE_URL"),
@@ -151,6 +151,20 @@ class CdkWindowgeniusaiStack(Stack):
 
         # ✅ Also allow the Task Role to read secrets
         secret.grant_read(task_role)
+
+        # ✅ Required for ECS Exec (SSM) – minimal inline policy
+        for role in [exec_role, task_role]:
+            role.add_to_policy(iam.PolicyStatement(
+                actions=[
+                    "ssmmessages:CreateControlChannel",
+                    "ssmmessages:CreateDataChannel",
+                    "ssmmessages:OpenControlChannel",
+                    "ssmmessages:OpenDataChannel",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
+                ],
+                resources=["*"]
+            ))
 
 
         # Configure Health Check on the ALB Target Group
