@@ -34,9 +34,7 @@ fi
 # Collect static (default true)
 if [ "${COLLECTSTATIC:-true}" = "true" ]; then
   echo "🧹 Collecting static files..."
-  python manage.py collectstatic --noinput --clear --verbosity=0 || {
-    echo "⚠️ Collectstatic failed (ignored in entrypoint)"
-  }
+  python manage.py collectstatic --noinput --clear --verbosity=0
 fi
 
 echo "🚀 Starting CMD: $*"
