@@ -77,8 +77,11 @@ class CdkWindowgeniusaiStack(Stack):
 
         # 🔹 NEW: reference your ECR repo + read image tag from CDK context
         repo = ecr.Repository.from_repository_name(self, "WindowGeniusRepo", "windowgeniusai")
-        image_tag = self.node.try_get_context("imageTag") or "latest"
-
+        
+        # 🔒 Require an explicit imageTag from CDK context
+        image_tag = self.node.try_get_context("imageTag")
+        if not image_tag:
+            raise ValueError("Missing context 'imageTag'. Call CDK with: -c imageTag=<tag>")
 
         # 6️⃣ Fargate Service with Load Balancer
         service = ecs_patterns.ApplicationLoadBalancedFargateService(

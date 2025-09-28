@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-set -e
+set -euo pipefail
 
 echo "🚀 entrypoint starting..."
 
@@ -13,23 +13,31 @@ if [ -n "$DATABASE_HOST" ]; then
   i=0
   until nc -z "$DATABASE_HOST" "$DATABASE_PORT"; do
     i=$((i+1))
-    [ "$i" -ge 180 ] && echo "❌ DB not reachable after 180s" >&2 && exit 1
+    if [ "$i" -ge 180 ]; then
+      echo "❌ DB not reachable after 180s" >&2
+      exit 1
+    fi
     sleep 1
   done
   echo "✅ PostgreSQL is available!"
 fi
 
-# Optional: only run on web if you really want to (prefer one-off task)
+# ✅ Run migrations only if MIGRATE_ON_START=true
 if [ "${MIGRATE_ON_START:-false}" = "true" ]; then
   echo "📦 Running migrations..."
-  python manage.py migrate --noinput
+  python manage.py migrate --noinput || {
+    echo "❌ Migrations failed" >&2
+    exit 1
+  }
 fi
 
 # Collect static (default true)
 if [ "${COLLECTSTATIC:-true}" = "true" ]; then
   echo "🧹 Collecting static files..."
-  python manage.py collectstatic --noinput --clear --verbosity=0
+  python manage.py collectstatic --noinput --clear --verbosity=0 || {
+    echo "⚠️ Collectstatic failed (ignored in entrypoint)"
+  }
 fi
 
-echo "🚀 Starting: $*"
+echo "🚀 Starting CMD: $*"
 exec "$@"
