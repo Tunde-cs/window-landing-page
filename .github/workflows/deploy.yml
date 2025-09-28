@@ -38,8 +38,10 @@ jobs:
       - name: Set image tag and uri
         run: |
           set -euo pipefail
-          echo "IMAGE_TAG=${GITHUB_SHA}" >> "$GITHUB_ENV"
-          echo "IMAGE_URI=${{ steps.login-ecr.outputs.registry }}/${ECR_REPOSITORY}:${GITHUB_SHA}" >> "$GITHUB_ENV"
+          IMAGE_TAG=${GITHUB_SHA}
+          IMAGE_URI=${{ steps.login-ecr.outputs.registry }}/${ECR_REPOSITORY}:${IMAGE_TAG}
+          echo "IMAGE_TAG=$IMAGE_TAG" >> "$GITHUB_ENV"
+          echo "IMAGE_URI=$IMAGE_URI" >> "$GITHUB_ENV"
           echo "Will push $IMAGE_URI"
 
 
@@ -48,7 +50,7 @@ jobs:
           set -euo pipefail
           docker buildx build \
             --platform linux/amd64 \
-            --progress=plain --pull \ 
+            --progress=plain --pull \
             -t "$IMAGE_URI" \
             --push \
             .
