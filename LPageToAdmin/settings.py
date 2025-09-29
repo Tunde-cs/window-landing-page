@@ -18,6 +18,8 @@ import environ
 import cloudinary
 import re
 import sys
+from django.core.exceptions import DisallowedHost
+
 
 
 import logging
@@ -73,12 +75,9 @@ ALLOWED_HOSTS = os.getenv(
     "DJANGO_ALLOWED_HOSTS",
     "127.0.0.1,localhost,192.168.1.4,"
     "windowgeniusai.com,www.windowgeniusai.com,"
-    "cdkwin-windo-ymgri9fugqm2-695473983.us-east-1.elb.amazonaws.com,*"
+    ".elb.amazonaws.com"
 ).split(",")
 
-
-
-    
     
 # Application definition
 
@@ -240,8 +239,14 @@ LOGGING = {
             "handlers": ["console"],
             "level": "DEBUG",
         },
+        "django.security.DisallowedHost": {
+            "handlers": ["console"],
+            "level": "CRITICAL",   # silence spam (was ERROR before)
+            "propagate": False,
+        },
     },
 }
+
 
 # ✅ Correct CSRF settings
 CSRF_FAILURE_VIEW = "app.views.csrf_failure"  # ✅ Ensure this view exists
@@ -254,8 +259,6 @@ CORS_ALLOW_ALL_ORIGINS = False  # ✅ Set to False for security
 
 # Keep local URLs during development, remove them before final production lockdown
 CORS_ALLOWED_ORIGINS = [
-    "https://windowgeniusai.herokuapp.com",
-    "https://windowgeniusai-d6c9fb157af2.herokuapp.com",
     "https://www.windowgeniusai.com",
     "https://windowgeniusai.com",
     "http://localhost:8000",
@@ -337,11 +340,13 @@ CSP_IMG_SRC = (
 
 CSP_CONNECT_SRC = (
     "'self'",
-    "https://windowgeniusai.herokuapp.com",
-    "https://windowgeniusai.com",
-    "https://api.openai.com",
-    "https://www.google-analytics.com", 
+    "https://windowgeniusai.com",          # ✅ custom domain
+    "https://www.windowgeniusai.com",      # ✅ www subdomain
+    "https://cdkwin-windo-ymgri9fugqm2-695473983.us-east-1.elb.amazonaws.com",  # ✅ ALB DNS
+    "https://api.openai.com",              # ✅ for chatbot API
+    "https://www.google-analytics.com",    # ✅ analytics
 )
+
 
 # Import django-heroku at the bottom
 # import django_heroku

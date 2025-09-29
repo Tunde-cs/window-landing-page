@@ -7,12 +7,12 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-# OS deps (only what you need)
+# OS deps
 RUN apt-get update && apt-get install -y --no-install-recommends \
       build-essential libpq-dev postgresql-client netcat-openbsd curl ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-# Python deps first (better caching)
+# Python deps first
 COPY requirements.txt .
 RUN pip install --upgrade pip==24.2 setuptools wheel && \
     pip install --no-cache-dir -r requirements.txt
@@ -20,19 +20,15 @@ RUN pip install --upgrade pip==24.2 setuptools wheel && \
 # Create non-root user BEFORE copying code
 RUN useradd -m -u 1000 appuser
 
-# Copy app code owned by appuser; prepare static dir
+# Copy code as appuser
 COPY --chown=appuser:appuser . /app
-RUN mkdir -p /app/staticfiles
 
-# Collect static files at build time (ignore errors if settings need DB)
-RUN python manage.py collectstatic --noinput || true
+# Switch to appuser here
+USER appuser
 
 # Entrypoint
 COPY --chown=appuser:appuser entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
-
-# Drop privileges
-USER appuser
 
 # Healthcheck
 HEALTHCHECK --interval=30s --timeout=10s --start-period=20s --retries=3 \
