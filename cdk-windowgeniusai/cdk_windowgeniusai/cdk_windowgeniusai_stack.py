@@ -43,8 +43,8 @@ class CdkWindowgeniusaiStack(Stack):
         log_group = logs.LogGroup(
             self, "WindowGeniusLogGroup",
             log_group_name="/ecs/windowgeniusai", # ✅ fixed log group name
-            removal_policy=RemovalPolicy.DESTROY,  # delete on stack destroy (optional)
-            retention=logs.RetentionDays.ONE_MONTH      # keep logs for 30 days
+            removal_policy=RemovalPolicy.RETAIN,                  # keep logs if stack deleted
+            retention=logs.RetentionDays.THREE_MONTH      # keep logs for 30 days
         )
 
         # 6️⃣ Import your existing RDS instead of creating a new one
@@ -67,12 +67,11 @@ class CdkWindowgeniusaiStack(Stack):
             domain_name="windowgeniusai.com"
         )
 
-        certificate = acm.DnsValidatedCertificate(
+        certificate = acm.Certificate(
             self, "WindowGeniusDnsCert",
             domain_name="windowgeniusai.com",
             subject_alternative_names=["www.windowgeniusai.com"],
-            hosted_zone=hosted_zone,
-            region="us-east-1"  # must match your ALB region
+            validation=acm.CertificateValidation.from_dns(hosted_zone),
         )
 
         # 🔹 NEW: reference your ECR repo + read image tag from CDK context
@@ -105,6 +104,8 @@ class CdkWindowgeniusaiStack(Stack):
                     "USE_AWS_SECRETS": "true",
                     # ✅ Add ALB DNS + custom domain
                     "DJANGO_ALLOWED_HOSTS": "cdkwin-windo-ymgri9fugqm2-695473983.us-east-1.elb.amazonaws.com,www.windowgeniusai.com,windowgeniusai.com",
+                    "COLLECTSTATIC": "false",   # 👈 prevents runtime collectstatic
+                    # (optional) "MIGRATE_ON_START": "false",
                 },
                 secrets={
                     # "DATABASE_URL": ecs.Secret.from_secrets_manager(secret, "DATABASE_URL"),
@@ -123,7 +124,8 @@ class CdkWindowgeniusaiStack(Stack):
                     "CLOUDINARY_CLOUD_NAME": ecs.Secret.from_secrets_manager(secret, "CLOUDINARY_CLOUD_NAME"),
                     "CLOUDINARY_API_KEY": ecs.Secret.from_secrets_manager(secret, "CLOUDINARY_API_KEY"),
                     "CLOUDINARY_API_SECRET": ecs.Secret.from_secrets_manager(secret, "CLOUDINARY_API_SECRET"),
-                    "FB_PAGE_ACCESS_TOKEN": ecs.Secret.from_secrets_manager(secret, "FB_PAGE_ACCESS_TOKEN")
+                    "FB_PAGE_ACCESS_TOKEN": ecs.Secret.from_secrets_manager(secret, "FB_PAGE_ACCESS_TOKEN"),
+                    "DB_SSL_MODE": ecs.Secret.from_secrets_manager(secret, "DB_SSL_MODE"),
                 },
                 log_driver=ecs.LogDriver.aws_logs(
                     stream_prefix="windowgeniusai",
