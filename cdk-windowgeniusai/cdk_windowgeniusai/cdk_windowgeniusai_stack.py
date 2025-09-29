@@ -44,7 +44,8 @@ class CdkWindowgeniusaiStack(Stack):
             self, "WindowGeniusLogGroup",
             log_group_name="/ecs/windowgeniusai", # ✅ fixed log group name
             removal_policy=RemovalPolicy.RETAIN,                  # keep logs if stack deleted
-            retention=logs.RetentionDays.THREE_MONTH      # keep logs for 30 days
+            retention=logs.RetentionDays.THREE_MONTHS
+
         )
 
         # 6️⃣ Import your existing RDS instead of creating a new one
