@@ -52,5 +52,9 @@
   "hosted-zone:account=629965575535:domainName=windowgeniusai.com:region=us-east-1": {
     "Id": "/hostedzone/Z09740222O8MHDHH1DVNC",
     "Name": "windowgeniusai.com."
-  }
+  },
+  "acknowledged-issue-numbers": [
+    34892,
+    34635
+  ]
 }
