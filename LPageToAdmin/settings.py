@@ -345,6 +345,7 @@ CSP_CONNECT_SRC = (
     "https://cdkwin-windo-ymgri9fugqm2-695473983.us-east-1.elb.amazonaws.com",  # ✅ ALB DNS
     "https://api.openai.com",              # ✅ for chatbot API
     "https://www.google-analytics.com",    # ✅ analytics
+    "https://cdn.jsdelivr.net"  # 👈 allow Bootstrap/Popper source maps
 )
 
 

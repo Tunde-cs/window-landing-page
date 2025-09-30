@@ -105,8 +105,12 @@ class CdkWindowgeniusaiStack(Stack):
                     "USE_AWS_SECRETS": "true",
                     # ✅ Add ALB DNS + custom domain
                     "DJANGO_ALLOWED_HOSTS": "cdkwin-windo-ymgri9fugqm2-695473983.us-east-1.elb.amazonaws.com,www.windowgeniusai.com,windowgeniusai.com",
-                    "COLLECTSTATIC": "true",               # ✅ ensure static files are collected
+                    
+                    # ⚡ Since static files are baked in the image at build time,
+                    # set this to false to skip collectstatic at runtime
+                    "COLLECTSTATIC": "false",               
                 },
+
                 secrets={
                     # "DATABASE_URL": ecs.Secret.from_secrets_manager(secret, "DATABASE_URL"),
                     "DATABASE_NAME": ecs.Secret.from_secrets_manager(secret, "DATABASE_NAME"),
@@ -185,6 +189,13 @@ class CdkWindowgeniusaiStack(Stack):
         service.service.enable_execute_command = True
         service.service.health_check_grace_period = Duration.seconds(600)  # ⬅️ 10 minutes
 
+
+        # 👇 add this *after* your service definition
+        cfn_service = service.service.node.default_child
+        cfn_service.deployment_configuration = ecs.CfnService.DeploymentConfigurationProperty(
+            minimum_healthy_percent=100,  # always keep old tasks running
+            maximum_percent=200           # allow old+new during rolling deploy
+        )       
 
         # 7️⃣ Output Load Balancer DNS
         CfnOutput(
