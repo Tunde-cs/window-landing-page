@@ -94,6 +94,7 @@ class CdkWindowgeniusaiStack(Stack):
             desired_count=1,
             task_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PUBLIC),
             platform_version=ecs.FargatePlatformVersion.LATEST,
+            enable_execute_command=True,  # ✅ <-- add this line
             task_image_options=ecs_patterns.ApplicationLoadBalancedTaskImageOptions(
                 container_name="windowgeniusai",
                 # ⬇️ swap from_registry(:latest) → from_ecr_repository(repo, tag=image_tag)

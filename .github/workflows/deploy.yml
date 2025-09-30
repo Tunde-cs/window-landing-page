@@ -1,106 +1,56 @@
-# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
-name: Deploy to AWS
+name: Deploy to AWS ECS
 
 on:
   push:
-    branches: [ main ]
-  workflow_dispatch: {}
+    branches: [ "main" ]
 
 concurrency:
-  group: deploy-${{ github.ref }}
+  group: ecs-deploy
   cancel-in-progress: true
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REGISTRY: 629965575535.dkr.ecr.us-east-1.amazonaws.com
+  ECR_REPOSITORY: windowgeniusai
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    env:
-      AWS_REGION: us-east-1
-      ECR_REPOSITORY: windowgeniusai
-      JSII_SILENCE_WARNING_DEPRECATED_NODE_VERSION: "1"   # ✅ silence Node.js warning
 
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: arn:aws:iam::629965575535:role/github-actions-deploy-role
+          aws-region: ${{ env.AWS_REGION }}
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      # ✅ Cache pip (Python deps)
-      - name: Cache pip
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-
-      # ✅ Cache npm (Node deps for CDK)
-      - name: Cache npm
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: Set image tag and uri
+      - name: Log in to Amazon ECR
         run: |
-          set -euo pipefail
-          IMAGE_TAG=${GITHUB_SHA}
-          IMAGE_URI=${{ steps.login-ecr.outputs.registry }}/${ECR_REPOSITORY}:${IMAGE_TAG}
-          echo "IMAGE_TAG=$IMAGE_TAG" >> "$GITHUB_ENV"
-          echo "IMAGE_URI=$IMAGE_URI" >> "$GITHUB_ENV"
-          echo "Will push $IMAGE_URI"
+          aws ecr get-login-password --region $AWS_REGION \
+            | docker login --username AWS --password-stdin $ECR_REGISTRY
 
-      # ✅ Optimized Build & Push with caching
-      - name: Build & push image to ECR
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          push: true
-          platforms: linux/amd64
-          tags: ${{ env.IMAGE_URI }}
-          cache-from: type=registry,ref=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:cache
-          cache-to: type=registry,ref=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:cache,mode=max
-
-      - name: Set up Node (for CDK)
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-
-      - name: Install AWS CDK
-        run: npm install -g aws-cdk
-
-      - name: Set up Python (for CDK app)
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install Python deps
+      - name: Build and push Docker image
         run: |
-          set -euo pipefail
-          python -m pip install --upgrade pip
+          IMAGE_TAG=$(git rev-parse --short HEAD)
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+
+          docker buildx build --platform linux/amd64 -t $ECR_REPOSITORY:$IMAGE_TAG .
+          docker tag $ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: Install CDK dependencies
+        run: |
+          cd cdk-windowgeniusai
           pip install -r requirements.txt
-          pip install -r cdk-windowgeniusai/requirements.txt
-
-      - name: CDK synth (optional)
-        run: cdk synth --app "python3 cdk-windowgeniusai/app.py" -c imageTag="$IMAGE_TAG"
 
       - name: CDK deploy
         run: |
           set -euo pipefail
+          cdk synth --app "python3 cdk-windowgeniusai/app.py" -c imageTag=$IMAGE_TAG
           cdk deploy \
             --require-approval never \
             --app "python3 cdk-windowgeniusai/app.py" \
-            -c imageTag="$IMAGE_TAG"
+            -c imageTag=$IMAGE_TAG
