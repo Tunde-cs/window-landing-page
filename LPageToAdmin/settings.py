@@ -70,13 +70,21 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "fallback-secret-key")
 DEBUG = os.environ.get("DEBUG", "False") == "True"  # Ensures DEBUG is a boolean
 
 
-# ✅ Use env var for flexibility, with local dev + custom domain + ALB fallback
+import os
+
+# ✅ Use env var for flexibility, with sane defaults
 ALLOWED_HOSTS = os.getenv(
     "DJANGO_ALLOWED_HOSTS",
-    "127.0.0.1,localhost,192.168.1.4,"
-    "windowgeniusai.com,www.windowgeniusai.com,"
-    ".elb.amazonaws.com"
+    ",".join([
+        "127.0.0.1",            # localhost loopback
+        "localhost",            # browser localhost
+        "192.168.1.4",          # your LAN IP (optional, dev only)
+        "windowgeniusai.com",   # custom domain
+        "www.windowgeniusai.com",
+        ".elb.amazonaws.com"    # fallback for AWS ALB
+    ])
 ).split(",")
+
 
     
 # Application definition

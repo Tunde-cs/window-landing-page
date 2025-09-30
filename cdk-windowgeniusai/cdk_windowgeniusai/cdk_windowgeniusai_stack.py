@@ -128,6 +128,7 @@ class CdkWindowgeniusaiStack(Stack):
                     "CLOUDINARY_API_SECRET": ecs.Secret.from_secrets_manager(secret, "CLOUDINARY_API_SECRET"),
                     "FB_PAGE_ACCESS_TOKEN": ecs.Secret.from_secrets_manager(secret, "FB_PAGE_ACCESS_TOKEN"),
                     "DB_SSL_MODE": ecs.Secret.from_secrets_manager(secret, "DB_SSL_MODE"),
+                    "DJANGO_ALLOWED_HOSTS": ecs.Secret.from_secrets_manager(secret, "DJANGO_ALLOWED_HOSTS"),
                 },
                 log_driver=ecs.LogDriver.aws_logs(
                     stream_prefix="windowgeniusai",
