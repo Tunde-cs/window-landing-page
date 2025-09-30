@@ -8,8 +8,14 @@ concurrency:
   group: ecs-deploy
   cancel-in-progress: true
 
+# Required for OIDC (no static keys)
+permissions:
+  id-token: write
+  contents: read
+
 env:
   AWS_REGION: us-east-1
+  AWS_ACCOUNT_ID: "629965575535"
   ECR_REGISTRY: 629965575535.dkr.ecr.us-east-1.amazonaws.com
   ECR_REPOSITORY: windowgeniusai
 
@@ -21,36 +27,45 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Configure AWS credentials
+      - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::629965575535:role/github-actions-deploy-role
           aws-region: ${{ env.AWS_REGION }}
+          role-session-name: gha-ecs-deploy
 
+      # CDK CLI needs Node; your CDK app needs Python deps
+      - name: Setup Node (for CDK CLI)
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Install CDK CLI
+        run: npm install -g aws-cdk
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install CDK Python deps
+        run: pip install -r cdk-windowgeniusai/requirements.txt
+
+      # ECR login (simpler than manual password piping)
       - name: Log in to Amazon ECR
-        run: |
-          aws ecr get-login-password --region $AWS_REGION \
-            | docker login --username AWS --password-stdin $ECR_REGISTRY
+        uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build and push Docker image
         run: |
           IMAGE_TAG=$(git rev-parse --short HEAD)
           echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
 
-          docker buildx build --platform linux/amd64 -t $ECR_REPOSITORY:$IMAGE_TAG .
+          docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
           docker tag $ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-      - name: Install CDK dependencies
-        run: |
-          cd cdk-windowgeniusai
-          pip install -r requirements.txt
-
       - name: CDK deploy
         run: |
-          set -euo pipefail
+          # Use the CDK app at cdk-windowgeniusai/app.py from repo root
           cdk synth --app "python3 cdk-windowgeniusai/app.py" -c imageTag=$IMAGE_TAG
-          cdk deploy \
-            --require-approval never \
-            --app "python3 cdk-windowgeniusai/app.py" \
-            -c imageTag=$IMAGE_TAG
+          cdk deploy --require-approval never --app "python3 cdk-windowgeniusai/app.py" -c imageTag=$IMAGE_TAG
