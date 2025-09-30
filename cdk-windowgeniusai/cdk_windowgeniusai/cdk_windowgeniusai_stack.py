@@ -105,10 +105,7 @@ class CdkWindowgeniusaiStack(Stack):
                     "USE_AWS_SECRETS": "true",
                     # ✅ Add ALB DNS + custom domain
                     "DJANGO_ALLOWED_HOSTS": "cdkwin-windo-ymgri9fugqm2-695473983.us-east-1.elb.amazonaws.com,www.windowgeniusai.com,windowgeniusai.com",
-                    
-                    # ⚡ Since static files are baked in the image at build time,
-                    # set this to false to skip collectstatic at runtime
-                    "COLLECTSTATIC": "false",               
+                    "COLLECTSTATIC": "true",               
                 },
 
                 secrets={
