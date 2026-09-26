@@ -104,8 +104,6 @@ class CdkWindowgeniusaiStack(Stack):
                     "PORT": "8000",
                     "DJANGO_SETTINGS_MODULE": "LPageToAdmin.settings",  # ✅ explicitly set Django settings module
                     "USE_AWS_SECRETS": "true",
-                    # ✅ Add ALB DNS + custom domain
-                    "DJANGO_ALLOWED_HOSTS": "cdkwin-windo-ymgri9fugqm2-695473983.us-east-1.elb.amazonaws.com,www.windowgeniusai.com,windowgeniusai.com",
                     "COLLECTSTATIC": "true",               
                 },
 
@@ -196,6 +194,12 @@ class CdkWindowgeniusaiStack(Stack):
             maximum_percent=200           # allow old+new during rolling deploy
         )       
 
+        # Extra Outputs for Easier Debugging
+        CfnOutput(self, "EcsClusterName", value=cluster.cluster_name)
+        CfnOutput(self, "EcsServiceName", value=service.service.service_name)
+        CfnOutput(self, "AppLogGroup", value=log_group.log_group_name)
+        CfnOutput(self, "TargetGroupArn", value=service.target_group.target_group_arn)
+
         # 7️⃣ Output Load Balancer DNS
         CfnOutput(
             self, "LoadBalancerDNS",
@@ -203,5 +207,3 @@ class CdkWindowgeniusaiStack(Stack):
             description="Public URL of the deployed WindowGeniusAI app",
             export_name="WindowGeniusALB"
         )
-
-        
