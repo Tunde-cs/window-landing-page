@@ -11,13 +11,12 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 # © 2025 Babatunde Oshodi | tunde@hotengroup.com
 # For demo purposes only. Not for reuse or redistribution.
-
+import sys
 import os
 from pathlib import Path
 import environ
 import cloudinary
 import re
-import sys
 from django.core.exceptions import DisallowedHost
 
 
@@ -72,21 +71,16 @@ DEBUG = os.environ.get("DEBUG", "False") == "True"  # Ensures DEBUG is a boolean
 
 import os
 
-# ✅ Use env var for flexibility, with sane defaults
-ALLOWED_HOSTS = os.getenv(
-    "DJANGO_ALLOWED_HOSTS",
-    ",".join([
-        "127.0.0.1",            # localhost loopback
-        "localhost",            # browser localhost
-        "192.168.1.4",          # your LAN IP (optional, dev only)
-        "windowgeniusai.com",   # custom domain
-        "www.windowgeniusai.com",
-        ".elb.amazonaws.com"    # fallback for AWS ALB
-    ])
-).split(",")
-
+# ✅ Final ALLOWED_HOSTS config
+ALLOWED_HOSTS = [
+    h.strip() for h in os.getenv(
+        "DJANGO_ALLOWED_HOSTS",
+        "127.0.0.1,localhost,windowgeniusai.com,www.windowgeniusai.com,.elb.amazonaws.com"
+    ).split(",")
+]
 
     
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -307,8 +301,12 @@ SESSION_COOKIE_HTTPONLY = True  # Always True for security
 
 
 
-# ✅ Content Security Policy (CSP) - DEV CONFIG
-CSP_DEFAULT_SRC = ("'self'", "https://windowgeniusai.herokuapp.com", "https://windowgeniusai.com")
+# ✅ Content Security Policy (CSP) - PROD CONFIG
+CSP_DEFAULT_SRC = (
+    "'self'",
+    "https://windowgeniusai.com",
+    "https://www.windowgeniusai.com",
+)
 
 CSP_SCRIPT_SRC = (
     "'self'",
@@ -357,11 +355,7 @@ CSP_CONNECT_SRC = (
 )
 
 
-# Import django-heroku at the bottom
-# import django_heroku
 
-# Apply Heroku settings
-# django_heroku.settings(locals())
 
 # ✅ Force HTTPS and use www only in production
 if not DEBUG:
