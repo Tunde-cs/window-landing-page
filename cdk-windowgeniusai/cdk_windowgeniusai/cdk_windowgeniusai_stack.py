@@ -24,6 +24,13 @@ class CdkWindowgeniusaiStack(Stack):
         # 1️⃣ VPC
         vpc = ec2.Vpc.from_lookup(self, "ImportedVPC", vpc_id="vpc-0737754be6fe963b4")
 
+        # Keep WindowGenius in two public AZs only.
+        windowgenius_azs = ["us-east-1a", "us-east-1b"]
+        windowgenius_public_subnets = ec2.SubnetSelection(
+            subnet_type=ec2.SubnetType.PUBLIC,
+            availability_zones=windowgenius_azs,
+        )
+
         # 2️⃣ ECS Cluster
         cluster = ecs.Cluster(self, "WindowGeniusCluster", vpc=vpc)
 
@@ -92,7 +99,7 @@ class CdkWindowgeniusaiStack(Stack):
             public_load_balancer=True,
             assign_public_ip=True,
             desired_count=1,
-            task_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PUBLIC),
+            task_subnets=windowgenius_public_subnets,
             platform_version=ecs.FargatePlatformVersion.LATEST,
             enable_execute_command=True,  # ✅ <-- add this line
             task_image_options=ecs_patterns.ApplicationLoadBalancedTaskImageOptions(
@@ -140,6 +147,16 @@ class CdkWindowgeniusaiStack(Stack):
             redirect_http=True  # force all traffic to HTTPS
 
         )
+
+        # Limit the existing ALB to the same two public AZs.
+        alb_subnet_ids = vpc.select_subnets(
+            subnet_type=ec2.SubnetType.PUBLIC,
+            availability_zones=windowgenius_azs,
+            one_per_az=True,
+        ).subnet_ids
+        cfn_load_balancer = service.load_balancer.node.default_child
+        cfn_load_balancer.subnets = alb_subnet_ids
+
         # 🔐 Allow ECS tasks to connect to RDS on port 5432
         rds_instance.connections.allow_default_port_from(
         service.service, "Allow ECS tasks to access Postgres"
